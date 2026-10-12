@@ -111,4 +111,32 @@ struct FullscreenGeometryTests {
     @Test func windowOnOtherDisplayDoesNotCount() {
         #expect(!FullscreenGeometry.window(second, covers: display))
     }
+
+    var displays: [FullscreenGeometry.Display] {
+        [.init(id: 1, bounds: display, topInset: 32), .init(id: 2, bounds: second)]
+    }
+
+    @Test func onlyTheDisplayWithTheFullscreenWindowIsReported() {
+        let windows: [FullscreenGeometry.Window] = [
+            .init(bounds: CGRect(x: 100, y: 100, width: 800, height: 600), layer: 0),
+            .init(bounds: second, layer: 0),
+        ]
+        #expect(FullscreenGeometry.fullscreenDisplays(windows: windows, displays: displays) == [2])
+    }
+
+    @Test func fullscreenWindowCoveredByAnotherWindowDoesNotCount() {
+        let windows: [FullscreenGeometry.Window] = [
+            .init(bounds: CGRect(x: 1600, y: 0, width: 800, height: 600), layer: 0),
+            .init(bounds: second, layer: 0),
+        ]
+        #expect(FullscreenGeometry.fullscreenDisplays(windows: windows, displays: displays).isEmpty)
+    }
+
+    @Test func nonApplicationLayersAreIgnored() {
+        let windows: [FullscreenGeometry.Window] = [
+            .init(bounds: CGRect(x: 0, y: 0, width: 1512, height: 24), layer: 24),
+            .init(bounds: CGRect(x: 0, y: 32, width: 1512, height: 950), layer: 0),
+        ]
+        #expect(FullscreenGeometry.fullscreenDisplays(windows: windows, displays: displays) == [1])
+    }
 }
