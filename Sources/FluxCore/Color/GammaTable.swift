@@ -36,6 +36,21 @@ public struct GammaTable: Equatable, Sendable {
         return GammaTable(red: mix(red, other.red), green: mix(green, other.green), blue: mix(blue, other.blue))
     }
 
+    /// Compares sampled entries (tables may have different lengths) within `tolerance`.
+    /// Used to notice another app overwriting what we wrote.
+    public func approximatelyEquals(_ other: GammaTable, tolerance: Float = 0.01, samples: Int = 17) -> Bool {
+        guard count > 1, other.count > 1 else { return count == other.count }
+        for s in 0..<samples {
+            let f = Double(s) / Double(samples - 1)
+            let i = Int((f * Double(count - 1)).rounded())
+            let j = Int((f * Double(other.count - 1)).rounded())
+            if abs(red[i] - other.red[j]) > tolerance
+                || abs(green[i] - other.green[j]) > tolerance
+                || abs(blue[i] - other.blue[j]) > tolerance { return false }
+        }
+        return true
+    }
+
     public func tinted(kelvin: Double) -> GammaTable {
         scaled(by: ColorTemperature.multipliers(kelvin: kelvin))
     }

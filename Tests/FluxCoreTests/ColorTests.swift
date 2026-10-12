@@ -52,6 +52,13 @@ struct GammaTableTests {
         #expect(base.tinted(kelvin: 6500) == base)
     }
 
+    @Test func approximateEqualityAcrossSizes() {
+        let small = GammaTable.identity(count: 256).tinted(kelvin: 3400)
+        let large = GammaTable.identity(count: 1024).tinted(kelvin: 3400)
+        #expect(small.approximatelyEquals(large))
+        #expect(!small.approximatelyEquals(GammaTable.identity(count: 1024)))
+    }
+
     @Test func tintScalesEachChannel() {
         let base = GammaTable.identity(count: 3)
         let tinted = base.scaled(by: RGB(red: 1, green: 0.5, blue: 0.25))

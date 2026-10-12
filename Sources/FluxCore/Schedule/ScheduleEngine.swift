@@ -17,8 +17,13 @@ public struct ScheduleResult: Equatable, Sendable {
     /// 0 outside bedtime, 1 during it.
     public var bedtime: Double
 
+    /// Brightness scale, dimming towards `UserSettings.bedtimeBrightness` with the bedtime ramp.
+    public var brightness: Double
+
     /// Whether macOS should be in dark appearance (for dark-mode sync).
     public var prefersDarkAppearance: Bool { daylight < 0.5 }
+
+    public var target: DisplayTarget { DisplayTarget(kelvin: kelvin, brightness: brightness) }
 }
 
 /// Works out the scheduled colour temperature for an instant.
@@ -54,8 +59,22 @@ public struct ScheduleEngine: Sendable {
         } else {
             phase = daylight >= 1 ? .day : .sunset
         }
+        let brightness = 1 - (1 - settings.bedtimeBrightness.clamped(to: 0...1)) * bedtime
         return ScheduleResult(
-            kelvin: kelvin, phase: phase, sunrise: sunrise, sunset: sunset, daylight: daylight, bedtime: bedtime)
+            kelvin: kelvin, phase: phase, sunrise: sunrise, sunset: sunset,
+            daylight: daylight, bedtime: bedtime, brightness: brightness)
+    }
+
+    /// The schedule sampled across the local calendar day containing `day`, for graphing.
+    public func dailyCurve(on day: Date, step: TimeInterval = 600) -> [(date: Date, result: ScheduleResult)] {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = timeZone
+        let start = calendar.startOfDay(for: day)
+        guard let end = calendar.date(byAdding: .day, value: 1, to: start), step > 0 else { return [] }
+        return stride(from: start.timeIntervalSince1970, through: end.timeIntervalSince1970, by: step).map {
+            let date = Date(timeIntervalSince1970: $0)
+            return (date, evaluate(at: date))
+        }
     }
 
     /// Minutes from `date` until the next wake time.

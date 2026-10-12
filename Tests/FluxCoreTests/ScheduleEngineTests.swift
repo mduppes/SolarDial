@@ -73,6 +73,24 @@ struct ScheduleEngineTests {
         #expect(sunrise > local(5, day: 13) && sunrise < local(6, day: 13))
     }
 
+    @Test func bedtimeDimsWithTheRamp() {
+        var settings = UserSettings()
+        settings.bedtimeBrightness = 0.6
+        let dimming = ScheduleEngine(settings: settings, coordinates: saoPaulo, timeZone: tz)
+        #expect(dimming.evaluate(at: local(13)).brightness == 1)
+        #expect(abs(dimming.evaluate(at: local(23, 30)).brightness - 0.6) < 1e-9)
+        let ramp = dimming.evaluate(at: local(22)).brightness
+        #expect(ramp < 1 && ramp > 0.6)
+    }
+
+    @Test func dailyCurveCoversTheLocalDay() {
+        let curve = engine.dailyCurve(on: local(13), step: 3600)
+        #expect(curve.count == 25)
+        #expect(curve.first?.date == local(0))
+        #expect(curve.contains { $0.result.phase == .day })
+        #expect(curve.contains { $0.result.phase == .bedtime })
+    }
+
     @Test func temporaryDisableExpires() {
         let now = local(21)
         let disable = TemporaryDisable.oneHour(from: now)

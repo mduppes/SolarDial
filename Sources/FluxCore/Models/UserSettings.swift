@@ -18,10 +18,16 @@ public struct UserSettings: Codable, Equatable, Sendable {
     public var darkModeSync: Bool = false
     /// Post a notification shortly after bedtime.
     public var bedtimeReminder: Bool = false
+    /// Display brightness reached at bedtime, ramping with the bedtime colour. 1 = no dimming.
+    public var bedtimeBrightness: Double = 1
+    public var movieKelvin: Double = 4100
+    public var movieMinutes: Int = 150
 
     public static let dayKelvinRange: ClosedRange<Double> = 4500...6500
     public static let sunsetKelvinRange: ClosedRange<Double> = 1900...5000
     public static let bedtimeKelvinRange: ClosedRange<Double> = 1200...4000
+    public static let movieKelvinRange: ClosedRange<Double> = 2700...6500
+    public static let bedtimeBrightnessRange: ClosedRange<Double> = 0.4...1
 
     public init() {}
 
@@ -44,5 +50,8 @@ public struct UserSettings: Codable, Equatable, Sendable {
         manualCoordinates = try c.decodeIfPresent(Coordinates.self, forKey: .manualCoordinates)
         darkModeSync = try c.decodeIfPresent(Bool.self, forKey: .darkModeSync) ?? d.darkModeSync
         bedtimeReminder = try c.decodeIfPresent(Bool.self, forKey: .bedtimeReminder) ?? d.bedtimeReminder
+        bedtimeBrightness = try c.decodeIfPresent(Double.self, forKey: .bedtimeBrightness) ?? d.bedtimeBrightness
+        movieKelvin = try c.decodeIfPresent(Double.self, forKey: .movieKelvin) ?? d.movieKelvin
+        movieMinutes = try c.decodeIfPresent(Int.self, forKey: .movieMinutes) ?? d.movieMinutes
     }
 }
