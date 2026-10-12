@@ -4,12 +4,14 @@ import FluxCore
 @MainActor
 final class StatusItemManager: NSObject, NSMenuDelegate {
     private let controller: TintController
+    private let preferences: PreferencesWindowController
     private let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
     private let menu = NSMenu()
     private let timeFormat: Date.FormatStyle = .dateTime.hour().minute()
 
     init(controller: TintController) {
         self.controller = controller
+        preferences = PreferencesWindowController(controller: controller)
         super.init()
         menu.autoenablesItems = false
         menu.delegate = self
@@ -21,6 +23,10 @@ final class StatusItemManager: NSObject, NSMenuDelegate {
         let symbol: String
         if controller.temporaryDisable != nil || controller.isFrontAppDisabled {
             symbol = "sun.max.trianglebadge.exclamationmark"
+        } else if case .darkroom = controller.mode {
+            symbol = "eye"
+        } else if case .movie = controller.mode {
+            symbol = "film"
         } else {
             switch controller.schedule?.phase {
             case .bedtime: symbol = "moon.stars"
@@ -60,6 +66,15 @@ final class StatusItemManager: NSObject, NSMenuDelegate {
         menu.addItem(fullscreen)
 
         menu.addItem(.separator())
+        let movie = action("Movie Mode (2½ Hours)", #selector(toggleMovie))
+        if case .movie = controller.mode { movie.state = .on }
+        menu.addItem(movie)
+        let darkroom = action("Darkroom (Until Sunrise)", #selector(toggleDarkroom))
+        if case .darkroom = controller.mode { darkroom.state = .on }
+        menu.addItem(darkroom)
+
+        menu.addItem(.separator())
+        menu.addItem(action("Settings…", #selector(showPreferences), key: ","))
         menu.addItem(action("Quit Flux", #selector(quit), key: "q"))
     }
 
@@ -69,8 +84,14 @@ final class StatusItemManager: NSObject, NSMenuDelegate {
             lines.append("Paused until \(disable.endDate.formatted(timeFormat))")
         } else if controller.isFrontAppDisabled, let name = controller.frontApp?.localizedName {
             lines.append("Paused for \(name)")
+        } else if case .darkroom(let until) = controller.mode {
+            lines.append("Darkroom until \(until.formatted(timeFormat))")
         } else if let schedule = controller.schedule {
-            lines.append("\(Int(schedule.kelvin.rounded()))K · \(phaseName(schedule.phase))")
+            var line = "\(Int(schedule.kelvin.rounded()))K · \(phaseName(schedule.phase))"
+            if case .movie(let until) = controller.mode {
+                line = "\(Int(max(schedule.kelvin, TintMode.movieKelvin).rounded()))K · Movie mode until \(until.formatted(timeFormat))"
+            }
+            lines.append(line)
         }
         let count = controller.fullscreenDisplays.count
         if count > 0, controller.temporaryDisable == nil, !controller.isFrontAppDisabled {
@@ -114,5 +135,8 @@ final class StatusItemManager: NSObject, NSMenuDelegate {
     @objc private func disableUntilSunrise() { controller.disableUntilSunrise() }
     @objc private func toggleFrontApp() { controller.toggleFrontAppDisabled() }
     @objc private func toggleFullscreen() { controller.toggleFullscreenDisable() }
+    @objc private func toggleMovie() { controller.toggleMovieMode() }
+    @objc private func toggleDarkroom() { controller.toggleDarkroom() }
+    @objc private func showPreferences() { preferences.show() }
     @objc private func quit() { NSApp.terminate(nil) }
 }
