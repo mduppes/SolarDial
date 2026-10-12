@@ -13,11 +13,11 @@
 ## Next Steps
 
 1. **First live test (do this first).** Quit f.lux (`pkill -f /Applications/Flux.app/Contents/MacOS/Flux`) and turn off Night Shift. Then `./scripts/build-app.sh && open build/Flux.app`. Check:
-   - [ ] The tint matches the menu's Kelvin readout, and the fade is smooth.
-   - [ ] Quitting from the menu, `kill <pid>` (SIGTERM) and Ctrl-C all restore normal colour.
+   - [x] The tint matches the schedule: 2026-10-12 18:33, Florianópolis fix, 5430 K expected; the display table read back as (1, 0.951, 0.878) against (1, 0.9507, 0.8772) expected, with the calibrated mid-table kept. The menu readout and fade smoothness still need a visual check.
+   - [ ] Quitting from the menu, `kill <pid>` (SIGTERM) and Ctrl-C all restore normal colour. (SIGTERM verified: the table is back to identity. Menu Quit and Ctrl-C are untested.)
    - [ ] Full screen: a full-screen video on one display untints only that display. Check a notched MacBook display, and Space switches.
    - [ ] Unplugging/replugging a monitor and sleep/wake re-apply the tint (`DisplayManager.resetAfterReconfiguration`).
-   - [ ] Location: the permission prompt appears once, then the menu shows "Location Services". Changing the time zone in System Settings switches to "Time zone (...)" without any window opening.
+   - [ ] Location: (a Core Location fix was received and stored on first launch, tagged `America/Sao_Paulo`) the permission prompt appears once, then the menu shows "Location Services". Changing the time zone in System Settings switches to "Time zone (...)" without any window opening.
    - [ ] Settings window: the sliders preview live and return to the schedule about 3 s after release. Wake time and sleep length move the bedtime readout. Manual location works.
    - [ ] Movie mode and darkroom: the darkroom fade looks acceptable (it's a table cross-fade).
    - [ ] Start at login registers (it may need approval in Login Items). Dark-mode sync triggers one Automation prompt. The bedtime reminder appears (notification permission).
@@ -27,6 +27,11 @@
 ---
 
 ## Handoff Log
+
+### 2026-10-12 — First live run (Claude Opus)
+- Quit f.lux and launched `build/Flux.app`. Verified by reading gamma back with `CGGetDisplayTransferByTable`: the tint matches `ScheduleEngine` output, SIGTERM restores identity, and relaunch re-applies. Core Location returned a fix with no visible fuss.
+- The agent couldn't take screenshots (no Screen Recording permission), so the visual checks (menu, settings window, full screen, fade smoothness) are left to the user.
+- A handy check: compile `Sources/FluxCore/**/*.swift` together with a small `main.swift` using `swiftc` to print what the schedule gives for any coordinates and time.
 
 ### 2026-10-12 — Milestone B implementation (Claude Opus)
 - **Done:**
