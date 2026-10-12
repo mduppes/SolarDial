@@ -1,4 +1,40 @@
 import AppKit
 
 @MainActor
-final class AppDelegate: NSObject, NSApplicationDelegate {}
+final class AppDelegate: NSObject, NSApplicationDelegate {
+    private var controller: TintController?
+    private var statusItem: StatusItemManager?
+    private var signalSources: [DispatchSourceSignal] = []
+
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        let controller = TintController(
+            store: SettingsStore(),
+            displays: DisplayManager(),
+            fullscreen: FullscreenTracker(),
+            location: LocationProvider())
+        let statusItem = StatusItemManager(controller: controller)
+        controller.onUpdate = { [weak statusItem] in statusItem?.updateIcon() }
+        self.controller = controller
+        self.statusItem = statusItem
+        installSignalHandlers()
+        controller.start()
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        controller?.stop()
+    }
+
+    /// Route termination signals through the normal quit path so gamma is restored.
+    /// (On a crash, macOS restores the ColorSync settings itself when the process exits.)
+    private func installSignalHandlers() {
+        for sig in [SIGINT, SIGTERM, SIGHUP] {
+            signal(sig, SIG_IGN)
+            let source = DispatchSource.makeSignalSource(signal: sig, queue: .main)
+            source.setEventHandler {
+                MainActor.assumeIsolated { NSApp.terminate(nil) }
+            }
+            source.resume()
+            signalSources.append(source)
+        }
+    }
+}
