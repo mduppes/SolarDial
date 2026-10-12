@@ -29,12 +29,7 @@ final class StatusItemManager: NSObject, NSMenuDelegate {
         } else if controller.movieMode != nil {
             symbol = "film"
         } else {
-            switch controller.schedule?.phase {
-            case .bedtime: symbol = "moon.stars"
-            case .sunset: symbol = "moon"
-            case .transition: symbol = "sun.horizon"
-            case .day, nil: symbol = "sun.max"
-            }
+            symbol = "sun.horizon"
         }
         let config = NSImage.SymbolConfiguration(pointSize: 14, weight: .regular)
         let image = NSImage(systemSymbolName: symbol, accessibilityDescription: "Flux")?

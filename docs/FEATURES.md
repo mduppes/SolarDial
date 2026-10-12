@@ -8,7 +8,7 @@ This document defines the feature set of the clean-room Flux clone, based on rev
 |---|---|---|---|
 | **Core** | Day / Sunset / Bedtime schedule | **Keep** | 3 configurable Kelvin targets. Transitions smoothly based on solar elevation and user wake time. |
 | **Core** | Smooth animated transitions | **Keep** | Interpolate gamma ramps smoothly across minutes (or quick fade when waking/toggling). |
-| **Core** | Menu bar status item | **Keep** | Minimal icon in macOS menu bar with current Kelvin, phase, quick controls, and settings. |
+| **Core** | Menu bar status item | **Keep** | Minimal icon in macOS menu bar with current Kelvin, phase, quick controls, and settings. The icon is always the sun-on-horizon symbol, never time-of-day based; it changes only for a conflict (⚠︎), a disable, or movie mode. |
 | **Core** | Display gamma adjustments | **Keep** | Apply color changes per display using `CGSetDisplayTransferByTable`. |
 | **Disable** | Disable for 1 hour | **Keep** | Temporarily restores normal display gamma for 60 minutes, then resumes schedule. |
 | **Disable** | Disable until sunrise | **Keep** | Temporarily restores normal display gamma until next morning's transition begins. |
