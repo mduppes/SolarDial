@@ -40,6 +40,8 @@ cat > "$APP/Contents/Info.plist" <<PLIST
     <true/>
     <key>NSHighResolutionCapable</key>
     <true/>
+    <key>NSAppleEventsUsageDescription</key>
+    <string>Flux switches macOS between Light and Dark Mode at sunrise and sunset, if you turn that on.</string>
     <key>NSLocationUsageDescription</key>
     <string>Flux uses your approximate location to work out local sunrise and sunset times. It never leaves your Mac.</string>
     <key>NSLocationWhenInUseUsageDescription</key>

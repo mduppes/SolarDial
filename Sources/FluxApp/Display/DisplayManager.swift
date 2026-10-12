@@ -3,14 +3,14 @@ import CoreGraphics
 import FluxCore
 
 /// Owns every write to display gamma. Keeps each display's calibrated base table so tinting only
-/// moves the white point, and fades between temperatures.
+/// moves the white point, and fades between targets.
 @MainActor
 final class DisplayManager {
     var onDisplaysChanged: (() -> Void)?
 
     private var baseTables: [CGDirectDisplayID: GammaTable] = [:]
-    private var applied: [CGDirectDisplayID: Double] = [:]
-    private var fades: [CGDirectDisplayID: KelvinFade] = [:]
+    private var applied: [CGDirectDisplayID: DisplayTarget] = [:]
+    private var fades: [CGDirectDisplayID: TargetFade] = [:]
     private var fadeTimer: Timer?
     private var pendingReset: DispatchWorkItem?
 
@@ -39,21 +39,21 @@ final class DisplayManager {
         return Array(ids.prefix(Int(count)))
     }
 
-    /// Moves each display towards its target temperature over `fadeDuration` seconds.
-    func setTargets(_ targets: [CGDirectDisplayID: Double], fadeDuration: TimeInterval) {
+    /// Moves each display towards its target over `fadeDuration` seconds.
+    func setTargets(_ targets: [CGDirectDisplayID: DisplayTarget], fadeDuration: TimeInterval) {
         let now = Date()
         for (id, target) in targets {
-            if let fade = fades[id], fade.to == target { continue }
-            let current = fades[id]?.value(at: now) ?? applied[id] ?? ColorTemperature.neutral
-            if fades[id] == nil, abs(current - target) < 1 {
-                if applied[id] == nil { apply(kelvin: target, to: id) }
+            if let fade = fades[id], !fade.to.needsChange(to: target) { continue }
+            let current = fades[id]?.current(at: now) ?? applied[id] ?? .neutral
+            if fades[id] == nil, !current.needsChange(to: target) {
+                if applied[id] == nil { apply(target, to: id) }
                 continue
             }
             if fadeDuration <= 0 {
                 fades[id] = nil
-                apply(kelvin: target, to: id)
+                apply(target, to: id)
             } else {
-                fades[id] = KelvinFade(from: current, to: target, start: now, duration: fadeDuration)
+                fades[id] = TargetFade(from: current, to: target, start: now, duration: fadeDuration)
             }
         }
         if !fades.isEmpty { startFadeTimer() }
@@ -67,11 +67,20 @@ final class DisplayManager {
         CGDisplayRestoreColorSyncSettings()
     }
 
-    private func apply(kelvin: Double, to id: CGDirectDisplayID) {
-        let base = baseTables[id] ?? captureBaseTable(for: id)
-        let table = base.tinted(kelvin: kelvin)
-        let result = CGSetDisplayTransferByTable(id, UInt32(table.count), table.red, table.green, table.blue)
-        if result == .success { applied[id] = kelvin }
+    private func apply(_ target: DisplayTarget, to id: CGDirectDisplayID) {
+        write(target.table(base: base(for: id)), to: id)
+        applied[id] = target
+    }
+
+    private func write(_ table: GammaTable, to id: CGDirectDisplayID) {
+        CGSetDisplayTransferByTable(id, UInt32(table.count), table.red, table.green, table.blue)
+    }
+
+    private func base(for id: CGDirectDisplayID) -> GammaTable {
+        if let table = baseTables[id] { return table }
+        let table = captureBaseTable(for: id)
+        baseTables[id] = table
+        return table
     }
 
     private func startFadeTimer() {
@@ -84,8 +93,13 @@ final class DisplayManager {
     private func stepFades() {
         let now = Date()
         for (id, fade) in fades {
-            apply(kelvin: fade.value(at: now), to: id)
-            if fade.isFinished(at: now) { fades[id] = nil }
+            if fade.isFinished(at: now) {
+                fades[id] = nil
+                apply(fade.to, to: id)
+            } else {
+                write(fade.table(at: now, base: base(for: id)), to: id)
+                applied[id] = fade.current(at: now)
+            }
         }
         if fades.isEmpty {
             fadeTimer?.invalidate()
@@ -110,8 +124,8 @@ final class DisplayManager {
         applied.removeAll()
         CGDisplayRestoreColorSyncSettings()
         captureBaseTables()
-        for (id, kelvin) in targets where baseTables[id] != nil {
-            apply(kelvin: kelvin, to: id)
+        for (id, target) in targets where baseTables[id] != nil {
+            apply(target, to: id)
         }
         onDisplaysChanged?()
     }
@@ -133,9 +147,7 @@ final class DisplayManager {
         guard CGGetDisplayTransferByTable(id, capacity, &red, &green, &blue, &count) == .success, count > 1
         else { return .identity(count: 256) }
         let n = Int(count)
-        let table = GammaTable(red: Array(red.prefix(n)), green: Array(green.prefix(n)), blue: Array(blue.prefix(n)))
-        baseTables[id] = table
-        return table
+        return GammaTable(red: Array(red.prefix(n)), green: Array(green.prefix(n)), blue: Array(blue.prefix(n)))
     }
 }
 

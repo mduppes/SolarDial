@@ -1,13 +1,20 @@
 import Foundation
 import FluxCore
+import Observation
 
 @MainActor
+@Observable
 final class SettingsStore {
-    private let defaults: UserDefaults
-    private static let key = "settings"
+    @ObservationIgnored var onChange: (() -> Void)?
+    @ObservationIgnored private let defaults: UserDefaults
+    @ObservationIgnored private static let key = "settings"
 
     var settings: UserSettings {
-        didSet { defaults.set(try? JSONEncoder().encode(settings), forKey: Self.key) }
+        didSet {
+            guard settings != oldValue else { return }
+            defaults.set(try? JSONEncoder().encode(settings), forKey: Self.key)
+            onChange?()
+        }
     }
 
     init(defaults: UserDefaults = .standard) {
