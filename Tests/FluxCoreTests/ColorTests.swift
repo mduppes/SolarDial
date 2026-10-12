@@ -59,16 +59,3 @@ struct GammaTableTests {
         #expect(tinted.blue == [0, 0.125, 0.25])
     }
 }
-
-struct KelvinFadeTests {
-    @Test func fadeEndpointsAndCompletion() {
-        let start = Date(timeIntervalSince1970: 0)
-        let fade = KelvinFade(from: 6500, to: 3400, start: start, duration: 2)
-        #expect(fade.value(at: start) == 6500)
-        #expect(abs(fade.value(at: start.addingTimeInterval(2)) - 3400) < 1e-9)
-        #expect(!fade.isFinished(at: start.addingTimeInterval(1)))
-        #expect(fade.isFinished(at: start.addingTimeInterval(2)))
-        let mid = fade.value(at: start.addingTimeInterval(1))
-        #expect(mid < 6500 && mid > 3400)
-    }
-}

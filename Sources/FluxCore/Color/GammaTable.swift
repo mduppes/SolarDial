@@ -29,6 +29,13 @@ public struct GammaTable: Equatable, Sendable {
             blue: blue.map { $0 * Float(rgb.blue) })
     }
 
+    /// Linear blend towards `other` (same size), `fraction` 0 = self, 1 = other.
+    public func mixed(with other: GammaTable, fraction: Double) -> GammaTable {
+        let t = Float(fraction.clamped(to: 0...1))
+        func mix(_ a: [Float], _ b: [Float]) -> [Float] { zip(a, b).map { $0 + ($1 - $0) * t } }
+        return GammaTable(red: mix(red, other.red), green: mix(green, other.green), blue: mix(blue, other.blue))
+    }
+
     public func tinted(kelvin: Double) -> GammaTable {
         scaled(by: ColorTemperature.multipliers(kelvin: kelvin))
     }

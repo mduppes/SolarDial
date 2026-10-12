@@ -14,6 +14,14 @@ public struct UserSettings: Codable, Equatable, Sendable {
     public var disabledBundleIDs: Set<String> = []
     /// Overrides automatic location when set.
     public var manualCoordinates: Coordinates?
+    /// Switch macOS between light and dark appearance at sunrise and sunset.
+    public var darkModeSync: Bool = false
+    /// Post a notification shortly after bedtime.
+    public var bedtimeReminder: Bool = false
+
+    public static let dayKelvinRange: ClosedRange<Double> = 4500...6500
+    public static let sunsetKelvinRange: ClosedRange<Double> = 1900...5000
+    public static let bedtimeKelvinRange: ClosedRange<Double> = 1200...4000
 
     public init() {}
 
@@ -34,5 +42,7 @@ public struct UserSettings: Codable, Equatable, Sendable {
         disableForFullscreen = try c.decodeIfPresent(Bool.self, forKey: .disableForFullscreen) ?? d.disableForFullscreen
         disabledBundleIDs = try c.decodeIfPresent(Set<String>.self, forKey: .disabledBundleIDs) ?? d.disabledBundleIDs
         manualCoordinates = try c.decodeIfPresent(Coordinates.self, forKey: .manualCoordinates)
+        darkModeSync = try c.decodeIfPresent(Bool.self, forKey: .darkModeSync) ?? d.darkModeSync
+        bedtimeReminder = try c.decodeIfPresent(Bool.self, forKey: .bedtimeReminder) ?? d.bedtimeReminder
     }
 }

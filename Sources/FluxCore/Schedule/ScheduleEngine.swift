@@ -12,6 +12,13 @@ public struct ScheduleResult: Equatable, Sendable {
     public var phase: Phase
     public var sunrise: Date?
     public var sunset: Date?
+    /// 0 at night, 1 in full daytime colour.
+    public var daylight: Double
+    /// 0 outside bedtime, 1 during it.
+    public var bedtime: Double
+
+    /// Whether macOS should be in dark appearance (for dark-mode sync).
+    public var prefersDarkAppearance: Bool { daylight < 0.5 }
 }
 
 /// Works out the scheduled colour temperature for an instant.
@@ -47,7 +54,18 @@ public struct ScheduleEngine: Sendable {
         } else {
             phase = daylight >= 1 ? .day : .sunset
         }
-        return ScheduleResult(kelvin: kelvin, phase: phase, sunrise: sunrise, sunset: sunset)
+        return ScheduleResult(
+            kelvin: kelvin, phase: phase, sunrise: sunrise, sunset: sunset, daylight: daylight, bedtime: bedtime)
+    }
+
+    /// Minutes from `date` until the next wake time.
+    public func minutesUntilWake(at date: Date) -> Double {
+        circular(Double(settings.wakeMinutes) - minutesIntoDay(date))
+    }
+
+    /// Minutes since the most recent bedtime.
+    public func minutesSinceBedtime(at date: Date) -> Double {
+        circular(minutesIntoDay(date) - Double(settings.bedtimeMinutes))
     }
 
     /// When daytime colour next starts returning after `date`: the later of sunrise and wake time.
