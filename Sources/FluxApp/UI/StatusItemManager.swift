@@ -7,6 +7,7 @@ final class StatusItemManager: NSObject, NSMenuDelegate {
     private let preferences: PreferencesWindowController
     private let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     private let menu = NSMenu()
+    private var currentSymbol: String?
     private let timeFormat: Date.FormatStyle = .dateTime.hour().minute()
 
     init(controller: TintController) {
@@ -39,9 +40,12 @@ final class StatusItemManager: NSObject, NSMenuDelegate {
         let image = NSImage(systemSymbolName: symbol, accessibilityDescription: "Flux")?
             .withSymbolConfiguration(config)
         image?.isTemplate = true
+        guard symbol != currentSymbol else { return }
+        currentSymbol = symbol
         item.button?.image = image
-        // variableLength pads 8 pt per side; other menu extras use about 4.
-        item.length = (image?.size.width ?? 18) + 8
+        // variableLength adds 8 pt per side. Setting length re-lays out the menu bar, so only on change.
+        let width = (image?.size.width ?? 18).rounded(.up)
+        if item.length != width { item.length = width }
     }
 
     func menuNeedsUpdate(_ menu: NSMenu) {
@@ -134,6 +138,9 @@ final class StatusItemManager: NSObject, NSMenuDelegate {
     @objc private func toggleFrontApp() { controller.toggleFrontAppDisabled() }
     @objc private func toggleFullscreen() { controller.toggleFullscreenDisable() }
     @objc private func toggleMovie() { controller.toggleMovieMode() }
-    @objc private func showPreferences() { preferences.show() }
+    @objc private func showPreferences() {
+        // Activating while the menu is still dismissing leaves the menu-bar highlight on a neighbour.
+        DispatchQueue.main.async { [preferences] in preferences.show() }
+    }
     @objc private func quit() { NSApp.terminate(nil) }
 }
