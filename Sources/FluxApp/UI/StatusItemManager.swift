@@ -40,6 +40,8 @@ final class StatusItemManager: NSObject, NSMenuDelegate {
             .withSymbolConfiguration(config)
         image?.isTemplate = true
         item.button?.image = image
+        // variableLength pads 8 pt per side; other menu extras use about 4.
+        item.length = (image?.size.width ?? 18) + 8
     }
 
     func menuNeedsUpdate(_ menu: NSMenu) {
