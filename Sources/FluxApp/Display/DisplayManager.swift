@@ -3,16 +3,19 @@ import CoreGraphics
 import FluxCore
 
 /// Owns every write to display gamma. Keeps each display's calibrated base table so tinting only
-/// moves the white point, and fades between targets.
+/// moves the white point, fades between targets, and notices when another app overwrites them.
 @MainActor
 final class DisplayManager {
     var onDisplaysChanged: (() -> Void)?
 
     private var baseTables: [CGDirectDisplayID: GammaTable] = [:]
     private var applied: [CGDirectDisplayID: DisplayTarget] = [:]
+    private var written: [CGDirectDisplayID: GammaTable] = [:]
     private var fades: [CGDirectDisplayID: TargetFade] = [:]
     private var fadeTimer: Timer?
     private var pendingReset: DispatchWorkItem?
+    /// The system resets gamma around wake and reconfiguration; don't mistake that for another app.
+    private var settledAfter = Date().addingTimeInterval(5)
 
     init() {
         CGDisplayRestoreColorSyncSettings()
@@ -64,7 +67,21 @@ final class DisplayManager {
         fadeTimer = nil
         fades.removeAll()
         applied.removeAll()
+        written.removeAll()
         CGDisplayRestoreColorSyncSettings()
+    }
+
+    /// Re-reads each display's table and compares it with what was last written. Rewrites any
+    /// display that differs and returns true, meaning some other app is changing display colour.
+    func checkForOverwrites() -> Bool {
+        guard fades.isEmpty, pendingReset == nil, Date() > settledAfter else { return false }
+        var overwritten = false
+        for (id, table) in written {
+            guard let current = readTable(id), !current.approximatelyEquals(table) else { continue }
+            overwritten = true
+            write(table, to: id)
+        }
+        return overwritten
     }
 
     private func apply(_ target: DisplayTarget, to id: CGDirectDisplayID) {
@@ -73,12 +90,14 @@ final class DisplayManager {
     }
 
     private func write(_ table: GammaTable, to id: CGDirectDisplayID) {
-        CGSetDisplayTransferByTable(id, UInt32(table.count), table.red, table.green, table.blue)
+        if CGSetDisplayTransferByTable(id, UInt32(table.count), table.red, table.green, table.blue) == .success {
+            written[id] = table
+        }
     }
 
     private func base(for id: CGDirectDisplayID) -> GammaTable {
         if let table = baseTables[id] { return table }
-        let table = captureBaseTable(for: id)
+        let table = readTable(id) ?? .identity(count: 256)
         baseTables[id] = table
         return table
     }
@@ -97,8 +116,7 @@ final class DisplayManager {
                 fades[id] = nil
                 apply(fade.to, to: id)
             } else {
-                write(fade.table(at: now, base: base(for: id)), to: id)
-                applied[id] = fade.current(at: now)
+                apply(fade.current(at: now), to: id)
             }
         }
         if fades.isEmpty {
@@ -119,9 +137,12 @@ final class DisplayManager {
     }
 
     private func resetAfterReconfiguration() {
+        pendingReset = nil
+        settledAfter = Date().addingTimeInterval(5)
         let targets = applied.merging(fades.mapValues(\.to)) { _, fadeTarget in fadeTarget }
         fades.removeAll()
         applied.removeAll()
+        written.removeAll()
         CGDisplayRestoreColorSyncSettings()
         captureBaseTables()
         for (id, target) in targets where baseTables[id] != nil {
@@ -133,19 +154,19 @@ final class DisplayManager {
     private func captureBaseTables() {
         baseTables.removeAll()
         for id in activeDisplays() {
-            baseTables[id] = captureBaseTable(for: id)
+            baseTables[id] = readTable(id) ?? .identity(count: 256)
         }
     }
 
-    private func captureBaseTable(for id: CGDirectDisplayID) -> GammaTable {
+    private func readTable(_ id: CGDirectDisplayID) -> GammaTable? {
         let capacity = CGDisplayGammaTableCapacity(id)
-        guard capacity > 0 else { return .identity(count: 256) }
+        guard capacity > 0 else { return nil }
         var red = [CGGammaValue](repeating: 0, count: Int(capacity))
         var green = red
         var blue = red
         var count: UInt32 = 0
         guard CGGetDisplayTransferByTable(id, capacity, &red, &green, &blue, &count) == .success, count > 1
-        else { return .identity(count: 256) }
+        else { return nil }
         let n = Int(count)
         return GammaTable(red: Array(red.prefix(n)), green: Array(green.prefix(n)), blue: Array(blue.prefix(n)))
     }

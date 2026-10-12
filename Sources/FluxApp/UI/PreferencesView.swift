@@ -9,18 +9,48 @@ struct PreferencesView: View {
     @State private var launchAtLogin = LaunchAtLogin.isEnabled
     @State private var loginNeedsApproval = LaunchAtLogin.needsApproval
     @State private var loginError: String?
+    @State private var confirmReset = false
 
     var body: some View {
-        Form {
-            colourSection
-            scheduleSection
-            locationSection
-            disableSection
-            systemSection
+        VStack(spacing: 0) {
+            Form {
+                if let warning = controller.conflictMessage {
+                    Section {
+                        Label(warning, systemImage: "exclamationmark.triangle.fill")
+                            .foregroundStyle(.orange)
+                    }
+                }
+                Section("Today") {
+                    DailyGraphView(controller: controller)
+                }
+                colourSection
+                movieSection
+                scheduleSection
+                locationSection
+                disableSection
+                systemSection
+            }
+            .formStyle(.grouped)
+            Divider()
+            footer
         }
-        .formStyle(.grouped)
-        .frame(width: 480)
-        .fixedSize(horizontal: false, vertical: true)
+        .frame(width: 500, height: 720)
+    }
+
+    private var footer: some View {
+        HStack {
+            Button("Undo") { store.undo() }
+                .keyboardShortcut("z")
+                .disabled(!store.canUndo)
+            Spacer()
+            Button("Reset to Defaults…") { confirmReset = true }
+        }
+        .padding(12)
+        .confirmationDialog("Reset all settings to their defaults?", isPresented: $confirmReset) {
+            Button("Reset", role: .destructive) { store.resetToDefaults() }
+        } message: {
+            Text("Colours, schedule, location, disabled apps and options go back to factory settings. You can undo this.")
+        }
     }
 
     // MARK: Sections
@@ -30,11 +60,31 @@ struct PreferencesView: View {
             kelvinSlider("Daytime", \.dayKelvin, UserSettings.dayKelvinRange)
             kelvinSlider("Sunset", \.sunsetKelvin, UserSettings.sunsetKelvinRange)
             kelvinSlider("Bedtime", \.bedtimeKelvin, UserSettings.bedtimeKelvinRange)
+            LabeledContent("Dim at bedtime") {
+                HStack {
+                    Slider(value: bedtimeBrightness, in: UserSettings.bedtimeBrightnessRange, step: 0.05)
+                    Text(store.settings.bedtimeBrightness >= 1
+                        ? "Off" : "\(Int((store.settings.bedtimeBrightness * 100).rounded()))%")
+                        .monospacedDigit()
+                        .frame(width: 52, alignment: .trailing)
+                }
+            }
         } header: {
             Text("Colour")
         } footer: {
-            Text("Moving a slider previews that colour for a few seconds.")
+            Text("Moving a slider previews it for a few seconds. Dimming scales the colour tables, so it works on every display, including ones without brightness control.")
                 .foregroundStyle(.secondary)
+        }
+    }
+
+    private var movieSection: some View {
+        Section("Movie Mode") {
+            kelvinSlider("Colour", \.movieKelvin, UserSettings.movieKelvinRange)
+            Picker("Lasts", selection: $store.settings.movieMinutes) {
+                ForEach([60, 90, 120, 150, 180, 240], id: \.self) { minutes in
+                    Text(duration(minutes)).tag(minutes)
+                }
+            }
         }
     }
 
@@ -123,6 +173,15 @@ struct PreferencesView: View {
                     .frame(width: 52, alignment: .trailing)
             }
         }
+    }
+
+    private var bedtimeBrightness: Binding<Double> {
+        Binding(
+            get: { store.settings.bedtimeBrightness },
+            set: { value in
+                store.settings.bedtimeBrightness = value
+                controller.preview(bedtimeBrightness: value)
+            })
     }
 
     private var wakeTime: Binding<Date> {
@@ -226,7 +285,7 @@ final class PreferencesWindowController {
             let view = PreferencesView(store: controller.store, controller: controller)
             let window = NSWindow(contentViewController: NSHostingController(rootView: view))
             window.title = "Flux Settings"
-            window.styleMask = [.titled, .closable]
+            window.styleMask = [.titled, .closable, .miniaturizable]
             window.isReleasedWhenClosed = false
             window.center()
             self.window = window

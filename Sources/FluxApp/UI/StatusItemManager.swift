@@ -5,7 +5,7 @@ import FluxCore
 final class StatusItemManager: NSObject, NSMenuDelegate {
     private let controller: TintController
     private let preferences: PreferencesWindowController
-    private let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
+    private let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     private let menu = NSMenu()
     private let timeFormat: Date.FormatStyle = .dateTime.hour().minute()
 
@@ -21,11 +21,11 @@ final class StatusItemManager: NSObject, NSMenuDelegate {
 
     func updateIcon() {
         let symbol: String
-        if controller.temporaryDisable != nil || controller.isFrontAppDisabled {
+        if controller.conflict != nil {
+            symbol = "exclamationmark.triangle"
+        } else if controller.temporaryDisable != nil || controller.isFrontAppDisabled {
             symbol = "sun.max.trianglebadge.exclamationmark"
-        } else if case .darkroom = controller.mode {
-            symbol = "eye"
-        } else if case .movie = controller.mode {
+        } else if controller.movieMode != nil {
             symbol = "film"
         } else {
             switch controller.schedule?.phase {
@@ -35,7 +35,9 @@ final class StatusItemManager: NSObject, NSMenuDelegate {
             case .day, nil: symbol = "sun.max"
             }
         }
-        let image = NSImage(systemSymbolName: symbol, accessibilityDescription: "Flux")
+        let config = NSImage.SymbolConfiguration(pointSize: 14, weight: .regular)
+        let image = NSImage(systemSymbolName: symbol, accessibilityDescription: "Flux")?
+            .withSymbolConfiguration(config)
         image?.isTemplate = true
         item.button?.image = image
     }
@@ -49,29 +51,17 @@ final class StatusItemManager: NSObject, NSMenuDelegate {
         }
         menu.addItem(.separator())
 
-        if controller.temporaryDisable != nil {
-            menu.addItem(action("Resume", #selector(resume)))
-        } else {
-            menu.addItem(action("Disable for an Hour", #selector(disableForAnHour)))
-            menu.addItem(action("Disable Until Sunrise", #selector(disableUntilSunrise)))
+        menu.addItem(toggle("Disable for an Hour", #selector(toggleHour), on: controller.isDisabledForAnHour))
+        menu.addItem(toggle("Disable Until Sunrise", #selector(toggleSunrise), on: controller.isDisabledUntilSunrise))
+        if let app = controller.frontApp, let id = app.bundleIdentifier {
+            let name = app.localizedName ?? id
+            menu.addItem(toggle("Disable for \(name)", #selector(toggleFrontApp), on: controller.isFrontAppDisabled))
         }
-        if let app = controller.frontApp, app.bundleIdentifier != nil {
-            let name = app.localizedName ?? app.bundleIdentifier ?? "App"
-            let toggle = action("Disable for \(name)", #selector(toggleFrontApp))
-            toggle.state = controller.isFrontAppDisabled ? .on : .off
-            menu.addItem(toggle)
-        }
-        let fullscreen = action("Disable for Full-Screen Apps", #selector(toggleFullscreen))
-        fullscreen.state = controller.store.settings.disableForFullscreen ? .on : .off
-        menu.addItem(fullscreen)
-
+        menu.addItem(toggle(
+            "Disable for Full-Screen Apps", #selector(toggleFullscreen),
+            on: controller.store.settings.disableForFullscreen))
         menu.addItem(.separator())
-        let movie = action("Movie Mode (2½ Hours)", #selector(toggleMovie))
-        if case .movie = controller.mode { movie.state = .on }
-        menu.addItem(movie)
-        let darkroom = action("Darkroom (Until Sunrise)", #selector(toggleDarkroom))
-        if case .darkroom = controller.mode { darkroom.state = .on }
-        menu.addItem(darkroom)
+        menu.addItem(toggle("Movie Mode", #selector(toggleMovie), on: controller.movieMode != nil))
 
         menu.addItem(.separator())
         menu.addItem(action("Settings…", #selector(showPreferences), key: ","))
@@ -80,17 +70,18 @@ final class StatusItemManager: NSObject, NSMenuDelegate {
 
     private func statusLines() -> [String] {
         var lines: [String] = []
+        if let warning = controller.conflictMessage {
+            lines.append("⚠︎ \(warning)")
+        }
         if let disable = controller.temporaryDisable {
-            lines.append("Paused until \(disable.endDate.formatted(timeFormat))")
+            lines.append("Disabled until \(disable.endDate.formatted(timeFormat))")
         } else if controller.isFrontAppDisabled, let name = controller.frontApp?.localizedName {
-            lines.append("Paused for \(name)")
-        } else if case .darkroom(let until) = controller.mode {
-            lines.append("Darkroom until \(until.formatted(timeFormat))")
+            lines.append("Disabled for \(name)")
+        } else if let movie = controller.movieMode {
+            lines.append("\(Int(controller.store.settings.movieKelvin))K · Movie mode until \(movie.until.formatted(timeFormat))")
         } else if let schedule = controller.schedule {
             var line = "\(Int(schedule.kelvin.rounded()))K · \(phaseName(schedule.phase))"
-            if case .movie(let until) = controller.mode {
-                line = "\(Int(max(schedule.kelvin, TintMode.movieKelvin).rounded()))K · Movie mode until \(until.formatted(timeFormat))"
-            }
+            if schedule.brightness < 0.995 { line += " · \(Int((schedule.brightness * 100).rounded()))% brightness" }
             lines.append(line)
         }
         let count = controller.fullscreenDisplays.count
@@ -124,19 +115,23 @@ final class StatusItemManager: NSObject, NSMenuDelegate {
         }
     }
 
+    private func toggle(_ title: String, _ selector: Selector, on: Bool) -> NSMenuItem {
+        let item = action(title, selector)
+        item.state = on ? .on : .off
+        return item
+    }
+
     private func action(_ title: String, _ selector: Selector, key: String = "") -> NSMenuItem {
         let item = NSMenuItem(title: title, action: selector, keyEquivalent: key)
         item.target = self
         return item
     }
 
-    @objc private func resume() { controller.resume() }
-    @objc private func disableForAnHour() { controller.disableForAnHour() }
-    @objc private func disableUntilSunrise() { controller.disableUntilSunrise() }
+    @objc private func toggleHour() { controller.toggleDisableForAnHour() }
+    @objc private func toggleSunrise() { controller.toggleDisableUntilSunrise() }
     @objc private func toggleFrontApp() { controller.toggleFrontAppDisabled() }
     @objc private func toggleFullscreen() { controller.toggleFullscreenDisable() }
     @objc private func toggleMovie() { controller.toggleMovieMode() }
-    @objc private func toggleDarkroom() { controller.toggleDarkroom() }
     @objc private func showPreferences() { preferences.show() }
     @objc private func quit() { NSApp.terminate(nil) }
 }
