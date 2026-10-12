@@ -1,11 +1,12 @@
 # Status & Handoff
 
-## Current Status: Milestone A (working menu-bar tinter) built; awaiting first live test
+## Current Status: every scoped feature is built; awaiting first live test
 
 - **Phase 1 (Reverse engineering):** Done. Exports are in `reference/`.
-- **Phase 2 (Architecture & decisions):** Done. ADR 001–008.
-- **Phase 3, Milestone A (core tinter):** Code done, unit-tested (38 tests) and builds as `build/Flux.app`. **Not yet run live** against real displays (the original f.lux was running during development).
-- **Phase 3, Milestone B (remaining scoped features):** Not started.
+- **Phase 2 (Architecture & decisions):** Done. ADR 001–010.
+- **Phase 3, Milestone A (core tinter):** Done in code.
+- **Phase 3, Milestone B (settings window, movie/darkroom, start at login, dark-mode sync, bedtime reminder):** Done in code.
+- 50 unit tests pass and `build/Flux.app` builds. **Nothing has been run live yet** (the original f.lux was running during development).
 
 ---
 
@@ -17,14 +18,24 @@
    - [ ] Full screen: a full-screen video on one display untints only that display. Check a notched MacBook display, and Space switches.
    - [ ] Unplugging/replugging a monitor and sleep/wake re-apply the tint (`DisplayManager.resetAfterReconfiguration`).
    - [ ] Location: the permission prompt appears once, then the menu shows "Location Services". Changing the time zone in System Settings switches to "Time zone (...)" without any window opening.
-2. **Milestone B: settings UI** (`UI/PreferencesView.swift`, SwiftUI window opened from the menu): Kelvin sliders for day, sunset and bedtime, wake time, sleep length, transition length, manual latitude/longitude, and the per-app disable list. The `UserSettings` fields already exist.
-3. **Milestone B: modes.** Movie mode (warm but contrast-preserving, auto-off after 2.5 h) and Darkroom (red, inverted). Both need new table shapes in `GammaTable`; check `reference/decompiled/__TintController_computeEffects_pr__.txt` for how f.lux did it.
-4. **Milestone B: system integration.** Start at login (`SMAppService.mainApp`), dark-mode sync, bedtime reminder notification.
-5. **Nice to have:** detect Night Shift or another gamma writer and warn; an app icon (`Resources/AppIcon.icns`).
+   - [ ] Settings window: the sliders preview live and return to the schedule about 3 s after release. Wake time and sleep length move the bedtime readout. Manual location works.
+   - [ ] Movie mode and darkroom: the darkroom fade looks acceptable (it's a table cross-fade).
+   - [ ] Start at login registers (it may need approval in Login Items). Dark-mode sync triggers one Automation prompt. The bedtime reminder appears (notification permission).
+2. Fix whatever the live test turns up. Likely candidates: the SwiftUI form's sizing, `SMAppService` behaviour with an ad-hoc signature, and notification authorization with an ad-hoc signature.
+3. **Nice to have (ask the user first):** detect Night Shift or another gamma writer and warn; an app icon (`Resources/AppIcon.icns`); a 24-hour colour graph in settings; brightness dimming.
 
 ---
 
 ## Handoff Log
+
+### 2026-10-12 — Milestone B implementation (Claude Opus)
+- **Done:**
+  - `FluxCore`: `DisplayTarget` (Kelvin or darkroom) and `TargetFade` (which replaces `KelvinFade`), `TintMode` + `TargetResolver` (ADR 009), `BedtimeReminder`, `ScheduleResult.daylight/bedtime/prefersDarkAppearance`, new settings `darkModeSync` and `bedtimeReminder`, Kelvin ranges. 50 tests.
+  - `FluxApp`: `@Observable` `SettingsStore`/`TintController` (a settings change refreshes the displays straight away), slider preview, `System/LaunchAtLogin`, `System/AppearanceSync` (ADR 010), `System/Notifier`, the `UI/PreferencesView` settings window, menu items for Movie Mode, Darkroom and Settings… (⌘,).
+  - `Info.plist` now has `NSAppleEventsUsageDescription`.
+- **Gotchas:**
+  - Changing `store.settings` already triggers `refresh` (through `SettingsStore.onChange`), so don't call `refresh` again after a setting changes.
+  - `Notifier` does nothing without a bundle ID (`swift run`), because `UNUserNotificationCenter.current()` would crash there.
 
 ### 2026-10-12 — Milestone A implementation (Claude Opus)
 - **Done:**

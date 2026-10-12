@@ -16,11 +16,12 @@ This document defines the feature set of the clean-room Flux clone, based on rev
 | **Disable** | Disable for fullscreen apps | **Keep (Improved)** | **Per-display untinting:** Untints *only* the specific monitor running the fullscreen app; other connected displays remain warm. |
 | **Location** | Solar calculation from location | **Keep (Improved)** | Background CoreLocation (one-time or significant change) with automatic fallback to timezone center coordinates. No popup windows or web sheets. |
 | **Location** | Timezone change detection | **Keep (Improved)** | Recalculates immediately upon `NSSystemTimeZoneDidChangeNotification` without interrupting the user. |
-| **Modes** | Movie mode | **Keep** | Warms colors moderately while maintaining shadow detail and video contrast (2.5 hr auto-timeout). |
-| **Modes** | Darkroom mode | **Keep** | Monochromatic red tone with inverted luminance for night-time preservation. |
-| **System** | macOS Dark Mode sync | **Keep** | Optional automatic switching of macOS appearance between light (day) and dark (sunset). |
-| **System** | Start at login | **Keep** | Uses modern `SMAppService` API. |
-| **System** | Bedtime reminders | **Keep** | Optional notification before configured bedtime. |
+| **Modes** | Movie mode | **Keep (built)** | Never warmer than 4100 K, so films keep sky colours and shadow detail. Turns itself off after 2.5 h. Menu toggle. |
+| **Modes** | Darkroom mode | **Keep (built)** | Red only with inverted luminance, until the next morning. Overrides the per-app and full-screen disables. Menu toggle. |
+| **System** | macOS Dark Mode sync | **Keep (built)** | Optional (settings). Switches to Dark at sunset and Light in the morning, only when the schedule crosses over, so manual changes stick until the next crossing. |
+| **System** | Start at login | **Keep (built)** | Settings toggle using `SMAppService.mainApp`. |
+| **System** | Bedtime reminders | **Keep (built)** | Optional (settings). One notification in the first 15 min after bedtime: "You're waking up in 8½ hours." |
+| **System** | Settings window | **Keep (built)** | SwiftUI: Kelvin sliders with live preview, wake time, sleep length, fast/slow transitions, manual location, per-app list, full screen, login, dark mode, reminder. |
 | **Vendor** | Account / Login (`fluxAccount`) | **Drop** | No online accounts, password stores, or authentication. |
 | **Vendor** | Analytics / Telemetry (`fluxNetworkQueue`) | **Drop** | Zero network traffic; no logging of screen time, spectrum, or light levels. |
 | **Vendor** | Promotional offers (`fluxOffer`) | **Drop** | No promotional dialogs, surveys, or sponsored content. |
@@ -59,9 +60,10 @@ This document defines the feature set of the clean-room Flux clone, based on rev
 ## 3. Color Temperature & Gamma Specifications
 
 - **Temperature Range:**
-  - Daytime: 5000K – 6500K (default: 6500K).
-  - Sunset: 3400K – 4500K (default: 3400K).
-  - Bedtime: 1900K – 2700K (default: 2300K).
+  - Daytime: 4500K – 6500K (default: 6500K).
+  - Sunset: 1900K – 5000K (default: 3400K).
+  - Bedtime: 1200K – 4000K (default: 2300K).
+  - Ranges live in `UserSettings.*KelvinRange`; the settings sliders step by 100 K.
 - **Gamma Curve Generation:**
   - RGB multipliers come from the Planckian locus (Krystek approximation), taken relative to 6500 K so that 6500 K means no change.
   - The multipliers scale each display's own calibrated transfer table (read with `CGGetDisplayTransferByTable`), sized to the display's table capacity.

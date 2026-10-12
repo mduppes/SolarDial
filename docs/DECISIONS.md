@@ -77,3 +77,23 @@ This log records settled architectural decisions. Do not re-litigate settled dec
 - **Context:** The first plan only checked the frontmost app's windows. That misses the case ADR 002 cites: a full-screen video on display B while the user works in another app on display A.
 - **Decision:** For each display, take the topmost on-screen window at layer 0 or at the shielding level (not Flux's own, not transparent) that intersects it. If it covers `CGDisplayBounds` (with notch slack), untint that display. The selection logic is pure (`FullscreenGeometry.fullscreenDisplays`) and unit-tested.
 - **Consequences:** It works on several monitors at once and needs no Screen Recording permission. A zoomed window fills the screen when the menu bar is set to auto-hide, so it counts as full screen. That's accepted for now.
+
+---
+
+### ADR 009: Mode precedence, movie and darkroom definitions
+- **Date:** 2026-10-12
+- **Status:** Accepted
+- **Context:** f.lux's `computeEffects:pr:` overrides the scheduled Kelvin for movie mode and sets a flag for darkroom. Its exact constants aren't readable from the decompile, and the clone needs explicit rules for how modes combine with the disables.
+- **Decision:** All the rules are in one pure function, `TargetResolver.target(for:)`. Precedence: preview, then temporary disable, then darkroom, then per-app/full-screen disable, then movie, then schedule.
+  - Movie mode is `max(scheduled, 4100 K)` for 2.5 h.
+  - Darkroom uses the display's red curve inverted (green and blue zero) until the next morning. It overrides the per-app and full-screen disables, because a bright full-screen window is what darkroom exists to prevent.
+- **Consequences:** It's easy to test and change. The movie-mode Kelvin is our own choice, not f.lux's.
+
+---
+
+### ADR 010: Dark Mode via System Events, edge-triggered
+- **Date:** 2026-10-12
+- **Status:** Accepted
+- **Context:** There's no public API for setting the system appearance. f.lux runs bundled `darkmode.scpt`/`lightmode.scpt` through `system("/usr/bin/osascript ...")`.
+- **Decision:** Run `osascript` with an inline System Events command through `Process` (no shell). Act only when `prefersDarkAppearance` changes (daylight weight crosses 0.5), and skip it if the appearance already matches.
+- **Consequences:** It needs one Automation permission prompt (`NSAppleEventsUsageDescription` is in `Info.plist`). A manual appearance change made by the user lasts until the next sunset or sunrise.

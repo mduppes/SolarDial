@@ -29,9 +29,11 @@ Flux/
 │   │   ├── Solar/SolarCalculator.swift    # NOAA solar elevation, sunrise/sunset for a local day
 │   │   ├── Color/ColorTemperature.swift   # Kelvin → RGB multipliers, mired-space blending
 │   │   ├── Color/GammaTable.swift         # Transfer tables; scale a base table by RGB
-│   │   ├── Color/KelvinFade.swift         # Timed fade between temperatures
+│   │   ├── Color/DisplayTarget.swift      # Kelvin or darkroom target per display; TargetFade between them
 │   │   ├── Schedule/ScheduleEngine.swift  # Day / sunset / bedtime target for an instant
 │   │   ├── Schedule/TemporaryDisable.swift# "For an hour" / "until sunrise" pauses
+│   │   ├── Schedule/TintMode.swift        # Movie / darkroom modes + TargetResolver (precedence rules)
+│   │   ├── Schedule/BedtimeReminder.swift # When to notify, and the message
 │   │   ├── Location/ZoneTab.swift         # Parser for /usr/share/zoneinfo/zone.tab
 │   │   ├── Location/LocationResolver.swift# Picks manual / Core Location / time-zone coordinates
 │   │   ├── Display/FullscreenGeometry.swift # Which displays a full-screen window covers
@@ -40,12 +42,16 @@ Flux/
 │   └── FluxApp/                           # Thin macOS layer (executable)
 │       ├── main.swift                     # NSApplication, accessory (menu-bar only) policy
 │       ├── AppDelegate.swift              # Wiring, restore on quit, SIGINT/SIGTERM/SIGHUP via DispatchSource
-│       ├── TintController.swift           # Combines schedule, disables, full screen → per-display targets
-│       ├── SettingsStore.swift            # UserSettings as JSON in UserDefaults ("settings" key)
+│       ├── TintController.swift           # @Observable; schedule + modes + disables + preview → per-display targets
+│       ├── SettingsStore.swift            # @Observable UserSettings, JSON in UserDefaults ("settings" key)
 │       ├── Display/DisplayManager.swift   # All gamma writes, base tables, fades, reconfig + wake handling
 │       ├── WindowAndSpace/FullscreenTracker.swift # Window list → full-screen displays; app/Space notifications
 │       ├── Location/LocationProvider.swift # One-shot Core Location, time-zone change + wake refresh
-│       └── UI/StatusItemManager.swift     # NSStatusItem menu
+│       ├── System/LaunchAtLogin.swift     # SMAppService.mainApp
+│       ├── System/AppearanceSync.swift    # Light/Dark Mode via osascript → System Events
+│       ├── System/Notifier.swift          # UNUserNotificationCenter (bundle only)
+│       ├── UI/StatusItemManager.swift     # NSStatusItem menu
+│       └── UI/PreferencesView.swift       # SwiftUI settings form + PreferencesWindowController
 │
 ├── Tests/FluxCoreTests/                   # Swift Testing suites for everything in FluxCore
 ├── scripts/
@@ -55,7 +61,6 @@ Flux/
 └── docs/
 ```
 
-Planned (Milestone B, see `STATUS.md`): `UI/PreferencesView.swift` (SwiftUI), `System/LaunchAtLogin.swift` (`SMAppService`), `System/DarkModeSync.swift`, movie/darkroom modes, bedtime reminder.
 
 ---
 
@@ -75,8 +80,14 @@ flowchart LR
 
 1. `TintController.refresh` runs every 30 s and whenever an input changes.
 2. It resolves coordinates (`LocationResolver`) and asks `ScheduleEngine` for the scheduled Kelvin.
-3. A display gets **6500 K (neutral)** if a temporary disable is active, if the frontmost app is on the per-app disable list, or if that display is showing a full-screen window. Otherwise it gets the scheduled Kelvin.
-4. `DisplayManager` fades each display towards its target (30 Hz while fading) and writes `baseTable.tinted(kelvin:)`.
+3. `TargetResolver` picks each display's `DisplayTarget`. Precedence: settings-slider preview, then temporary disable (neutral), then darkroom, then the per-app or full-screen disable (neutral), then movie mode (`max(scheduled, 4100 K)`), then the schedule ([ADR 009](DECISIONS.md)).
+4. `DisplayManager` fades each display towards its target (30 Hz while fading). Kelvin-to-Kelvin fades go through mired space; fades involving darkroom cross-fade the tables.
+5. After each refresh: dark-mode sync (edge-triggered on `ScheduleResult.prefersDarkAppearance`, i.e. daylight < 0.5) and the bedtime-reminder check.
+
+### Modes
+- **Movie mode:** 2.5 h. It never warms past 4100 K but doesn't cool a cooler schedule. It still respects the full-screen disable.
+- **Darkroom:** lasts until the next morning (the later of sunrise and wake time). It shows red only, using the display's inverted red curve. It overrides the per-app and full-screen disables but not a temporary disable.
+- **Preview:** moving a settings slider shows that Kelvin on every display for 3 s after the last change.
 
 ### Schedule model (`ScheduleEngine`)
 Two weights are blended in **mired** space (1e6/K):
@@ -114,6 +125,9 @@ The order is: manual coordinates, then the last Core Location fix **if it was ta
 | App / Space events | `NSWorkspace.didActivateApplicationNotification`, `activeSpaceDidChangeNotification` | |
 | Location | `CLLocationManager.requestLocation()` (kilometre accuracy) | One-shot fixes only, no continuous tracking |
 | Time zone | `NSSystemTimeZoneDidChange` + `NSTimeZone.resetSystemTimeZone()` | No UI, ever |
+| Start at login | `SMAppService.mainApp.register()/unregister()` | `.requiresApproval` → button opens Login Items settings |
+| Dark Mode | `osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to …'` | Needs `NSAppleEventsUsageDescription`; one Automation prompt ([ADR 010](DECISIONS.md)) |
+| Notifications | `UNUserNotificationCenter` | Skipped when there is no bundle ID; delegate forces banners |
 
 **Conflicts:** macOS Night Shift and the original f.lux both change the display output. Turn them off while testing. Night Shift isn't detected yet.
 
@@ -125,7 +139,7 @@ The order is: manual coordinates, then the last Core Location fix **if it was ta
 
 ```
 build/Flux.app/Contents/
-├── Info.plist      # com.mduppes.flux, LSUIElement, LSMinimumSystemVersion 14.0, location usage strings
+├── Info.plist      # com.mduppes.flux, LSUIElement, LSMinimumSystemVersion 14.0, location + Apple Events usage strings
 └── MacOS/FluxApp
 ```
 
