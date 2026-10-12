@@ -1,0 +1,14 @@
+    r0 = self;
+    var_10 = r20;
+    decomp_var_8 = r19;
+    r31 = r31 + 0xffffffffffffffe0;
+    saved_fp = r29;
+    decomp_var_m8 = r30;
+    if (r0[0x178] != 0x0) {
+            r19 = r0;
+            if ([CLLocationManager locationServicesEnabled] != 0x0) {
+                    [r19 enableCoreLocation];
+                    [r19[0x2e] startAnimation:r19];
+            }
+    }
+    return;

@@ -1,0 +1,67 @@
+    r31 = r31 - 0x140;
+    var_50 = r28;
+    decomp_var_48 = r27;
+    var_40 = r26;
+    decomp_var_38 = r25;
+    var_30 = r24;
+    decomp_var_28 = r23;
+    var_20 = r22;
+    decomp_var_18 = r21;
+    var_10 = r20;
+    decomp_var_8 = r19;
+    saved_fp = r29;
+    decomp_var_m8 = r30;
+    r21 = arg0;
+    var_60 = **___stack_chk_guard;
+    r20 = [CFMakeCollectable(CGWindowListCopyWindowInfo(0x1, 0x0)) autorelease];
+    r8 = r21[0x4];
+    r19 = [r8[0xb3] count];
+    var_120 = q0;
+    var_110 = q0;
+    r0 = [r20 countByEnumeratingWithState:&var_120 objects:&decomp_var_e0 count:0x10];
+    if (r0 != 0x0) {
+            r22 = r0;
+            var_130 = r19;
+            var_128 = r21;
+            r21 = 0x0;
+            r19 = 0x1;
+            r26 = *var_110;
+            do {
+                    r27 = 0x0;
+                    do {
+                            if (*var_110 != r26) {
+                                    objc_enumerationMutation(r20);
+                            }
+                            r28 = *(var_118 + r27 * 0x8);
+                            if ([[r28 objectForKeyedSubscript:@"kCGWindowOwnerName"] isEqualToString:@"Flux"] != 0x0) {
+                                    r19 = 0x0;
+                            }
+                            if ([[r28 objectForKeyedSubscript:@"kCGWindowOwnerName"] isEqualToString:@"Window Server"] != 0x0) {
+                                    r21 = r21 + [[r28 objectForKeyedSubscript:@"kCGWindowName"] isEqualToString:@"Menubar"];
+                            }
+                            r27 = r27 + 0x1;
+                    } while (r22 != r27);
+                    r0 = [r20 countByEnumeratingWithState:&var_120 objects:&decomp_var_e0 count:0x10];
+                    r22 = r0;
+            } while (r0 != 0x0);
+            r8 = var_130;
+            if (r21 != r8) {
+                    r8 = 0x1;
+            }
+            r21 = var_128;
+            *(int8_t *)(r21[0x4] + 0x61) = r8;
+            if (r19 != 0x0) {
+                    *(int8_t *)(r21[0x4] + 0x61) = 0x1;
+            }
+    }
+    else {
+            if (r19 != 0x0) {
+                    r8 = 0x1;
+            }
+            *(int8_t *)(r21[0x4] + 0x61) = r8;
+            *(int8_t *)(r21[0x4] + 0x61) = 0x1;
+    }
+    if (**___stack_chk_guard != var_60) {
+            __stack_chk_fail();
+    }
+    return r0;

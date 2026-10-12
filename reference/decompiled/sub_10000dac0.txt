@@ -1,0 +1,59 @@
+    r1 = arg1;
+    r0 = arg0;
+    if (*(int32_t *)dword_1000b6cc4 == r0) {
+            asm { fcvt       d0, s0 };
+            *r1 = d0;
+            r0 = 0x1;
+    }
+    else {
+            if (*qword_10003b48c == r0) {
+                    *(int32_t *)dword_1000b6cc4 = r0;
+                    *(int32_t *)qword_1000b6cc8 = 0x0;
+                    asm { fcvt       d0, s0 };
+                    *r1 = d0;
+                    r0 = 0x1;
+            }
+            else {
+                    r10 = 0x0;
+                    r8 = 0x10003b498;
+                    while (true) {
+                            if (r10 == 0xa440) {
+                                    r8 = r10 >> 0x6;
+                                    if (r8 >= 0x291) {
+                                            temp_0 = 0x1;
+                                    }
+                                    else {
+                                            r8 = 0x1;
+                                            temp_0 = 0x1;
+                                    }
+                                    break;
+                            }
+                            r12 = *(int32_t *)r8;
+                            r8 = r8 + 0xc;
+                            r10 = r10 + 0x1;
+                            if (r12 != r0) {
+                                    continue;
+                            }
+                            r8 = r10 - 0x1 >> 0x6;
+                            if (r8 >= 0x291) {
+                                    temp_0 = 0x0;
+                            }
+                            else {
+                                    r8 = 0x1;
+                                    temp_0 = 0x0;
+                            }
+                            break;
+                    }
+                    if (temp_0 != 0x0) {
+                            r0 = r8;
+                    }
+                    else {
+                            *(int32_t *)dword_1000b6cc4 = r0;
+                            *(int32_t *)qword_1000b6cc8 = r10;
+                            asm { fcvt       d0, s0 };
+                            *r1 = d0;
+                            r0 = r8;
+                    }
+            }
+    }
+    return r0;

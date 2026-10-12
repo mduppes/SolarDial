@@ -1,0 +1,18 @@
+    r31 = r31 - 0x40;
+    var_20 = r22;
+    decomp_var_18 = r21;
+    var_10 = r20;
+    decomp_var_8 = r19;
+    saved_fp = r29;
+    decomp_var_m8 = r30;
+    r19 = self;
+    if (([self internetAvailable] & 0x1) != 0x0) {
+            r19[0x8] = [NSMutableString stringWithCapacity:0x80];
+            [CFMakeCollectable(CFURLCreateStringByAddingPercentEscapes(0x0, [r19[0x1] stringValue], 0x0, 0x0, 0x8000100)) autorelease];
+            [r19[0x7] setMainFrameURL:[NSString stringWithFormat:@"https://justgetflux.com/minimap.html?geo=%@", r3]];
+            [**_NSApp beginSheet:r19[0x6] modalForWindow:r19[0x3] modalDelegate:r19 didEndSelector:@selector(didEndSheet:returnCode:contextInfo:) contextInfo:0x0];
+    }
+    else {
+            NSRunAlertPanel([[NSBundle mainBundle] localizedStringForKey:@"No Internet Connection" value:@"" table:0x0], [[NSBundle mainBundle] localizedStringForKey:@"Could not perform the search because no internet connection is available." value:@"" table:0x0], [[NSBundle mainBundle] localizedStringForKey:@"OK" value:@"" table:0x0], 0x0, 0x0);
+    }
+    return;

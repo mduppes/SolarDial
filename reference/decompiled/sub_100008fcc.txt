@@ -1,0 +1,4 @@
+    var_40 = arg0[0x1a];
+    localtime_r(&var_40, &decomp_var_38);
+    r0 = var_1C;
+    return r0;

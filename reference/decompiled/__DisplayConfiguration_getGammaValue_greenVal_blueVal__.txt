@@ -1,0 +1,45 @@
+    decomp_var_10 = r29;
+    decomp_var_8 = r30;
+    r31 = r31 + 0xfffffffffffffff0;
+    r13 = r0[0x3];
+    if (r13 != 0x0) {
+            s0 = *(int32_t *)r2;
+            asm { fcvtzs     w14, s0 };
+            if (r13 <= r14) {
+                    sub_10001ae60();
+            }
+            asm { fcvtzs     w12, s1 };
+            asm { sxtw       x8, w12 };
+            if (r13 <= r8) {
+                    sub_10001ae38();
+            }
+            asm { fcvtzs     w11, s1 };
+            asm { sxtw       x9, w11 };
+            if (r13 <= r9) {
+                    sub_10001ae10();
+            }
+            asm { sxtw       x10, w14 };
+            r16 = r0[0x6];
+            r15 = r0[0x7];
+            s1 = *(int32_t *)(r16 + r14 * 0x4);
+            r13 = r13 - 0x1;
+            if (r13 != r10) {
+                    s3 = *(int32_t *)(r16 + r10 * 0x4 + 0x4);
+                    s3 = s3 - s1;
+            }
+            r14 = r0[0x8];
+            s4 = *(int32_t *)(r15 + r12 * 0x4);
+            if (r13 != r8) {
+                    s2 = *(int32_t *)(r15 + r8 * 0x4 + 0x4);
+                    s2 = s2 - s4;
+            }
+            s5 = *(int32_t *)(r14 + r11 * 0x4);
+            if (r13 != r9) {
+                    s6 = *(int32_t *)(r14 + r9 * 0x4 + 0x4);
+                    s6 = s6 - s5;
+            }
+            *(int32_t *)r2 = s1 + (s0 - r10) * s3;
+            *(int32_t *)r3 = s4 + s2 * (*(int32_t *)r3 - r8);
+            *(int32_t *)r4 = s5 + s6 * (*(int32_t *)r4 - r9);
+    }
+    return;

@@ -1,0 +1,320 @@
+    r2 = arg2;
+    r31 = r31 - 0x60;
+    var_20 = d9;
+    decomp_var_18 = d8;
+    var_10 = r20;
+    decomp_var_8 = r19;
+    saved_fp = r29;
+    decomp_var_m8 = r30;
+    r19 = self;
+    [self updateALS];
+    [r19 handleOffer];
+    r20 = time(0x0);
+    asm { ccmp       x0, x8, #0x4, ne };
+    if (!asm { ccmp       x0, x8, #0x4, ne }) {
+            [r19 disableReset];
+    }
+    r8 = r19[0xa4];
+    if (r8 == 0x0) {
+            r19[0xa4] = r20;
+            r8 = r20;
+    }
+    if (*(int8_t *)byte_1000b6c28 != 0x0 && r19[0x9b] == 0x0) {
+            s0 = r19[0x152];
+            if (s0 == 0x0) {
+                    r9 = sign_extend_64(r19[0x19]);
+                    if (r9 != 0x0) {
+                            if (r20 - r8 > r9) {
+                                    r19[0x558] = 0x1;
+                            }
+                    }
+            }
+    }
+    [r19 syncPrefs];
+    [r19[0xb4] lazyTimeGraph];
+    if (r19[0x9b] != 0x0 && [r19[0xb4] isTrackingLightingSlider] != 0x0) {
+            [r19[0x9b] invalidate];
+            r19[0x9b] = 0x0;
+            [r19 disableReset];
+    }
+    if (r19[0x27] == *0x1000213b0) {
+            r19[0x27] = 0x1964;
+    }
+    if ([r19[0xb4] isTrackingDaySlider] != 0x0) {
+            if (r19[0x88] != 0x0) {
+                    [r19 postTabReset];
+            }
+            [r19 animateTo:r19[0x25] AnimLength:r3];
+            r2 = r19[0x25];
+            [r19 updateStatus:r2];
+    }
+    else {
+            if ([r19[0xb4] isTrackingNightSlider] != 0x0) {
+                    if (r19[0x88] != 0x0) {
+                            [r19 postTabReset];
+                    }
+                    [r19 animateTo:r19[0x26] AnimLength:r3];
+                    r2 = r19[0x26];
+                    [r19 updateStatus:r2];
+            }
+            else {
+                    r0 = r19[0xb4];
+                    r0 = [r0 isTrackingLateSlider];
+                    r8 = r19[0x88];
+                    if (r0 != 0x0) {
+                            if (r8 != 0x0) {
+                                    [r19 postTabReset];
+                            }
+                            r2 = r19[0x27];
+                            if (r2 == 0x1964) {
+                                    r2 = r19[0x26];
+                            }
+                            [r19 animateTo:r2 AnimLength:r3];
+                            r2 = r19[0x27];
+                            [r19 updateStatus:r2];
+                    }
+                    else {
+                            if (r8 == 0x0) {
+                                    sub_1000071e8();
+                                    r0 = r19[0x13];
+                                    asm { fcvt       s2, d0 };
+                                    asm { fcvt       s3, d1 };
+                                    r20 = r19 + 0xcc;
+                                    d0 = 0x0;
+                                    r3 = &var_40;
+                                    r0 = sub_100018290(r0, r20, &decomp_var_24, r3, r4, r5, r6, r7, *(r19 + 0x54));
+                                    s8 = s0;
+                                    r8 = var_38;
+                                    r9 = r19[0x3];
+                                    if (r8 != r9) {
+                                            if (r9 != 0x0) {
+                                                    [r19[0xb4] updateLocation];
+                                                    r8 = var_38;
+                                            }
+                                            r19[0x3] = r8;
+                                    }
+                                    asm { fcvt       d0, s8 };
+                                    d8 = -0.9;
+                                    asm { fcvtzs     w8, d0 };
+                                    r19[0x28] = r8;
+                                    if (r8 == 0x2) {
+                                            r8 = r19[0x27];
+                                            if (r8 == 0x1964) {
+                                                    r0 = r19[0x13];
+                                                    asm { fcvt       s2, d0 };
+                                                    asm { fcvt       s3, d1 };
+                                                    r3 = 0x0;
+                                                    sub_100018290(r0, r20, &decomp_var_24, 0x0, r4, r5, r6, r7, *(r19 + 0x54));
+                                                    asm { fcvt       d0, s0 };
+                                                    asm { fcvtzs     w8, d0 };
+                                                    r19[0x28] = r8;
+                                            }
+                                    }
+                                    r0 = r19[0xb4];
+                                    if (r0 != 0x0) {
+                                            r19[0xa4] = 0x1;
+                                            [[r0 timeTabs] selectTabViewItemAtIndex:sign_extend_64(r19[0x28])];
+                                            r0 = r19[0xb4];
+                                            r0 = [r0 timeControl];
+                                            r2 = sign_extend_64(r19[0x28]);
+                                            [r0 setSelectedSegment:r2];
+                                            r19[0xa4] = 0x0;
+                                    }
+                                    d0 = **_NSAppKitVersionNumber;
+                                    if (**_NSAppKitVersionNumber >= 1343.0) {
+                                            r8 = r19[0x15a];
+                                            r9 = r19[0x164];
+                                            if (r8 == -0x1) {
+                                                    if (r9 != 0x0) {
+                                                            r10 = r19[0x28];
+                                                            if (r10 != 0x0) {
+                                                                    r10 = 0x1;
+                                                            }
+                                                            r11 = r19[0x157];
+                                                            if (r11 != 0x0) {
+                                                                    if (r9 == 0x0) {
+                                                                            r2 = r9 & r11 & r10;
+                                                                            if (r8 != r2) {
+                                                                                    r19[0x15a] = r2;
+                                                                                    [r19 useTheme:r2];
+                                                                            }
+                                                                    }
+                                                                    else {
+                                                                            r2 = 0x1 & r11 & r10;
+                                                                            if (r8 != r2) {
+                                                                                    r19[0x15a] = r2;
+                                                                                    [r19 useTheme:r2];
+                                                                            }
+                                                                    }
+                                                            }
+                                                            else {
+                                                                    if (r9 == 0x0) {
+                                                                            r2 = r9 & 0x1 & r10;
+                                                                            if (r8 != r2) {
+                                                                                    r19[0x15a] = r2;
+                                                                                    [r19 useTheme:r2];
+                                                                            }
+                                                                    }
+                                                                    else {
+                                                                            r2 = 0x1 & r10;
+                                                                            if (r8 != r2) {
+                                                                                    r19[0x15a] = r2;
+                                                                                    [r19 useTheme:r2];
+                                                                            }
+                                                                    }
+                                                            }
+                                                    }
+                                            }
+                                            else {
+                                                    r10 = r19[0x28];
+                                                    if (r10 == 0x0) {
+                                                            r11 = r19[0x157];
+                                                            if (r11 != 0x0) {
+                                                                    if (r9 == 0x0) {
+                                                                            r2 = r9 & r11 & r10;
+                                                                            if (r8 != r2) {
+                                                                                    r19[0x15a] = r2;
+                                                                                    [r19 useTheme:r2];
+                                                                            }
+                                                                    }
+                                                                    else {
+                                                                            r2 = 0x1 & r11 & r10;
+                                                                            if (r8 != r2) {
+                                                                                    r19[0x15a] = r2;
+                                                                                    [r19 useTheme:r2];
+                                                                            }
+                                                                    }
+                                                            }
+                                                            else {
+                                                                    if (r9 != 0x0) {
+                                                                            r9 = 0x1;
+                                                                    }
+                                                                    r2 = r9 & 0x1 & r10;
+                                                                    if (r8 != r2) {
+                                                                            r19[0x15a] = r2;
+                                                                            [r19 useTheme:r2];
+                                                                    }
+                                                            }
+                                                    }
+                                                    else {
+                                                            r11 = r19[0x157];
+                                                            if (r11 == 0x0) {
+                                                                    r11 = 0x1;
+                                                            }
+                                                            if (r9 == 0x0) {
+                                                                    r2 = r9 & r11 & 0x1;
+                                                                    if (r8 != r2) {
+                                                                            r19[0x15a] = r2;
+                                                                            [r19 useTheme:r2];
+                                                                    }
+                                                            }
+                                                            else {
+                                                                    r2 = 0x1 & r11 & 0x1;
+                                                                    if (r8 != r2) {
+                                                                            r19[0x15a] = r2;
+                                                                            [r19 useTheme:r2];
+                                                                    }
+                                                            }
+                                                    }
+                                            }
+                                    }
+                            }
+                            if ([r19 isDisabled] != 0x0) {
+                                    if (r19[0x21] != 0x0) {
+                                            r19[0x21] = 0x0;
+                                    }
+                                    [r19 animateTo:0x1964 AnimLength:r3];
+                                    r0 = r19;
+                                    [r0 updateStatus:0x1964];
+                            }
+                            else {
+                                    if (r19[0x157] != 0x0) {
+                                            [r19 animateTo:*(int32_t *)0x10002135c AnimLength:r3];
+                                            r0 = r19;
+                                            r2 = *(int32_t *)0x10002135c;
+                                            [r0 updateStatus:r2];
+                                    }
+                                    else {
+                                            if (r19[0x159] != 0x0) {
+                                                    [r19 animateTo:0x2328ffffff99 AnimLength:r3];
+                                                    r0 = r19;
+                                                    r2 = 0x2328ffffff99;
+                                                    [r0 updateStatus:r2];
+                                            }
+                                            else {
+                                                    if (r19[0x15c] != 0x0) {
+                                                            [r19 animateTo:*(int32_t *)0x100021364 AnimLength:r3];
+                                                            r0 = r19;
+                                                            r2 = *(int32_t *)0x100021364;
+                                                            [r0 updateStatus:r2];
+                                                    }
+                                                    else {
+                                                            if (r19[0x158] != 0x0) {
+                                                                    [r19 animateTo:0xffffff9affffff9b AnimLength:r3];
+                                                                    r0 = r19;
+                                                                    [r0 updateStatus:0xffffff9affffff9b];
+                                                            }
+                                                            else {
+                                                                    if (r19[0x88] == 0x0) {
+                                                                            s0 = 0x42700000;
+                                                                            if (r19[0x48] == 0x0) {
+                                                                                    s0 = s8;
+                                                                            }
+                                                                            r0 = r19[0x13];
+                                                                            asm { fcvt       s2, d1 };
+                                                                            asm { fcvt       s3, d3 };
+                                                                            sub_100018290(r0, 0x0, &var_40, 0x0, r4, r5, r6, r7, *(r19 + 0x54));
+                                                                            asm { fcvt       d0, s0 };
+                                                                            d1 = 0x3fe0000000000000;
+                                                                            d0 = d0 + 0x3fe0000000000000;
+                                                                            asm { fcvtzs     w20, d0 };
+                                                                            [r19 doAlarm:r2];
+                                                                            s0 = 0x447a0000;
+                                                                            if (r20 != 0x0 && r19[0x20] != 0x0) {
+                                                                                    s0 = r20;
+                                                                                    asm { fcvt       d0, s0 };
+                                                                                    d2 = 1.0e+06;
+                                                                                    asm { fcvt       d1, s1 };
+                                                                                    d1 = d2 / d1;
+                                                                                    asm { fcvt       s0, d0 };
+                                                                            }
+                                                                            s0 = Abs(s0) / 0x4024000000000000;
+                                                                            asm { fcvt       d1, s0 };
+                                                                            if (d1 < 0.3) {
+                                                                                    s0 = s8;
+                                                                            }
+                                                                            asm { fmin       s0, s0, s1 };
+                                                                            s1 = r19[0x24];
+                                                                            s3 = *0x1000213a8;
+                                                                            if (s1 != *0x10002135c) {
+                                                                                    s8 = s0;
+                                                                            }
+                                                                            else {
+                                                                                    s8 = s3;
+                                                                            }
+                                                                            s0 = r19[0x21];
+                                                                            if (s0 != 0x0) {
+                                                                                    r19[0x21] = 0x0;
+                                                                                    s8 = s0;
+                                                                            }
+                                                                            r2 = r20;
+                                                                            [r19 animateTo:r2 AnimLength:0x0];
+                                                                            if (r19[0x558] != 0x0 && s8 != 0x0) {
+                                                                                    r2 = r20;
+                                                                                    [r19 animateTo:r2 AnimLength:0x0];
+                                                                            }
+                                                                            if (r19[0x9b] == 0x0) {
+                                                                                    asm { fcvtzs     w2, s0 };
+                                                                                    r0 = r19;
+                                                                                    [r0 updateStatus:r2];
+                                                                            }
+                                                                    }
+                                                            }
+                                                    }
+                                            }
+                                    }
+                            }
+                    }
+            }
+    }
+    return;

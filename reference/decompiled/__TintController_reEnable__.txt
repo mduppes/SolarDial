@@ -1,0 +1,3 @@
+    [self disableReset];
+    [self resetForegroundApp];
+    return;

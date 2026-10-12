@@ -1,0 +1,30 @@
+    r2 = arg2;
+    var_10 = r20;
+    decomp_var_8 = r19;
+    r31 = r31 + 0xffffffffffffffe0;
+    saved_fp = r29;
+    decomp_var_m8 = r30;
+    r19 = self;
+    if (r2 != 0x0) {
+            r20 = r2;
+            if (r19[0x157] != 0x0) {
+                    [r19 toggleDarkroom];
+            }
+            if (r19[0x158] != 0x0) {
+                    [r19 toggleMovie];
+            }
+            if (r19[0x159] != 0x0) {
+                    [r19 toggleMesopic];
+            }
+            r19[0x154] = 0x1;
+            [r19 handleMelanopic:0x1];
+            [r19 setResetTime:r20];
+    }
+    else {
+            r19[0x154] = 0x0;
+            [r19 setResetTime:r2];
+            [r19 handleMelanopic:0x0];
+            [[r19[0xb4] disable1Hr] setState:0x0];
+            [[r19[0xb4] disableSunrise] setState:0x0];
+    }
+    return;

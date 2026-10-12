@@ -1,0 +1,2 @@
+    r0 = self[0xa];
+    return r0;

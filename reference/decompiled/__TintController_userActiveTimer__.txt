@@ -1,0 +1,22 @@
+    r0 = self;
+    var_10 = r20;
+    decomp_var_8 = r19;
+    r31 = r31 + 0xffffffffffffffe0;
+    saved_fp = r29;
+    decomp_var_m8 = r30;
+    if (r0[0x2] != 0x0) {
+            r19 = r0;
+            if (r0[0x4] != 0x0) {
+                    r0 = CGEventSourceCounterForEventType(0x0, 0xffffffff);
+                    r8 = r19[0x134];
+                    if (r8 == 0x0) {
+                            r9 = 0x1;
+                    }
+                    if (r8 == r0) {
+                            r8 = 0x1;
+                    }
+                    *(int8_t *)(r19[0x4] + sign_extend_64(*ivar_offset(pause))) = r9 | r8;
+                    r19[0x134] = r0;
+            }
+    }
+    return;

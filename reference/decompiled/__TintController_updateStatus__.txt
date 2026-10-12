@@ -1,0 +1,468 @@
+    r31 = r31 - 0x60;
+    var_40 = r26;
+    decomp_var_38 = r25;
+    var_30 = r24;
+    decomp_var_28 = r23;
+    var_20 = r22;
+    decomp_var_18 = r21;
+    var_10 = r20;
+    decomp_var_8 = r19;
+    saved_fp = r29;
+    decomp_var_m8 = r30;
+    r21 = arg2;
+    r20 = self;
+    if (arg2 == 0x0) {
+            asm { fcvtzs     w21, s0 };
+    }
+    r24 = r20[0x88];
+    r19 = r20 + 0xcc;
+    r0 = sub_1000127ec(0x0, r19);
+    r8 = r20[0x60];
+    r8 = r0 + r21 + r8;
+    if (r24 == 0x0) {
+            if (r20[0x32] != r8) {
+                    r20[0x32] = r8;
+                    if (r20[0x88] != 0x0) {
+                            r8 = sign_extend_64(r20[0x2e]);
+                            if (r8 < 0x3) {
+                                    r22 = *(0x100028288 + r8 * 0x8);
+                                    [r20[0xb4] setPromptText:[[NSBundle mainBundle] localizedStringForKey:r22 value:@"" table:0x0]];
+                            }
+                    }
+                    else {
+                            r23 = r20[0x28];
+                            r0 = time(0x0);
+                            if (r0 - ((SAR(r0 * 0x8888888888888889 + r0, 0x5)) + (r0 * 0x8888888888888889 + r0) / 0x8000000000000000) * 0x3c >= 0x4) {
+                                    r22 = @"The sun is up.";
+                            }
+                            else {
+                                    r22 = @"The sun is up—go outside!";
+                            }
+                            switch (r23) {
+                                case 0:
+                                    [r20[0xb4] setPromptText:[[NSBundle mainBundle] localizedStringForKey:r22 value:@"" table:0x0]];
+                                    break;
+                                case 2:
+                                    [r20[0xb4] setPromptText:[[NSBundle mainBundle] localizedStringForKey:@"You're getting sleepy." value:@"" table:0x0]];
+                                    break;
+                                case 1:
+                                    [r20[0xb4] setPromptText:[[NSBundle mainBundle] localizedStringForKey:@"The sun has set." value:@"" table:0x0]];
+                                    break;
+                            }
+                            if (r20[0x15c] != 0x0) {
+                                    [r20[0xb4] setPromptText:[[NSBundle mainBundle] localizedStringForKey:@"Using a filter" value:@"" table:0x0]];
+                            }
+                    }
+                    if (r20[0x88] != 0x0) {
+                            if (r24 != 0x0) {
+                                    r8 = r20[0x2e];
+                                    if (r8 != 0x0) {
+                                            r2 = 0x0;
+                                    }
+                                    else {
+                                            r2 = [[NSBundle mainBundle] localizedStringForKey:@"Previewing Daytime (will reset automatically)" value:@"" table:0x0];
+                                            r8 = r20[0x2e];
+                                    }
+                                    if (r8 == 0x1) {
+                                            r2 = [[NSBundle mainBundle] localizedStringForKey:@"Previewing Sunset & Nighttime (will reset automatically)" value:@"" table:0x0];
+                                            r8 = r20[0x2e];
+                                    }
+                                    if (r8 == 0x2) {
+                                            r2 = [[NSBundle mainBundle] localizedStringForKey:@"Previewing Bedtime (will reset automatically)" value:@"" table:0x0];
+                                    }
+                                    if (r2 != 0x0) {
+                                            [r20[0xb4] setStatusText:r2];
+                                    }
+                            }
+                            else {
+                                    if (r21 == 0xffffff9affffff9b) {
+                                            [r20[0xb4] setStatusText:[[NSString alloc] initWithFormat:[[NSBundle mainBundle] localizedStringForKey:@"%s (movie mode)" value:@"" table:0x0]]];
+                                            r20 = r20[0xb5];
+                                            r0 = [NSBundle mainBundle];
+                                            r2 = [r0 localizedStringForKey:@"f.lux\nMovie mode\n%s" value:@"" table:0x0];
+                                            r0 = @class(NSString);
+                                    }
+                                    else {
+                                            if (r21 == 0x2328ffffff99) {
+                                                    [r20[0xb4] setStatusText:[[NSString alloc] initWithFormat:[[NSBundle mainBundle] localizedStringForKey:@"%s (mesopic)" value:@"" table:0x0]]];
+                                                    if (r21 != *0x10002135c) {
+                                                            r20 = r20[0xb5];
+                                                            r0 = [NSBundle mainBundle];
+                                                            r2 = [r0 localizedStringForKey:@"f.lux\nMesopic\n%s" value:@"" table:0x0];
+                                                            r0 = @class(NSString);
+                                                    }
+                                                    else {
+                                                            r20 = r20[0xb5];
+                                                            r0 = [NSBundle mainBundle];
+                                                            r2 = [r0 localizedStringForKey:@"f.lux\nDarkroom\n%s" value:@"" table:0x0];
+                                                            r0 = @class(NSString);
+                                                    }
+                                            }
+                                            else {
+                                                    r24 = *0x10002135c;
+                                                    if (r21 == *0x10002135c) {
+                                                            r22 = r20[0xb4];
+                                                            r2 = [[NSString alloc] initWithFormat:[[NSBundle mainBundle] localizedStringForKey:@"%s (darkroom)" value:@"" table:0x0]];
+                                                            r24 = r21;
+                                                    }
+                                                    else {
+                                                            if (r21 == *0x100021364) {
+                                                                    r22 = r20[0xb4];
+                                                                    r23 = [NSString alloc];
+                                                                    r0 = [NSBundle mainBundle];
+                                                                    r2 = [r0 localizedStringForKey:@"%s (color filter)" value:@"" table:0x0];
+                                                            }
+                                                            else {
+                                                                    r25 = r20[0x60];
+                                                                    r22 = r20[0xb4];
+                                                                    r23 = [NSString alloc];
+                                                                    r0 = [NSBundle mainBundle];
+                                                                    if (r25 != 0x0) {
+                                                                            r2 = [r0 localizedStringForKey:@"%s" value:@"" table:0x0];
+                                                                    }
+                                                                    else {
+                                                                            r2 = [r0 localizedStringForKey:@"%s (%dK)" value:@"" table:0x0];
+                                                                    }
+                                                            }
+                                                            r2 = [r23 initWithFormat:r2];
+                                                    }
+                                                    [r22 setStatusText:r2];
+                                                    if (r21 == r24) {
+                                                            r20 = r20[0xb5];
+                                                            r0 = [NSBundle mainBundle];
+                                                            r2 = [r0 localizedStringForKey:@"f.lux\nDarkroom\n%s" value:@"" table:0x0];
+                                                            r0 = @class(NSString);
+                                                    }
+                                                    else {
+                                                            if (r21 == *0x100021364) {
+                                                                    r20 = r20[0xb5];
+                                                                    r0 = [NSBundle mainBundle];
+                                                                    r2 = [r0 localizedStringForKey:@"f.lux\nColor Filter\n%s" value:@"" table:0x0];
+                                                                    r0 = @class(NSString);
+                                                            }
+                                                            else {
+                                                                    r23 = r20[0x60];
+                                                                    r20 = r20[0xb5];
+                                                                    r0 = [NSBundle mainBundle];
+                                                                    if (r23 != 0x0) {
+                                                                            r2 = [r0 localizedStringForKey:@"f.lux\n%s" value:@"" table:0x0];
+                                                                    }
+                                                                    else {
+                                                                            r2 = [r0 localizedStringForKey:@"f.lux\nColor temperature: %dK\n%s" value:@"" table:0x0];
+                                                                    }
+                                                                    r0 = @class(NSString);
+                                                            }
+                                                    }
+                                            }
+                                    }
+                                    [r20 setTooltip:[r0 stringWithFormat:r2]];
+                            }
+                    }
+                    else {
+                            if (r21 == 0xffffff9affffff9b) {
+                                    [r20[0xb4] setStatusText:[[NSString alloc] initWithFormat:[[NSBundle mainBundle] localizedStringForKey:@"%s (movie mode)" value:@"" table:0x0]]];
+                                    r20 = r20[0xb5];
+                                    r0 = [NSBundle mainBundle];
+                                    r2 = [r0 localizedStringForKey:@"f.lux\nMovie mode\n%s" value:@"" table:0x0];
+                                    r0 = @class(NSString);
+                            }
+                            else {
+                                    if (r21 == 0x2328ffffff99) {
+                                            [r20[0xb4] setStatusText:[[NSString alloc] initWithFormat:[[NSBundle mainBundle] localizedStringForKey:@"%s (mesopic)" value:@"" table:0x0]]];
+                                            if (r21 != *0x10002135c) {
+                                                    r20 = r20[0xb5];
+                                                    r0 = [NSBundle mainBundle];
+                                                    r2 = [r0 localizedStringForKey:@"f.lux\nMesopic\n%s" value:@"" table:0x0];
+                                                    r0 = @class(NSString);
+                                            }
+                                            else {
+                                                    r20 = r20[0xb5];
+                                                    r0 = [NSBundle mainBundle];
+                                                    r2 = [r0 localizedStringForKey:@"f.lux\nDarkroom\n%s" value:@"" table:0x0];
+                                                    r0 = @class(NSString);
+                                            }
+                                    }
+                                    else {
+                                            r24 = *0x10002135c;
+                                            if (r21 == *0x10002135c) {
+                                                    r22 = r20[0xb4];
+                                                    r2 = [[NSString alloc] initWithFormat:[[NSBundle mainBundle] localizedStringForKey:@"%s (darkroom)" value:@"" table:0x0]];
+                                                    r24 = r21;
+                                            }
+                                            else {
+                                                    if (r21 == *0x100021364) {
+                                                            r22 = r20[0xb4];
+                                                            r23 = [NSString alloc];
+                                                            r0 = [NSBundle mainBundle];
+                                                            r2 = [r0 localizedStringForKey:@"%s (color filter)" value:@"" table:0x0];
+                                                    }
+                                                    else {
+                                                            r25 = r20[0x60];
+                                                            r22 = r20[0xb4];
+                                                            r23 = [NSString alloc];
+                                                            r0 = [NSBundle mainBundle];
+                                                            if (r25 != 0x0) {
+                                                                    r2 = [r0 localizedStringForKey:@"%s" value:@"" table:0x0];
+                                                            }
+                                                            else {
+                                                                    r2 = [r0 localizedStringForKey:@"%s (%dK)" value:@"" table:0x0];
+                                                            }
+                                                    }
+                                                    r2 = [r23 initWithFormat:r2];
+                                            }
+                                            [r22 setStatusText:r2];
+                                            if (r21 == r24) {
+                                                    r20 = r20[0xb5];
+                                                    r0 = [NSBundle mainBundle];
+                                                    r2 = [r0 localizedStringForKey:@"f.lux\nDarkroom\n%s" value:@"" table:0x0];
+                                                    r0 = @class(NSString);
+                                            }
+                                            else {
+                                                    if (r21 == *0x100021364) {
+                                                            r20 = r20[0xb5];
+                                                            r0 = [NSBundle mainBundle];
+                                                            r2 = [r0 localizedStringForKey:@"f.lux\nColor Filter\n%s" value:@"" table:0x0];
+                                                            r0 = @class(NSString);
+                                                    }
+                                                    else {
+                                                            r23 = r20[0x60];
+                                                            r20 = r20[0xb5];
+                                                            r0 = [NSBundle mainBundle];
+                                                            if (r23 != 0x0) {
+                                                                    r2 = [r0 localizedStringForKey:@"f.lux\n%s" value:@"" table:0x0];
+                                                            }
+                                                            else {
+                                                                    r2 = [r0 localizedStringForKey:@"f.lux\nColor temperature: %dK\n%s" value:@"" table:0x0];
+                                                            }
+                                                            r0 = @class(NSString);
+                                                    }
+                                            }
+                                    }
+                            }
+                            [r20 setTooltip:[r0 stringWithFormat:r2]];
+                    }
+            }
+    }
+    else {
+            r20[0x32] = r8;
+            if (r20[0x88] != 0x0) {
+                    r8 = sign_extend_64(r20[0x2e]);
+                    if (r8 < 0x3) {
+                            r22 = *(0x100028288 + r8 * 0x8);
+                            [r20[0xb4] setPromptText:[[NSBundle mainBundle] localizedStringForKey:r22 value:@"" table:0x0]];
+                    }
+            }
+            else {
+                    r23 = r20[0x28];
+                    r0 = time(0x0);
+                    if (r0 - ((SAR(r0 * 0x8888888888888889 + r0, 0x5)) + (r0 * 0x8888888888888889 + r0) / 0x8000000000000000) * 0x3c >= 0x4) {
+                            r22 = @"The sun is up.";
+                    }
+                    else {
+                            r22 = @"The sun is up—go outside!";
+                    }
+                    switch (r23) {
+                        case 0:
+                            [r20[0xb4] setPromptText:[[NSBundle mainBundle] localizedStringForKey:r22 value:@"" table:0x0]];
+                            break;
+                        case 2:
+                            [r20[0xb4] setPromptText:[[NSBundle mainBundle] localizedStringForKey:@"You're getting sleepy." value:@"" table:0x0]];
+                            break;
+                        case 1:
+                            [r20[0xb4] setPromptText:[[NSBundle mainBundle] localizedStringForKey:@"The sun has set." value:@"" table:0x0]];
+                            break;
+                    }
+                    if (r20[0x15c] != 0x0) {
+                            [r20[0xb4] setPromptText:[[NSBundle mainBundle] localizedStringForKey:@"Using a filter" value:@"" table:0x0]];
+                    }
+            }
+            if (r20[0x88] != 0x0) {
+                    if (r24 != 0x0) {
+                            r8 = r20[0x2e];
+                            if (r8 != 0x0) {
+                                    r2 = 0x0;
+                            }
+                            else {
+                                    r2 = [[NSBundle mainBundle] localizedStringForKey:@"Previewing Daytime (will reset automatically)" value:@"" table:0x0];
+                                    r8 = r20[0x2e];
+                            }
+                            if (r8 == 0x1) {
+                                    r2 = [[NSBundle mainBundle] localizedStringForKey:@"Previewing Sunset & Nighttime (will reset automatically)" value:@"" table:0x0];
+                                    r8 = r20[0x2e];
+                            }
+                            if (r8 == 0x2) {
+                                    r2 = [[NSBundle mainBundle] localizedStringForKey:@"Previewing Bedtime (will reset automatically)" value:@"" table:0x0];
+                            }
+                            if (r2 != 0x0) {
+                                    [r20[0xb4] setStatusText:r2];
+                            }
+                    }
+                    else {
+                            if (r21 == 0xffffff9affffff9b) {
+                                    [r20[0xb4] setStatusText:[[NSString alloc] initWithFormat:[[NSBundle mainBundle] localizedStringForKey:@"%s (movie mode)" value:@"" table:0x0]]];
+                                    r20 = r20[0xb5];
+                                    r0 = [NSBundle mainBundle];
+                                    r2 = [r0 localizedStringForKey:@"f.lux\nMovie mode\n%s" value:@"" table:0x0];
+                                    r0 = @class(NSString);
+                            }
+                            else {
+                                    if (r21 == 0x2328ffffff99) {
+                                            [r20[0xb4] setStatusText:[[NSString alloc] initWithFormat:[[NSBundle mainBundle] localizedStringForKey:@"%s (mesopic)" value:@"" table:0x0]]];
+                                            if (r21 != *0x10002135c) {
+                                                    r20 = r20[0xb5];
+                                                    r0 = [NSBundle mainBundle];
+                                                    r2 = [r0 localizedStringForKey:@"f.lux\nMesopic\n%s" value:@"" table:0x0];
+                                                    r0 = @class(NSString);
+                                            }
+                                            else {
+                                                    r20 = r20[0xb5];
+                                                    r0 = [NSBundle mainBundle];
+                                                    r2 = [r0 localizedStringForKey:@"f.lux\nDarkroom\n%s" value:@"" table:0x0];
+                                                    r0 = @class(NSString);
+                                            }
+                                    }
+                                    else {
+                                            r24 = *0x10002135c;
+                                            if (r21 == *0x10002135c) {
+                                                    r22 = r20[0xb4];
+                                                    r2 = [[NSString alloc] initWithFormat:[[NSBundle mainBundle] localizedStringForKey:@"%s (darkroom)" value:@"" table:0x0]];
+                                                    r24 = r21;
+                                            }
+                                            else {
+                                                    if (r21 == *0x100021364) {
+                                                            r22 = r20[0xb4];
+                                                            r23 = [NSString alloc];
+                                                            r0 = [NSBundle mainBundle];
+                                                            r2 = [r0 localizedStringForKey:@"%s (color filter)" value:@"" table:0x0];
+                                                    }
+                                                    else {
+                                                            r25 = r20[0x60];
+                                                            r22 = r20[0xb4];
+                                                            r23 = [NSString alloc];
+                                                            r0 = [NSBundle mainBundle];
+                                                            if (r25 != 0x0) {
+                                                                    r2 = [r0 localizedStringForKey:@"%s" value:@"" table:0x0];
+                                                            }
+                                                            else {
+                                                                    r2 = [r0 localizedStringForKey:@"%s (%dK)" value:@"" table:0x0];
+                                                            }
+                                                    }
+                                                    r2 = [r23 initWithFormat:r2];
+                                            }
+                                            [r22 setStatusText:r2];
+                                            if (r21 == r24) {
+                                                    r20 = r20[0xb5];
+                                                    r0 = [NSBundle mainBundle];
+                                                    r2 = [r0 localizedStringForKey:@"f.lux\nDarkroom\n%s" value:@"" table:0x0];
+                                                    r0 = @class(NSString);
+                                            }
+                                            else {
+                                                    if (r21 == *0x100021364) {
+                                                            r20 = r20[0xb5];
+                                                            r0 = [NSBundle mainBundle];
+                                                            r2 = [r0 localizedStringForKey:@"f.lux\nColor Filter\n%s" value:@"" table:0x0];
+                                                            r0 = @class(NSString);
+                                                    }
+                                                    else {
+                                                            r23 = r20[0x60];
+                                                            r20 = r20[0xb5];
+                                                            r0 = [NSBundle mainBundle];
+                                                            if (r23 != 0x0) {
+                                                                    r2 = [r0 localizedStringForKey:@"f.lux\n%s" value:@"" table:0x0];
+                                                            }
+                                                            else {
+                                                                    r2 = [r0 localizedStringForKey:@"f.lux\nColor temperature: %dK\n%s" value:@"" table:0x0];
+                                                            }
+                                                            r0 = @class(NSString);
+                                                    }
+                                            }
+                                    }
+                            }
+                            [r20 setTooltip:[r0 stringWithFormat:r2]];
+                    }
+            }
+            else {
+                    if (r21 == 0xffffff9affffff9b) {
+                            [r20[0xb4] setStatusText:[[NSString alloc] initWithFormat:[[NSBundle mainBundle] localizedStringForKey:@"%s (movie mode)" value:@"" table:0x0]]];
+                            r20 = r20[0xb5];
+                            r0 = [NSBundle mainBundle];
+                            r2 = [r0 localizedStringForKey:@"f.lux\nMovie mode\n%s" value:@"" table:0x0];
+                            r0 = @class(NSString);
+                    }
+                    else {
+                            if (r21 == 0x2328ffffff99) {
+                                    [r20[0xb4] setStatusText:[[NSString alloc] initWithFormat:[[NSBundle mainBundle] localizedStringForKey:@"%s (mesopic)" value:@"" table:0x0]]];
+                                    if (r21 != *0x10002135c) {
+                                            r20 = r20[0xb5];
+                                            r0 = [NSBundle mainBundle];
+                                            r2 = [r0 localizedStringForKey:@"f.lux\nMesopic\n%s" value:@"" table:0x0];
+                                            r0 = @class(NSString);
+                                    }
+                                    else {
+                                            r20 = r20[0xb5];
+                                            r0 = [NSBundle mainBundle];
+                                            r2 = [r0 localizedStringForKey:@"f.lux\nDarkroom\n%s" value:@"" table:0x0];
+                                            r0 = @class(NSString);
+                                    }
+                            }
+                            else {
+                                    r24 = *0x10002135c;
+                                    if (r21 == *0x10002135c) {
+                                            r22 = r20[0xb4];
+                                            r2 = [[NSString alloc] initWithFormat:[[NSBundle mainBundle] localizedStringForKey:@"%s (darkroom)" value:@"" table:0x0]];
+                                            r24 = r21;
+                                    }
+                                    else {
+                                            if (r21 == *0x100021364) {
+                                                    r22 = r20[0xb4];
+                                                    r23 = [NSString alloc];
+                                                    r0 = [NSBundle mainBundle];
+                                                    r2 = [r0 localizedStringForKey:@"%s (color filter)" value:@"" table:0x0];
+                                            }
+                                            else {
+                                                    r25 = r20[0x60];
+                                                    r22 = r20[0xb4];
+                                                    r23 = [NSString alloc];
+                                                    r0 = [NSBundle mainBundle];
+                                                    if (r25 != 0x0) {
+                                                            r2 = [r0 localizedStringForKey:@"%s" value:@"" table:0x0];
+                                                    }
+                                                    else {
+                                                            r2 = [r0 localizedStringForKey:@"%s (%dK)" value:@"" table:0x0];
+                                                    }
+                                            }
+                                            r2 = [r23 initWithFormat:r2];
+                                    }
+                                    [r22 setStatusText:r2];
+                                    if (r21 == r24) {
+                                            r20 = r20[0xb5];
+                                            r0 = [NSBundle mainBundle];
+                                            r2 = [r0 localizedStringForKey:@"f.lux\nDarkroom\n%s" value:@"" table:0x0];
+                                            r0 = @class(NSString);
+                                    }
+                                    else {
+                                            if (r21 == *0x100021364) {
+                                                    r20 = r20[0xb5];
+                                                    r0 = [NSBundle mainBundle];
+                                                    r2 = [r0 localizedStringForKey:@"f.lux\nColor Filter\n%s" value:@"" table:0x0];
+                                                    r0 = @class(NSString);
+                                            }
+                                            else {
+                                                    r23 = r20[0x60];
+                                                    r20 = r20[0xb5];
+                                                    r0 = [NSBundle mainBundle];
+                                                    if (r23 != 0x0) {
+                                                            r2 = [r0 localizedStringForKey:@"f.lux\n%s" value:@"" table:0x0];
+                                                    }
+                                                    else {
+                                                            r2 = [r0 localizedStringForKey:@"f.lux\nColor temperature: %dK\n%s" value:@"" table:0x0];
+                                                    }
+                                                    r0 = @class(NSString);
+                                            }
+                                    }
+                            }
+                    }
+                    [r20 setTooltip:[r0 stringWithFormat:r2]];
+            }
+    }
+    return;

@@ -1,0 +1,87 @@
+    r2 = arg2;
+    r0 = self;
+    r31 = r31 - 0x80;
+    var_10 = r20;
+    decomp_var_8 = r19;
+    saved_fp = r29;
+    decomp_var_m8 = r30;
+    r19 = r0;
+    s0 = r0[0x151];
+    r8 = 0x100021398;
+    if (s0 <= 1.34218e+08) {
+            r8 = double_value_1_49012E_minus_09;
+    }
+    asm { fcvtzs     w8, s1 };
+    r9 = r0[0x150];
+    if (r9 > r8) {
+            [r2 invalidate];
+            r19[0x9b] = 0x0;
+            r19[0x150] = 0x0;
+            r19[0xa9] = 0x0;
+    }
+    else {
+            s1 = r9 / r8;
+            s2 = 0x4008000000000000;
+            if (s0 >= 0x4008000000000000) {
+                    s1 = s2 - s1 + s1;
+            }
+            else {
+                    asm { fcvt       d0, s1 };
+                    sub_100007f18();
+                    asm { fcvt       s0, d0 };
+            }
+            var_70 = q0;
+            s0 = r19[0x152];
+            if (s0 != 0x0) {
+                    asm { fsqrt      s1, s1 };
+                    s1 = s1 * (s0 + 0xbff0000000000000) + 0x3ff0000000000000;
+                    s0 = r19[0x153];
+                    s2 = s1 / s0;
+                    r19[0x153] = s1;
+                    [r19 setScaledBrightness:r2];
+            }
+            r0 = sub_10000ede4(&var_38);
+            r2 = &var_38;
+            [r19 computeEffects:r2 pr:r3];
+            if (r19[0x24] > 0x0) {
+                    asm { fcvt       d0, s0 };
+                    d0 = d0 + 0x3fe0000000000000;
+                    asm { fcvtzs     w2, d0 };
+            }
+            else {
+                    asm { fcvtzs     w2, s0 };
+            }
+            [r19 updateStatus:r2];
+            if (r19[0x15c] != 0x0) {
+                    s0 = r19[0x24];
+                    s1 = *0x100021364;
+                    if (s0 == *0x100021364) {
+                            sub_100009430(&decomp_var_60);
+                            r10 = r19[0x15d];
+                            if (r10 != 0x0) {
+                                    r8 = 0x100020000;
+                                    asm { dup        v0.2s, w10 };
+                                    asm { ushl       v0.2s, v0.2s, v1.2s };
+                                    v0 = v0 & v1;
+                                    asm { dup        v1.2s, w11 };
+                                    v0 = v0 * v1;
+                                    s1 = (r10 & 0xff) * r8[0x238];
+                            }
+                            else {
+                                    d0 = var_5C;
+                                    s1 = var_54;
+                            }
+                            r8 = 0x100020000;
+                            asm { dup        v2.2s, w10 };
+                            asm { ushl       v2.2s, v2.2s, v3.2s };
+                            asm { dup        v3.2s, w9 };
+                    }
+            }
+            r19[0x20] = var_38;
+            if (s1 == 0x3ff0000000000000) {
+                    r20 = 0x1;
+            }
+            [r19 setScaledGamma:&var_38 syncProfile:[r19[0xb4] wantsProfile] & r20];
+            r19[0x150] = r19[0x150] + 0x1;
+    }
+    return;

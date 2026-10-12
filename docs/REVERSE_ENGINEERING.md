@@ -32,21 +32,22 @@ npx -y rea-agents@6.4.0 decompile /Applications/Flux.app/Contents/MacOS/Flux \
 
 ---
 
-## 3. Preserved Artifacts & Scratch Location
+## 3. Preserved Artifacts & Reference Location
 
-All decompilation and static analysis outputs are preserved outside the source repository:
+All decompilation and static analysis exports are committed directly to this repository under [`reference/`](file:///Users/mduppes/code/Flux/reference/) so any future agent or developer can access them without requiring external tools:
 
-- **Compressed Archive:**
-  `/Users/mduppes/.gemini/antigravity/brain/7816c773-9c80-4c6f-8743-29d9df92048f/scratch/rea_flux_decompilation.tar.gz` (134 KB)
-- **Decompiled Procedures Directory:**
-  `/Users/mduppes/.gemini/antigravity/brain/7816c773-9c80-4c6f-8743-29d9df92048f/scratch/dec/`
-  Contains 44+ decompiled methods and helper routines (both clean `.txt` pseudocode and `.json` REA envelopes).
+- **Decompiled Pseudocode Directory:**
+  [`reference/decompiled/`](file:///Users/mduppes/code/Flux/reference/decompiled/)
+  Contains 56 clean `.txt` decompiled methods and helper routines (e.g. `sub_100009f28.txt`, `__TintController_daylightMonitor__.txt`, `__DisplayConfiguration_makeGammaTable__.txt`).
 - **Metadata Files:**
+  [`reference/metadata/`](file:///Users/mduppes/code/Flux/reference/metadata/)
   - `classes.txt`: Objective-C class catalog and method selectors.
-  - `dispatch.json`: Complete Objective-C / Swift runtime dispatch metadata.
-  - `macho.json`: Mach-O header, load commands, and architecture definitions.
   - `strings.txt`: Extracted strings with cross-reference searches.
-  - `trace_*.json`: Traces for symbols such as `disableFullscreen`, `lastGMToffset`, `CGWindowListCopyWindowInfo`, etc.
+- **Complete Raw Archive:**
+  [`reference/rea_flux_decompilation.tar.gz`](file:///Users/mduppes/code/Flux/reference/rea_flux_decompilation.tar.gz) (134 KB)
+  Contains the complete bundle including REA JSON envelopes, `dispatch.json`, `macho.json`, and trace outputs.
+- **Local Scratch Directory (Session backup):**
+  `/Users/mduppes/.gemini/antigravity/brain/7816c773-9c80-4c6f-8743-29d9df92048f/scratch/`
 
 ---
 

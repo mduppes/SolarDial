@@ -1,0 +1,206 @@
+    r31 = r31 - 0x50;
+    var_30 = r24;
+    decomp_var_28 = r23;
+    var_20 = r22;
+    decomp_var_18 = r21;
+    var_10 = r20;
+    decomp_var_8 = r19;
+    saved_fp = r29;
+    decomp_var_m8 = r30;
+    r19 = self;
+    r21 = [NSUserDefaults standardUserDefaults];
+    r20 = sub_10000c218();
+    if (*(int8_t *)byte_1000b6c28 != 0x0) {
+            if (([r19 lastApp] | r20) != 0x0) {
+                    if ([r19 lastApp] != 0x0) {
+                            if (r20 != 0x0) {
+                                    if (([[r19 lastApp] isEqualToString:r20] & 0x1) == 0x0) {
+                                            r19[0x558] = 0x1;
+                                            [r19 setLastApp:r20];
+                                    }
+                            }
+                            else {
+                                    r19[0x558] = 0x1;
+                                    [r19 setLastApp:r20];
+                            }
+                    }
+                    else {
+                            r19[0x558] = 0x1;
+                            [r19 setLastApp:r20];
+                    }
+                    if ([r21 integerForKey:@"disableCount"] != 0x0) {
+                            if (r20 != 0x0) {
+                                    r24 = r19 + 0x554;
+                                    r19[0x155] = [r21 boolForKey:r20];
+                                    r23 = 0x1;
+                            }
+                            else {
+                                    r23 = 0x0;
+                                    r24 = r19 + 0x554;
+                                    r19[0x155] = 0x0;
+                            }
+                            r2 = @".";
+                            r21 = [[r20 componentsSeparatedByString:@"."] lastObject];
+                            r0 = r19[0x9e];
+                            if (r19[0x155] != 0x0) {
+                                    r2 = 0x1;
+                            }
+                            [r0 setState:r2];
+                            r22 = r19[0x9e];
+                            if (r21 != 0x0) {
+                                    [r22 setTitle:[NSString stringWithFormat:@"for %@", r3]];
+                                    r0 = r19[0x9e];
+                                    r2 = 0x0;
+                            }
+                            else {
+                                    r0 = r22;
+                                    r2 = 0x1;
+                            }
+                            [r0 setHidden:r2];
+                            r8 = *(int32_t *)r24;
+                            if (r8 == 0x0) {
+                                    r8 = 0x1;
+                            }
+                            r0 = r19;
+                            if (((r23 ^ 0x1 | r8) & 0x1) == 0x0) {
+                                    if ([r0 lastForegroundApp] != 0x0 && ([r20 isEqualToString:[r19 lastForegroundApp]] & 0x1) == 0x0) {
+                                            asm { ccmp       x21, #0x0, #0x4, ne };
+                                            if (!asm { ccmp       x21, #0x0, #0x4, ne }) {
+                                                    [r19 setForegroundAppNotifier:r20];
+                                                    [r19[0xb4] clearAppNotification];
+                                                    [r19[0xb4] displayAppNotification:[NSString stringWithFormat:@"Disabled for %@", r3]];
+                                            }
+                                    }
+                                    [r19 setLastForegroundApp:r20];
+                            }
+                            else {
+                                    [r0 setForegroundAppNotifier:0x0];
+                                    [r19[0xb4] clearAppNotification];
+                            }
+                            [r19 handleMelanopic:[r19 isDisabled]];
+                    }
+                    else {
+                            [r19[0x9e] setTitle:@"for current app"];
+                            [r19[0x9e] setHidden:0x0];
+                            [r19[0x9e] setState:0x0];
+                            [r19 setForegroundAppNotifier:0x0];
+                            r19[0x155] = 0x0;
+                            [r19[0xb4] clearAppNotification];
+                    }
+            }
+            else {
+                    if ([r21 integerForKey:@"disableCount"] != 0x0) {
+                            r24 = r19 + 0x554;
+                            r19[0x155] = 0x0;
+                            r2 = @".";
+                            r21 = [[r20 componentsSeparatedByString:@"."] lastObject];
+                            r0 = r19[0x9e];
+                            if (r19[0x155] != 0x0) {
+                                    r2 = 0x1;
+                            }
+                            [r0 setState:r2];
+                            r22 = r19[0x9e];
+                            if (r21 != 0x0) {
+                                    [r22 setTitle:[NSString stringWithFormat:@"for %@", r3]];
+                                    r0 = r19[0x9e];
+                                    r2 = 0x0;
+                            }
+                            else {
+                                    r0 = r22;
+                                    r2 = 0x1;
+                            }
+                            [r0 setHidden:r2];
+                            r8 = *(int32_t *)r24;
+                            if (r8 == 0x0) {
+                                    r8 = 0x1;
+                            }
+                            r0 = r19;
+                            if (((0x1 | r8) & 0x1) == 0x0) {
+                                    if ([r0 lastForegroundApp] != 0x0 && ([r20 isEqualToString:[r19 lastForegroundApp]] & 0x1) == 0x0) {
+                                            asm { ccmp       x21, #0x0, #0x4, ne };
+                                            if (!asm { ccmp       x21, #0x0, #0x4, ne }) {
+                                                    [r19 setForegroundAppNotifier:r20];
+                                                    [r19[0xb4] clearAppNotification];
+                                                    [r19[0xb4] displayAppNotification:[NSString stringWithFormat:@"Disabled for %@", r3]];
+                                            }
+                                    }
+                                    [r19 setLastForegroundApp:r20];
+                            }
+                            else {
+                                    [r0 setForegroundAppNotifier:0x0];
+                                    [r19[0xb4] clearAppNotification];
+                            }
+                            [r19 handleMelanopic:[r19 isDisabled]];
+                    }
+                    else {
+                            [r19[0x9e] setTitle:@"for current app"];
+                            [r19[0x9e] setHidden:0x0];
+                            [r19[0x9e] setState:0x0];
+                            [r19 setForegroundAppNotifier:0x0];
+                            r19[0x155] = 0x0;
+                            [r19[0xb4] clearAppNotification];
+                    }
+            }
+    }
+    else {
+            if ([r21 integerForKey:@"disableCount"] != 0x0) {
+                    if (r20 != 0x0) {
+                            r24 = r19 + 0x554;
+                            r19[0x155] = [r21 boolForKey:r20];
+                            r23 = 0x1;
+                    }
+                    else {
+                            r23 = 0x0;
+                            r24 = r19 + 0x554;
+                            r19[0x155] = 0x0;
+                    }
+                    r2 = @".";
+                    r21 = [[r20 componentsSeparatedByString:@"."] lastObject];
+                    r0 = r19[0x9e];
+                    if (r19[0x155] != 0x0) {
+                            r2 = 0x1;
+                    }
+                    [r0 setState:r2];
+                    r22 = r19[0x9e];
+                    if (r21 != 0x0) {
+                            [r22 setTitle:[NSString stringWithFormat:@"for %@", r3]];
+                            r0 = r19[0x9e];
+                            r2 = 0x0;
+                    }
+                    else {
+                            r0 = r22;
+                            r2 = 0x1;
+                    }
+                    [r0 setHidden:r2];
+                    r8 = *(int32_t *)r24;
+                    if (r8 == 0x0) {
+                            r8 = 0x1;
+                    }
+                    r0 = r19;
+                    if (((r23 ^ 0x1 | r8) & 0x1) == 0x0) {
+                            if ([r0 lastForegroundApp] != 0x0 && ([r20 isEqualToString:[r19 lastForegroundApp]] & 0x1) == 0x0) {
+                                    asm { ccmp       x21, #0x0, #0x4, ne };
+                                    if (!asm { ccmp       x21, #0x0, #0x4, ne }) {
+                                            [r19 setForegroundAppNotifier:r20];
+                                            [r19[0xb4] clearAppNotification];
+                                            [r19[0xb4] displayAppNotification:[NSString stringWithFormat:@"Disabled for %@", r3]];
+                                    }
+                            }
+                            [r19 setLastForegroundApp:r20];
+                    }
+                    else {
+                            [r0 setForegroundAppNotifier:0x0];
+                            [r19[0xb4] clearAppNotification];
+                    }
+                    [r19 handleMelanopic:[r19 isDisabled]];
+            }
+            else {
+                    [r19[0x9e] setTitle:@"for current app"];
+                    [r19[0x9e] setHidden:0x0];
+                    [r19[0x9e] setState:0x0];
+                    [r19 setForegroundAppNotifier:0x0];
+                    r19[0x155] = 0x0;
+                    [r19[0xb4] clearAppNotification];
+            }
+    }
+    return;

@@ -1,0 +1,8 @@
+    var_18 = time(0x0);
+    localtime_r(&var_18, &var_50);
+    var_50 = 0x0;
+    r0 = mktime(&var_50);
+    *arg0 = r0 + sign_extend_64(arg1 * 0x15180);
+    arg0[0x1] = 0x0;
+    arg0[0x2] = -0.0078125;
+    return r0;

@@ -1,0 +1,124 @@
+    r31 = r31 - 0xb0;
+    var_50 = r28;
+    decomp_var_48 = r27;
+    var_40 = r26;
+    decomp_var_38 = r25;
+    var_30 = r24;
+    decomp_var_28 = r23;
+    var_20 = r22;
+    decomp_var_18 = r21;
+    var_10 = r20;
+    decomp_var_8 = r19;
+    saved_fp = r29;
+    decomp_var_m8 = r30;
+    r24 = arg2;
+    r21 = self;
+    r0 = self[0x2];
+    r0 = ColorSyncProfileCreateWithDisplayID(r0);
+    if (r0 != 0x0) {
+            r19 = r0;
+            r0 = r21[0x2];
+            r0 = CGDisplayCreateUUIDFromDisplayID(r0);
+            if (r0 != 0x0) {
+                    r20 = r0;
+                    if ((ColorSyncProfileContainsTag(r19, @"flux") & 0x1) == 0x0) {
+                            r0 = ColorSyncProfileGetURL(r19, 0x0);
+                            r3 = r20;
+                            [r21 SaveOldURL:r0 forUUID:r3];
+                    }
+                    var_80 = 0.0078125;
+                    sub_10000ed58(&var_80, r24);
+                    if (d0 < 0.001) {
+                            r22 = [r21 GetOldURL:r20];
+                            [r21 cleanProfileFolder];
+                            r0 = r21;
+                            if (r22 != 0x0) {
+                                    r25 = [r0 installProfileByURL:r22 forUUID:r20];
+                                    CFRelease(r22);
+                            }
+                            else {
+                                    r25 = [r0 installProfileByURL:0x0 forUUID:r20];
+                            }
+                            CFRelease(r20);
+                    }
+                    else {
+                            var_84 = 0x0;
+                            r0 = sub_100010168(r20, r24, &var_84);
+                            r25 = 0x0;
+                            if (r21[0x5] != r0) {
+                                    r23 = r0;
+                                    r0 = ColorSyncProfileCreateMutableCopy(r19);
+                                    r22 = r0;
+                                    ColorSyncProfileRemoveTag(r0, @"dscm");
+                                    r25 = CFDataCreate(0x0, 0x100020a34, 0x38);
+                                    ColorSyncProfileSetTag(r22, @"desc", r25);
+                                    if (r25 != 0x0) {
+                                            CFRelease(r25);
+                                    }
+                                    r25 = CFDataCreate(0x0, 0x100020a6c, 0x54);
+                                    ColorSyncProfileSetTag(r22, @"cprt", r25);
+                                    if (r25 != 0x0) {
+                                            CFRelease(r25);
+                                    }
+                                    if ((ColorSyncProfileContainsTag(r22, @"flux") & 0x1) == 0x0) {
+                                            r0 = ColorSyncProfileCopyTag(r22, @"vcgt");
+                                            if (r0 != 0x0) {
+                                                    r25 = r0;
+                                                    ColorSyncProfileSetTag(r22, @"flux", r25);
+                                                    CFRelease(r25);
+                                            }
+                                            else {
+                                                    r25 = CFDataCreate(r0, 0x100020ac0, 0x30);
+                                                    ColorSyncProfileSetTag(r22, @"flux", r25);
+                                                    if (r25 != 0x0) {
+                                                            CFRelease(r25);
+                                                    }
+                                            }
+                                    }
+                                    r0 = sub_10000fda0(r22, r24, r21[0x84]);
+                                    if (r0 != 0x0) {
+                                            ColorSyncProfileSetTag(r22, @"vcgt", r0);
+                                            CFRelease(r0);
+                                    }
+                                    sub_1000113fc();
+                                    r24 = [NSString stringWithFormat:@"%@/fluxprofile-%x.icc", r3, r4];
+                                    r25 = ColorSyncProfileCopyData(r22, 0x0);
+                                    r0 = [r24 UTF8String];
+                                    r0 = fopen(r0, "w");
+                                    if (r0 != 0x0) {
+                                            fwrite(CFDataGetBytePtr(r25), 0x1, CFDataGetLength(r25), r0);
+                                            fclose(r0);
+                                    }
+                                    if (r25 != 0x0) {
+                                            CFRelease(r25);
+                                    }
+                                    r24 = CFURLCreateFromFileSystemRepresentation(0x0, [r24 UTF8String], strlen([r24 UTF8String]), 0x0);
+                                    r0 = [r21 installProfileByURL:r24 forUUID:r20];
+                                    r25 = r0;
+                                    if (r0 != 0x0) {
+                                            r21[0x5] = r23;
+                                    }
+                                    if (r24 != 0x0) {
+                                            CFRelease(r24);
+                                    }
+                                    CFRelease(r20);
+                                    if (r22 != 0x0) {
+                                            r20 = r22;
+                                            CFRelease(r20);
+                                    }
+                            }
+                            else {
+                                    CFRelease(r20);
+                            }
+                    }
+            }
+            else {
+                    r25 = 0x0;
+            }
+            CFRelease(r19);
+    }
+    else {
+            r25 = 0x0;
+    }
+    r0 = r25;
+    return r0;

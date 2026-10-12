@@ -1,0 +1,23 @@
+    var_10 = r20;
+    decomp_var_8 = r19;
+    saved_fp = r29;
+    decomp_var_m8 = r30;
+    r31 = r31 + 0xffffffffffffffe0 - 0x810;
+    var_18 = **___stack_chk_guard;
+    r0 = [NSBundle mainBundle];
+    if (arg2 != 0x0) {
+            r2 = @"darkmode";
+    }
+    else {
+            r2 = @"lightmode";
+    }
+    r0 = [r0 pathForResource:r2 ofType:@"scpt"];
+    if (r0 != 0x0) {
+            [r0 UTF8String];
+            __sprintf_chk(&decomp_var_818, 0x0, 0x800, "/usr/bin/osascript %s");
+            system(&decomp_var_818);
+    }
+    if (**___stack_chk_guard != var_18) {
+            __stack_chk_fail();
+    }
+    return;

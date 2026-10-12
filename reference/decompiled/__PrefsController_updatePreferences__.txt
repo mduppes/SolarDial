@@ -1,0 +1,64 @@
+    r31 = r31 - 0x50;
+    var_30 = r24;
+    decomp_var_28 = r23;
+    var_20 = r22;
+    decomp_var_18 = r21;
+    var_10 = r20;
+    decomp_var_8 = r19;
+    saved_fp = r29;
+    decomp_var_m8 = r30;
+    r19 = arg2;
+    r21 = self;
+    r0 = [NSUserDefaults standardUserDefaults];
+    r20 = r0;
+    r21[0x39] = [r0 valueForKey:@"locationType"];
+    r21[0x3a] = [r20 valueForKey:@"location"];
+    if ([r21[0x39] isEqual:@"N"] != 0x0 && ([r21[0x3a] isEqual:@""] & 0x1) == 0x0 && [r21[0x39] isEqual:@"N"] != 0x0) {
+            r0 = r21[0x3a];
+            r0 = [r0 intValue];
+            r0 = sub_10000dac0(r0, &decomp_var_38);
+            if (r0 != 0x0) {
+                    [r20 setValue:r21[0x3a] forKey:@"location"];
+                    [r20 setValue:@"Z" forKey:@"locationType"];
+            }
+    }
+    r21 = [r20 integerForKey:@"version"];
+    r0 = [r20 valueForKey:@"indoorLightingType"];
+    asm { ccmp       x0, #0x0, #0x4, le };
+    if (!asm { ccmp       x0, #0x0, #0x4, le }) {
+            r22 = r0;
+            if (([r0 isEqual:@"Tungsten"] & 0x1) != 0x0) {
+                    r23 = qword_value_14602888809100;
+            }
+            else {
+                    if (([r22 isEqual:@"Candle"] & 0x1) != 0x0) {
+                            r23 = qword_value_9878424782700;
+                    }
+                    else {
+                            r23 = 0x100021344;
+                            if (([r22 isEqual:@"Halogen"] & 0x1) == 0x0) {
+                                    if (([r22 isEqual:@"Fluorescent"] & 0x1) != 0x0) {
+                                            r23 = qword_value_23622320132200;
+                                    }
+                                    else {
+                                            r0 = [r22 isEqual:@"Daylight"];
+                                            r8 = 0x10002134c;
+                                            if (r0 != 0x0) {
+                                                    r8 = 0x10002134c;
+                                                    r23 = 0x10002134c;
+                                            }
+                                    }
+                            }
+                    }
+            }
+            [r20 setInteger:sign_extend_64(*(int32_t *)r23) forKey:@"nightColorTemp"];
+    }
+    r2 = sign_extend_64(*0x100021390);
+    if (r19 != 0x0) {
+            if (r2 > r21) {
+                    r8 = 0x1;
+            }
+            *(int8_t *)r19 = r8;
+    }
+    [r20 setInteger:r2 forKey:@"version"];
+    return;

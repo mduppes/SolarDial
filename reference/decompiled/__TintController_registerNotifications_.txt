@@ -1,0 +1,7 @@
+    r0 = [NSDistributedNotificationCenter defaultCenter];
+    r20 = r0;
+    [r0 addObserver:self selector:@selector(listenColorSync:) name:@"CMDeviceUnregisteredNotification" object:0x0];
+    [r20 addObserver:self selector:@selector(listenColorSync:) name:@"CMDefaultDeviceNotification" object:0x0];
+    [r20 addObserver:self selector:@selector(listenColorSync:) name:@"CMDeviceProfilesNotification" object:0x0];
+    [r20 addObserver:self selector:@selector(listenColorSync:) name:@"CMDefaultDeviceProfileNotification" object:0x0];
+    return;

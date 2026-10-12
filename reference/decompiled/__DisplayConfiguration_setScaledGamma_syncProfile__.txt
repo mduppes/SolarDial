@@ -1,0 +1,116 @@
+    r3 = arg3;
+    r2 = arg2;
+    r1 = _cmd;
+    r0 = self;
+    r31 = r31 - 0x60;
+    var_20 = r22;
+    decomp_var_18 = r21;
+    var_10 = r20;
+    decomp_var_8 = r19;
+    saved_fp = r29;
+    decomp_var_m8 = r30;
+    if (r2 != 0x0) {
+            r21 = r3;
+            r20 = r2;
+            r19 = r0;
+            if (r3 != 0x0) {
+                    if (*qword_1000b6c40 == 0x0) {
+                            r1 = 0x0;
+                            *qword_1000b6c40 = dispatch_queue_create("org.herf.flux.gamma", 0x0);
+                    }
+                    var_48 = *__NSConcreteStackBlock;
+                    objc_sync_enter(r19);
+                    q0 = *r20;
+                    q1 = r20[0x2];
+                    r19[0x15] = r20[0x4];
+                    *(int128_t *)(r19 + 0x98) = q1;
+                    *(int128_t *)(r19 + 0x88) = q0;
+                    r19[0x36] = r19[0x36] + 0x1;
+                    objc_sync_exit(r19);
+                    if (r21 == 0x2) {
+                            r19[0x36] = 0x1;
+                            r0 = sub_10000fc80(&var_48);
+                    }
+                    else {
+                            r1 = &var_48;
+                            dispatch_async(*qword_1000b6c40, r1);
+                    }
+            }
+            if (r20[0x8] > 0x3fe0000000000000) {
+                    if (*(int32_t *)dword_1000b6c48 == 0x0) {
+                            CGDisplayForceToGray();
+                            if (*dword_1000b6c30 != 0x0) {
+                                    CGDisplaySetInvertedPolarity();
+                            }
+                            CGSSetDebugOptions();
+                    }
+                    *(int32_t *)dword_1000b6c48 = 0x1;
+                    [r19 makeGammaTable:r20];
+                    r0 = r19[0x1];
+                    r0 = CGSetDisplayTransferByTable(r0, *(r19 + 0xc), r19[0x9], r19[0xa], r19[0xb]);
+            }
+            else {
+                    r8 = *(int32_t *)dword_1000b6c48;
+                    r22 = r19[0x85];
+                    if (r8 == 0x1) {
+                            CGDisplayForceToGray();
+                            if (*dword_1000b6c30 != 0x0) {
+                                    CGDisplaySetInvertedPolarity();
+                            }
+                            CGSSetDebugOptions();
+                    }
+                    *(int32_t *)dword_1000b6c48 = 0x0;
+                    r2 = r20;
+                    [r19 makeGammaTable:r2];
+                    if (r22 != 0x0) {
+                            r8 = r19[0x84];
+                            bool_16 = r8 == 0x0;
+                            bool_15 = r8 == 0x0;
+                            r9 = 0x10;
+                            if (r8 == 0x0) {
+                                    r9 = 0x4;
+                            }
+                            r9 = 0x14;
+                            if (bool_15) {
+                                    r9 = 0x8;
+                            }
+                            r9 = 0x18;
+                            if (bool_16) {
+                                    r9 = 0xc;
+                            }
+                            r0 = r19[0x2];
+                            r0 = CGSetDisplayTransferByFormula(r0, r1, r2, r3, r4, r5, r6, r7, r20[0x7], var_48);
+                    }
+                    else {
+                            r0 = r19[0x1];
+                            r0 = CGSetDisplayTransferByTable(r0, *(r19 + 0xc), r19[0x9], r19[0xa], r19[0xb]);
+                    }
+            }
+            r21 = r0;
+            [r19 getGammaTable];
+            r14 = (sign_extend_64(r19[0x3]) << 0x2) - 0x4;
+            r8 = r19[0x3];
+            r9 = r19[0x4];
+            r19[0x18] = *(int32_t *)(r8 + r14);
+            r19[0x19] = *(int32_t *)(r9 + r14);
+            r10 = r19[0x5];
+            r19[0x1a] = *(int32_t *)(r10 + r14);
+            r11 = r19[0x9];
+            r12 = r19[0xa];
+            r19[0x1e] = *(int32_t *)(r11 + r14);
+            r19[0x1f] = *(int32_t *)(r12 + r14);
+            r13 = r19[0xb];
+            r19[0x20] = *(int32_t *)(r13 + r14);
+            if (r20[0x8] != 0x0) {
+                    r19[0x18] = *(int32_t *)r8;
+                    r19[0x19] = *(int32_t *)r9;
+                    r19[0x1a] = *(int32_t *)r10;
+                    r19[0x1e] = *(int32_t *)r11;
+                    r19[0x1f] = *(int32_t *)r12;
+                    r19[0x20] = *(int32_t *)r13;
+            }
+            if (r21 == 0x0) {
+                    r19[0x4] = [r19 lastHash];
+            }
+    }
+    return;

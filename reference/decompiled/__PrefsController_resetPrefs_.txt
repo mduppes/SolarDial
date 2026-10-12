@@ -1,0 +1,8 @@
+    [self setDayColor:0x1964];
+    [self setNightColor:*0x100021344];
+    [self setLateColor:0x8fc0000076c];
+    [self setLockdown:0x0];
+    [self displayInfoNotification:@"f.lux is no longer connected" text:@"Now using the default settings"];
+    [self[0x16] setHidden:0x1];
+    [self[0xf] setHidden:0x1];
+    return;

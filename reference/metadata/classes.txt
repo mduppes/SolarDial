@@ -1,0 +1,31 @@
+dict_keys(['objc_classes', 'objc_protocols', 'objc_categories', 'swift_decls', 'objc_ivars', 'objc_protocol_records', 'objc_dispatch_implementations', 'swift_conformances', 'swift_dispatch_slots', 'swift_symbols', 'relative_pointers', 'coverage', 'db_save_result'])
+## fluxAccount : NSObject
+    doServerReset forgetEverything setPromo:anon: appendParam:key:value: doLogin:onComplete: getVersion addVersion: tryAPIURL:useCache: activityURL setActivityURL: username setUsername: settingsURL setSettingsURL: setURL setSetURL: sensorURL setSensorURL: historyURL setHistoryURL: surveyURL setSurveyURL: sensorname setSensorname: dataURL setDataURL: activityname setActivityname: sig setSig: promo setPromo: version setVersion:
+## settingItem : NSObject
+    
+## fluxSignal : NSObject
+    queuePost:item: queueInt:value: queueFloat:value: isValidSig:serverSig: startPolling:onComplete: endpoint setEndpoint: setURL setSetURL: sig setSig: user setUser: infoURL setInfoURL:
+## fluxSensor : NSObject
+    startPolling:onComplete: endpoint setEndpoint:
+## TintController : NSObject
+    setResetTime: resetSettings setDisableBacklight: handleMelanopic: setDisableTime: darktheme lockdown isAwake isDisabled wakeTime chronotype lastlat lastlng toggleMesopic toggleMovie toggleDarkroom resetForegroundApp disableReset prefs lastTabMode listenColorSync: registerNotifications dumpNotifications observeFullscreen observeValueForKeyPath:ofObject:change:context: awakeFromNib queueSpeed: runPreview: displays areTablesChanging checkGammaParameters: setScaledBrightnessAPI: getBrightnessAPI getBrightness setScaledBrightness: setScaledGamma:syncProfile: animateTo:AnimLength: activeTab updateStatus: postTabReset postNotifyReset tabReset: notifyReset: computeEffects:pr: fadeTimerFireMethod: queueInt:value: queueFloat:value: queuePref:value: acceptOffer: handleOffer userActiveTimer: displayConfig: getAutoKelvin: getLightingType: getTotalDaylight lazySyncApp syncApp appToggleBundle:forceState: appToggle: useSensor animateCustom login:promo:anon: resetNetwork doRoomAlarm doAlarm: reEnable: syncPrefs undoTheme useTheme: updateALS daylightMonitor: lastForegroundApp setLastForegroundApp: lastApp setLastApp: foregroundAppNotifier setForegroundAppNotifier:
+## GraphView : None
+    initWithFrame: getSunValue: drawSunElevation:height:w0:context: prcScale: drawPRC:height:w0:context:flip: drawRect:
+## FluxMenulet : NSObject
+    dealloc openWindow: awakeFromNib setTooltip:
+## DisplayConfiguration : NSObject
+    resampleFrom: getGammaValue:greenVal:blueVal: makeGammaTable: getContentScale: getFluxScale: getGammaTable setScaledGamma:syncProfile: SaveOldURL:forUUID: GetOldURL: installProfileByURL:forUUID: cleanProfileFolder AdjustICCProfile: GetTableFromColorSync GetTableFromColorSync_: GetICCConfiguration hasTableChange allocTablesWithSize: allocTables dealloc displayID gammaTableSize setDisplayID: redLUT greenLUT blueLUT redLUTx greenLUTx blueLUTx redICC greenICC blueICC lastr lastg lastb lastr2 lastg2 lastb2 lastSetR lastSetG lastSetB hash lastHash
+## FluxSlider : None
+    initWithFrame: drawRect: getValue
+## fluxNetworkQueue : NSObject
+    init initWithName:postInterval: setPostTime: ensureBuffer Flush LogLight:ts: LogSpectrum: LogScreenTime:ts:dim:cct: LogEvent:ts: endpoint setEndpoint: batchname setBatchname:
+## GPUInfo : NSObject
+    
+## RingBuffer : NSObject
+    initWithCapacity: element:atIndex: appendItem: appendItemUnique: contains: dealloc
+## PrefsController : NSObject
+    applicationWillTerminate: disable1Hr disableSunrise moviemode customfilter darkroom mesopic timeTabs timeControl fluxLogin updateLocation updatePreferences: applicationWillFinishLaunching: beforeStartup getVersion awakeFromNib setLockdown: setWakeTime: setChronotype: setDimLight: observeValueForKeyPath:ofObject:change:context: userTypingActionMethod: updateStatusFromUserDefaults tabView:didSelectTabViewItem: isTrackingDaySlider isTrackingNightSlider isTrackingLateSlider isTrackingLightingSlider updateLightingSliderStatus: resetPrefs setDayColor: setNightColor: setLateColor: login: userNotificationCenter:shouldPresentNotification: userNotificationCenter:didActivateNotification: clearTransientNotification displayAppNotification: clearAppNotification displayTransientNotification: displayInfoNotification:text: displayOfferNotification:text: displayNotificationTitle:title:transient: displayNotification: lazyTimeGraph setupSliderRanges clampSliders: setDaylight: adjustColor: updateLightingSliderStatus settingsChanged: locateButtonClicked: startAtLoginClicked: windowShouldClose: alertDidEnd:returnCode:contextInfo: googleMapSheetClosed: didEndSheet:returnCode:contextInfo: internetAvailable wantsProfile enableCoreLocation disableCoreLocation autoLocatorButtonClicked: locationManager:didFailWithError: locationManager:didUpdateToLocation:fromLocation: wakeTimeChange: showPrefs: showNetworkInfo: networkAlert:returnCode:contextInfo: resetNetwork: updateExposure showAbout: goToHomepage: contribute: statusText setStatusText: promptText setPromptText: locationReadout setLocationReadout: aboutText setAboutText: infoURL setInfoURL: lastLocationType setLastLocationType: lastLocation setLastLocation: exposuremlux setExposuremlux: exposurepct setExposurepct: exposureroomtoscreen setExposureroomtoscreen:
+## FluxSliderCell : None
+    tracking startTrackingAt:inView: stopTracking:at:inView:mouseIsUp:
+## fluxOffer : NSObject
+    setOfferURL: getOffers getAge showOffers runDaily: url setUrl: promo setPromo: message setMessage: mode setMode:

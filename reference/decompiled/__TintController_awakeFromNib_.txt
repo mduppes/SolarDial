@@ -1,0 +1,51 @@
+    decomp_var_30 = r22;
+    decomp_var_28 = r21;
+    r31 = r31 + 0xffffffffffffffd0;
+    decomp_var_20 = r20;
+    decomp_var_18 = r19;
+    decomp_var_10 = r29;
+    decomp_var_8 = r30;
+    r19 = r0;
+    [r0 observeFullscreen];
+    r19[0x8] = 0x1;
+    if (r19[0x9b] != 0x0) {
+            sub_10001add8();
+    }
+    if (r19[0x150] != 0x0) {
+            sub_10001adb0();
+    }
+    [r19 queueSpeed:r2];
+    r0 = [NSMutableArray alloc];
+    r0 = [r0 init];
+    r19[0xb3] = r0;
+    sub_100009530(r0, 0x1);
+    CGDisplayRegisterReconfigurationCallback(sub_100009604, r19);
+    *(r19 + 0x94) = 0x1964;
+    r19[0x13] = 0x1964;
+    r19[0x27] = 0x1964;
+    s0 = 0x1964;
+    r19[0x20] = 0x1964;
+    *(r19 + 0x8c) = 0x1964;
+    r19[0x12] = 0x1964;
+    r19[0x15a] = 0xffffffff;
+    if (r19[0x5] == 0x0) {
+            [r19 useSensor];
+    }
+    if (r19[0x2] == 0x0) {
+            r19[0x2] = [[fluxAccount alloc] init];
+            [r19 login:0x0 promo:0x0 anon:0x0];
+    }
+    if (r19[0x7] == 0x0) {
+            r21 = &@selector(isEqual:);
+            r0 = r21[0x150];
+            r0 = [r0 alloc];
+            asm { fcvtzs     w20, d0 };
+            r19[0x7] = [r0 initWithName:@"activity" postInterval:r20];
+            r19[0x8] = [[r21[0x150] alloc] initWithName:@"light" postInterval:r20];
+    }
+    r19[0x9d] = [NSTimer scheduledTimerWithTimeInterval:s0 target:r19 selector:@selector(userActiveTimer:) userInfo:0x0 repeats:0x1];
+    r19[0x9c] = [NSTimer scheduledTimerWithTimeInterval:s0 target:r19 selector:@selector(daylightMonitor:) userInfo:0x0 repeats:0x1];
+    [r19 daylightMonitor:0x0];
+    r19[0xa0] = [NSTimer scheduledTimerWithTimeInterval:s0 target:r19 selector:@selector(displayConfig:) userInfo:0x0 repeats:0x1];
+    [r19 displayConfig:0x0];
+    return;

@@ -1,0 +1,22 @@
+    r1 = arg1;
+    r31 = r31 - 0x60;
+    var_10 = r20;
+    decomp_var_8 = r19;
+    saved_fp = r29;
+    decomp_var_m8 = r30;
+    r19 = arg0;
+    var_18 = r1;
+    if (r1 == 0x0) {
+            time(&var_18);
+            r1 = var_18;
+    }
+    *r19 = r1;
+    tzset();
+    r8 = *_timezone;
+    r8 = sign_extend_64(*(int32_t *)r8);
+    r19[0x2] = (SAR((r8 * 0x77777777 >> 0x20) - r8, 0x5)) + ((r8 * 0x77777777 >> 0x20) - r8) / 0x80000000;
+    r19[0x5] = 0xbf800000;
+    r0 = localtime_r(r19, &decomp_var_50);
+    *(r19 + 0xc) = (SAR((sign_extend_64(var_28) * 0xffffffffffff8889 >> 0x20) + sign_extend_64(var_28), 0x5)) + ((sign_extend_64(var_28) * 0xffffffffffff8889 >> 0x20) + sign_extend_64(var_28)) / 0x80000000 - r19[0x2];
+    r19[0x2] = 0x0;
+    return r0;

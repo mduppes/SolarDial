@@ -1,0 +1,15 @@
+    r19 = self;
+    r20 = [NSUserDefaults standardUserDefaults];
+    [arg3 coordinate];
+    [arg3 coordinate];
+    asm { fcvtzs     w8, d2 };
+    asm { fcvtzs     w8, d0 };
+    r21 = [NSString stringWithFormat:@"%g,%g", r3, r4];
+    [r20 setValue:@"L" forKey:@"locationType"];
+    [r20 setValue:r21 forKey:@"location"];
+    [r20 setValue:[r20 valueForKey:@"location"] forKey:@"locationTextField"];
+    [r19 disableCoreLocation];
+    [r19[0x2e] stopAnimation:r19];
+    [**_NSApp beginSheet:r19[0x6] modalForWindow:r19[0x3] modalDelegate:r19 didEndSelector:@selector(didEndSheet:returnCode:contextInfo:) contextInfo:0x0];
+    [r19[0x7] setMainFrameURL:[NSString stringWithFormat:@"https://justgetflux.com/minimap.html?lat=%g&lng=%g", r3, r4]];
+    return;

@@ -1,0 +1,207 @@
+    r2 = arg2;
+    r0 = self;
+    r31 = r31 - 0x90;
+    arg_10 = d15;
+    arg_18 = d14;
+    arg_20 = d13;
+    arg_28 = d12;
+    arg_30 = d11;
+    arg_38 = d10;
+    arg_40 = d9;
+    arg_48 = d8;
+    arg_50 = r24;
+    arg_58 = r23;
+    arg_60 = r22;
+    arg_68 = r21;
+    arg_70 = r20;
+    arg_78 = r19;
+    arg_80 = r29;
+    arg_88 = r30;
+    if (r2 != 0x0) {
+            r20 = r2;
+            r19 = r0;
+            r8 = r0[0x3];
+            s0 = r2[0x8];
+            s1 = 0x3fe0000000000000;
+            if (s0 > 0x3fe0000000000000) {
+                    asm { fcvt       d1, s0 };
+                    d1 = d1 + 0xbfe0000000000000;
+                    r9 = *dword_1000b6c30;
+                    if (*dword_1000b6c30 == 0x0) {
+                            r9 = 0x1;
+                    }
+                    asm { fcvt       d2, s2 };
+                    asm { fcvt       s1, d1 };
+                    r20[0x7] = s1;
+            }
+            else {
+                    s1 = r20[0x7];
+            }
+            d8 = 0x3ff0000000000000;
+            if (s1 != 0x0) {
+                    s2 = 0x3ff0000000000000;
+                    if (s1 != 0x3ff0000000000000) {
+                            asm { fcvt       d8, s1 };
+                    }
+            }
+            r9 = r19[0x84];
+            bool_14 = r9 == 0x0;
+            bool_13 = r9 == 0x0;
+            r10 = 0x10;
+            if (r9 == 0x0) {
+                    r10 = 0x4;
+            }
+            s9 = *(int32_t *)(r20 + r10);
+            r10 = 0x14;
+            if (bool_13) {
+                    r10 = 0x8;
+            }
+            s10 = *(int32_t *)(r20 + r10);
+            r10 = 0x18;
+            if (bool_14) {
+                    r10 = 0xc;
+            }
+            s11 = *(int32_t *)(r20 + r10);
+            if (*0x1000b6c3c != 0x0) {
+                    if (r9 != 0x0 && r19[0x86] != 0x0) {
+                            s11 = r20[0x2];
+                            s9 = *(r20 + 0x14);
+                            s10 = r20[0x6];
+                    }
+            }
+            if (r8 >= 0x1) {
+                    r21 = 0x0;
+                    d12 = r8 - 0x1;
+                    d0 = 0x3ff0000000000000 / d12;
+                    asm { fcvt       s13, d0 };
+                    do {
+                            s2 = r20[0x9];
+                            s0 = s9 * r21 * s2;
+                            s15 = s10 * r21 * s2;
+                            arg_8 = s15;
+                            arg_c = s0;
+                            s1 = s11 * r21;
+                            s14 = s1 * s2;
+                            arg_4 = s14;
+                            if (d8 != 0x3ff0000000000000) {
+                                    if (*(int32_t *)dword_1000b6c30 != 0x0) {
+                                            s1 = s9 * (r21 - 0x8);
+                                            s0 = s10 * (r21 - 0x8);
+                                            bool_17 = r21 > 0x8;
+                                            if (r21 <= 0x8) {
+                                                    s1 = s2;
+                                            }
+                                            if (!bool_17) {
+                                                    s14 = s2;
+                                            }
+                                            else {
+                                                    s14 = s0;
+                                            }
+                                            s0 = s1 * s13;
+                                            asm { fcvt       d0, s0 };
+                                            pow(s0, s1);
+                                            asm { fcvt       s0, d0 };
+                                            arg_c = s0;
+                                            s0 = s14 * s13;
+                                            asm { fcvt       d0, s0 };
+                                            pow(s0, s1);
+                                            d0 = d0 * d12;
+                                            asm { fcvt       s0, d0 };
+                                            arg_8 = s0;
+                                    }
+                                    else {
+                                            s0 = s0 * s13;
+                                            asm { fcvt       d0, s0 };
+                                            pow(s0, s1);
+                                            asm { fcvt       s0, d0 };
+                                            arg_c = s0;
+                                            s0 = s15 * s13;
+                                            asm { fcvt       d0, s0 };
+                                            pow(s0, s1);
+                                            asm { fcvt       s0, d0 };
+                                            arg_8 = s0;
+                                            s0 = s14 * s13;
+                                            asm { fcvt       d0, s0 };
+                                            pow(s0, s1);
+                                            d0 = d0 * d12;
+                                            asm { fcvt       s0, d0 };
+                                    }
+                                    arg_4 = s0;
+                            }
+                            r0 = [r19 getGammaValue:&arg_c greenVal:&arg_8 blueVal:&arg_4];
+                            s0 = *(int32_t *)0x1000b6c34;
+                            if (*(int32_t *)0x1000b6c34 > 0x3fe0000000000000) {
+                                    *(int32_t *)0x1000b6c34 = 0x3f000000;
+                                    s0 = 0x3fe0000000000000;
+                            }
+                            s2 = arg_8;
+                            s1 = arg_c;
+                            if (s1 < s0) {
+                                    s1 = s0;
+                            }
+                            if (s2 < s0) {
+                                    arg_8 = s0;
+                            }
+                            if (arg_4 < s0) {
+                                    arg_4 = s0;
+                            }
+                            r8 = r19[0x9];
+                            r9 = r19[0xa];
+                            *(int32_t *)(r8 + r21 * 0x4) = s1;
+                            *(int32_t *)(r9 + r21 * 0x4) = arg_8;
+                            *(int32_t *)(r19[0xb] + r21 * 0x4) = arg_4;
+                            r21 = r21 + 0x1;
+                            r8 = sign_extend_64(r19[0x3]);
+                    } while (r21 < r8);
+                    s0 = r20[0x8];
+            }
+            if (s0 != 0x0) {
+                    r9 = r8 - 0x1;
+                    if (r9 >= 0x0) {
+                            asm { fcvt       d0, s0 };
+                            asm { fcvt       s0, d0 };
+                            r10 = r19[0x9];
+                            r11 = r19[0xa];
+                            r12 = r19[0xb];
+                            r13 = r8;
+                            do {
+                                    *(int32_t *)r10 = *(int32_t *)r10 * s0;
+                                    r10 = r10 + 0x4;
+                                    *(int32_t *)r11 = *(int32_t *)r11 * s0;
+                                    r11 = r11 + 0x4;
+                                    *(int32_t *)r12 = *(int32_t *)r12 * s0;
+                                    r12 = r12 + 0x4;
+                                    r13 = r13 - 0x1;
+                            } while (r13 != 0x0);
+                            s0 = r20[0x8];
+                    }
+                    if (s0 > 0x3fe0000000000000 && r8 >= 0x2) {
+                            r10 = 0x0;
+                            r11 = 0x0;
+                            r15 = r8 >> 0x1;
+                            r8 = r19[0xa];
+                            r13 = r19[0xb];
+                            asm { sxtw       x14, w9 };
+                            r15 = r15 << 0x2;
+                            do {
+                                    r16 = r14;
+                                    if (*dword_1000b6c30 == 0x0) {
+                                            r17 = r19[0x9];
+                                            s0 = *(int32_t *)(r17 + r10);
+                                            r16 = r9 - r11;
+                                            asm { sxtw       x16, w16 };
+                                            *(int32_t *)(r17 + r10) = *(int32_t *)(r17 + r14 * 0x4);
+                                            *(int32_t *)(r17 + r14 * 0x4) = s0;
+                                    }
+                                    *(int32_t *)(r8 + r10) = 0x0;
+                                    *(int32_t *)(r8 + r16 * 0x4) = 0x0;
+                                    *(int32_t *)(r13 + r10) = 0x0;
+                                    *(int32_t *)(r13 + r16 * 0x4) = 0x0;
+                                    r11 = r11 + 0x1;
+                                    r14 = r14 - 0x1;
+                                    r10 = r10 + 0x4;
+                            } while (r15 != r10);
+                    }
+            }
+    }
+    return;
