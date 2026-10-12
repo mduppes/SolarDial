@@ -12,7 +12,7 @@ This document defines the feature set of the clean-room Flux clone, based on rev
 | **Core** | Display gamma adjustments | **Keep** | Apply color changes per display using `CGSetDisplayTransferByTable`. |
 | **Disable** | Disable for 1 hour | **Keep** | Temporarily restores normal display gamma for 60 minutes, then resumes schedule. |
 | **Disable** | Disable until sunrise | **Keep** | Temporarily restores normal display gamma until next morning's transition begins. |
-| **Disable** | Disable for current app | **Keep** | Automatically untints when a specified application is frontmost (keyed by bundle identifier). |
+| **Disable** | Disable for current app | **Keep** | Toggled from the menu for the frontmost app. Untints all displays when a specified application is frontmost (keyed by bundle identifier). |
 | **Disable** | Disable for fullscreen apps | **Keep (Improved)** | **Per-display untinting:** Untints *only* the specific monitor running the fullscreen app; other connected displays remain warm. |
 | **Location** | Solar calculation from location | **Keep (Improved)** | Background CoreLocation (one-time or significant change) with automatic fallback to timezone center coordinates. No popup windows or web sheets. |
 | **Location** | Timezone change detection | **Keep (Improved)** | Recalculates immediately upon `NSSystemTimeZoneDidChangeNotification` without interrupting the user. |
@@ -36,23 +36,23 @@ This document defines the feature set of the clean-room Flux clone, based on rev
 - **Original f.lux Flaw:**
   - Observed in `sub_100009f28` and `observeFullscreen`: Flux checked `NSWorkspaceActiveSpaceDidChangeNotification` and counted visible menu bar windows across displays. If a menu bar was missing or its own icon was hidden, it declared fullscreen and untinted *all* displays globally.
   - Fails with multiple monitors, auto-hiding menu bars, and menu-bar hiders like Bartender.
-- **Clone Implementation:**
-  1. Observe `NSWorkspace.didActivateApplicationNotification` and `NSWorkspace.activeSpaceDidChangeNotification`.
-  2. Inspect window frames of the active application using `CGWindowListCopyWindowInfo`.
-  3. Compare window bounds with `NSScreen.screens` frames.
-  4. If a window occupies the entire frame of Display $A$, restore default gamma on Display $A$ only. Display $B$ retains its warm color temperature.
-  5. When the user leaves fullscreen or switches focus to a standard window on Display $A$, Display $A$ smoothly transitions back to the scheduled color temperature.
+- **Clone Implementation (built):**
+  1. Re-check on `NSWorkspace.didActivateApplicationNotification`, `activeSpaceDidChangeNotification` (and again 1 s later) and on the 30 s tick.
+  2. Read on-screen window bounds and layers with `CGWindowListCopyWindowInfo`. No Screen Recording permission is needed.
+  3. For each display, take the topmost normal window. If it covers that display's `CGDisplayBounds` (allowing for the notch), the display is full screen.
+  4. Only that display goes back to neutral; other displays stay warm. When the full-screen window leaves, the display fades back to the schedule (0.5 s).
+  5. Details and edge cases: [ARCHITECTURE.md](ARCHITECTURE.md) section 3 and [ADR 008](DECISIONS.md).
 
 ### Location & Timezone Handling
 - **Original f.lux Flaw:**
   - Observed in `daylightMonitor:`: Polled UTC offset (`lastGMToffset`). If offset changed, it invoked `-[PrefsController updateLocation]`, which opened the Preferences window and loaded `https://justgetflux.com/minimap.html?geo=<old_text>` in a WebKit sheet.
   - Only requested CoreLocation once upon explicit button click.
-- **Clone Implementation:**
-  1. Requests standard macOS CoreLocation authorization once on first launch with a gentle prompt.
-  2. If granted, receives latitude and longitude silently in the background and saves them in `UserDefaults`.
-  3. If denied or unavailable, uses the system's `TimeZone.current.identifier` to lookup default coordinates (e.g., center of city/timezone).
-  4. Listens for `NSSystemTimeZoneDidChangeNotification`. When the user lands in a new timezone, the app recalculates the solar curve immediately in the background without opening any UI.
-  5. Never makes outbound network requests for geocoding or maps.
+- **Clone Implementation (built):**
+  1. On first launch of the bundled app, asks for location once through the standard macOS prompt, then requests a single kilometre-accuracy fix at launch, on wake and after a time-zone change.
+  2. Each fix is saved together with the time zone it was taken in, and is used only while that zone is current.
+  3. Otherwise it uses the coordinates `/usr/share/zoneinfo/zone.tab` gives for `TimeZone.current`, or as a last resort a longitude estimated from the UTC offset. Manual coordinates (a setting, UI in Milestone B) override everything.
+  4. On `NSSystemTimeZoneDidChange` it recalculates at once, without opening any UI.
+  5. It never makes network requests. The menu shows which location source is in use.
 
 ---
 
@@ -63,7 +63,7 @@ This document defines the feature set of the clean-room Flux clone, based on rev
   - Sunset: 3400K – 4500K (default: 3400K).
   - Bedtime: 1900K – 2700K (default: 2300K).
 - **Gamma Curve Generation:**
-  - Calculates RGB multipliers from Color Temperature (Kelvin) using Planckian locus blackbody radiation / Tanner Helland algorithm.
-  - Generates linear or power-law transfer tables (256 or 1024 entries per channel).
-  - Calls `CGSetDisplayTransferByTable(displayID, tableSize, redTable, greenTable, blueTable)`.
-  - When resetting or disabling, calls `CGDisplayRestoreColorSyncSettings()`.
+  - RGB multipliers come from the Planckian locus (Krystek approximation), taken relative to 6500 K so that 6500 K means no change.
+  - The multipliers scale each display's own calibrated transfer table (read with `CGGetDisplayTransferByTable`), sized to the display's table capacity.
+  - Transitions and blends are interpolated in mired space.
+  - A disabled display gets 6500 K (its unmodified base table). Quitting calls `CGDisplayRestoreColorSyncSettings()`.

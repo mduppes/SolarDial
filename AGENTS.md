@@ -29,16 +29,16 @@ No Xcode is installed, only Command Line Tools. Everything goes through SwiftPM:
 
 ```sh
 swift build                 # debug build
-swift test                  # unit tests (FluxCore)
-./scripts/build-app.sh      # release build → build/<AppName>.app (ad-hoc signed)
-open build/*.app
+./scripts/test.sh           # unit tests (FluxCore); NOT bare `swift test`, which silently runs 0 tests here
+./scripts/build-app.sh      # release build → build/Flux.app (ad-hoc signed)
+open build/Flux.app
 ```
 
-(If any of these don't exist yet, check `docs/STATUS.md`; they may still be on the to-do list.)
+If an agent sandbox makes SwiftPM fail with `sandbox_apply: Operation not permitted`, run the command outside the sandbox.
 
 ## Hazards
 
-- **Quit the original f.lux before testing** (`osascript -e 'quit app "Flux"'`). Two apps writing display gamma tables will fight and flicker.
+- **Quit the original f.lux before testing** (`pkill -f /Applications/Flux.app/Contents/MacOS/Flux`; `osascript -e 'quit app "Flux"'` is ambiguous because this clone is also named Flux). Turn off Night Shift too. Two gamma writers will fight and flicker.
 - Gamma tables persist until something resets them. The app must call `CGDisplayRestoreColorSyncSettings()` on quit/crash paths. If a display is stuck tinted during development, run that call (or log out/in).
 - Location permission (TCC) is tied to the code signature. Ad-hoc re-signing after each build may make macOS ask again. That's expected in development.
 - **Reverse-engineering reference exports:** Decompiled pseudocode and metadata are committed in [`reference/`](file:///Users/mduppes/code/Flux/reference/) (`reference/decompiled/`, `reference/metadata/`, and `reference/rea_flux_decompilation.tar.gz`). Consult these for understanding f.lux behavior, but write clean-room Swift without copying vendor code.

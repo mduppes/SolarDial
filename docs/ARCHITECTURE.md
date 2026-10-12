@@ -1,12 +1,21 @@
-# Architecture & Implementation Plan
+# Architecture
 
 ## 1. Overview & Toolchain
 
-The project is structured as a clean Swift package built using **SwiftPM** (Command Line Tools), requiring no full Xcode IDE installation.
+A Swift package built with **SwiftPM** and the Command Line Tools only (no Xcode).
 
-- **Language:** Swift 6.0+ (utilizing modern Swift Concurrency: `Sendable`, actors, async/await).
-- **Target OS:** macOS 14.0+ (Sonoma) and later (tested on macOS 26.x Command Line Tools).
-- **Dependencies:** Pure standard library, Foundation, AppKit, CoreGraphics, CoreLocation, ServiceManagement. Zero third-party dependencies.
+- **Language:** Swift 6 language mode (strict concurrency). App-target types are `@MainActor`.
+- **Target OS:** macOS 14.0+ (developed on macOS 26.x).
+- **Frameworks:** Foundation, AppKit, CoreGraphics, CoreLocation. No third-party dependencies.
+- **Tests:** Swift Testing (`import Testing`), because the Command Line Tools don't ship XCTest. Run them with `./scripts/test.sh`, not bare `swift test` (see [ADR 006](DECISIONS.md)).
+
+| Command | What it does |
+|---|---|
+| `swift build` | Debug build of everything |
+| `./scripts/test.sh` | Unit tests for `FluxCore` (wraps `swift test` with the flags Swift Testing needs) |
+| `./scripts/build-app.sh` | Release build, wrapped in an ad-hoc signed `build/Flux.app` |
+
+If an agent sandbox blocks SwiftPM (`sandbox-exec: sandbox_apply: Operation not permitted`), run the command outside the sandbox. SwiftPM sandboxes its own manifest compilation, and that can't nest.
 
 ---
 
@@ -16,118 +25,108 @@ The project is structured as a clean Swift package built using **SwiftPM** (Comm
 Flux/
 ├── Package.swift
 ├── Sources/
-│   ├── FluxCore/                      # Pure business logic (Library)
-│   │   ├── Solar/
-│   │   │   └── SolarCalculator.swift  # Solar altitude, sunrise/sunset times
-│   │   ├── Color/
-│   │   │   ├── ColorTemperature.swift # Kelvin to RGB conversion
-│   │   │   └── GammaTable.swift       # 256/1024-entry gamma LUT generation
-│   │   ├── Schedule/
-│   │   │   ├── ScheduleEngine.swift   # Evaluates current target Kelvin
-│   │   │   └── ScheduleState.swift    # Day / Sunset / Bedtime phases
-│   │   └── Models/
-│   │       ├── Coordinates.swift      # Latitude / Longitude representation
-│   │       └── UserSettings.swift     # Preferences model
+│   ├── FluxCore/                          # Pure logic, Foundation + CoreGraphics geometry types only
+│   │   ├── Solar/SolarCalculator.swift    # NOAA solar elevation, sunrise/sunset for a local day
+│   │   ├── Color/ColorTemperature.swift   # Kelvin → RGB multipliers, mired-space blending
+│   │   ├── Color/GammaTable.swift         # Transfer tables; scale a base table by RGB
+│   │   ├── Color/KelvinFade.swift         # Timed fade between temperatures
+│   │   ├── Schedule/ScheduleEngine.swift  # Day / sunset / bedtime target for an instant
+│   │   ├── Schedule/TemporaryDisable.swift# "For an hour" / "until sunrise" pauses
+│   │   ├── Location/ZoneTab.swift         # Parser for /usr/share/zoneinfo/zone.tab
+│   │   ├── Location/LocationResolver.swift# Picks manual / Core Location / time-zone coordinates
+│   │   ├── Display/FullscreenGeometry.swift # Which displays a full-screen window covers
+│   │   └── Models/                        # Coordinates, UserSettings (Codable, tolerant of missing keys)
 │   │
-│   └── FluxApp/                       # macOS menu-bar app (Executable)
-│       ├── Main.swift                 # App entry point (NSApplication, LSUIElement)
-│       ├── AppDelegate.swift          # App lifecycle, signal handling, cleanup
-│       ├── Display/
-│       │   ├── DisplayManager.swift   # CGSetDisplayTransferByTable & restore
-│       │   └── DisplayReconfig.swift  # Display connect/disconnect listener
-│       ├── WindowAndSpace/
-│       │   └── FullscreenTracker.swift# Per-display window detection
-│       ├── Location/
-│       │   ├── LocationProvider.swift # CoreLocation wrapper
-│       │   └── TimezoneFallback.swift # Coordinate lookup by timezone ID
-│       ├── UI/
-│       │   ├── StatusItemManager.swift# Menu bar icon and quick controls
-│       │   └── PreferencesView.swift  # SwiftUI settings window
-│       └── System/
-│           ├── LaunchAtLogin.swift    # SMAppService wrapper
-│           └── DarkModeSync.swift     # Automatic macOS dark mode toggle
+│   └── FluxApp/                           # Thin macOS layer (executable)
+│       ├── main.swift                     # NSApplication, accessory (menu-bar only) policy
+│       ├── AppDelegate.swift              # Wiring, restore on quit, SIGINT/SIGTERM/SIGHUP via DispatchSource
+│       ├── TintController.swift           # Combines schedule, disables, full screen → per-display targets
+│       ├── SettingsStore.swift            # UserSettings as JSON in UserDefaults ("settings" key)
+│       ├── Display/DisplayManager.swift   # All gamma writes, base tables, fades, reconfig + wake handling
+│       ├── WindowAndSpace/FullscreenTracker.swift # Window list → full-screen displays; app/Space notifications
+│       ├── Location/LocationProvider.swift # One-shot Core Location, time-zone change + wake refresh
+│       └── UI/StatusItemManager.swift     # NSStatusItem menu
 │
-├── Tests/
-│   └── FluxCoreTests/
-│       ├── SolarCalculatorTests.swift # Verification against known solar data
-│       ├── ColorTemperatureTests.swift# Verification of RGB curves
-│       └── ScheduleEngineTests.swift  # Phase transition & wake time tests
-│
+├── Tests/FluxCoreTests/                   # Swift Testing suites for everything in FluxCore
 ├── scripts/
-│   └── build-app.sh                   # Assembles Flux.app bundle and ad-hoc signs
-└── docs/                              # Project documentation
+│   ├── test.sh                            # swift test + Swift Testing search paths for the CLT
+│   └── build-app.sh                       # Assembles and ad-hoc signs build/Flux.app
+├── reference/                             # f.lux decompilation exports (see REVERSE_ENGINEERING.md)
+└── docs/
 ```
+
+Planned (Milestone B, see `STATUS.md`): `UI/PreferencesView.swift` (SwiftUI), `System/LaunchAtLogin.swift` (`SMAppService`), `System/DarkModeSync.swift`, movie/darkroom modes, bedtime reminder.
 
 ---
 
-## 3. Core Components & Data Flow
+## 3. Data Flow
 
 ```mermaid
-flowchart TD
-    subgraph Inputs
-        Clock[System Clock / Timer]
-        SpaceChange[Space / App Changed Notification]
-        TZChange[Timezone / Location Updated]
-        Prefs[User Preferences]
-    end
-
-    subgraph FluxCore [Pure Swift Engine]
-        Solar[SolarCalculator] --> Phase[ScheduleEngine]
-        Prefs --> Phase
-        TZChange --> Solar
-        Clock --> Phase
-        Phase --> TargetKelvin[Target Kelvin for System]
-        TargetKelvin --> GammaRamp[GammaTable Generator]
-    end
-
-    subgraph FluxApp [OS & Display Integration]
-        SpaceChange --> FSTracker[FullscreenTracker]
-        FSTracker --> PerDisplayCheck{Is Display Fullscreen?}
-        PerDisplayCheck -- "Yes" --> NormalGamma[Default Linear Gamma]
-        PerDisplayCheck -- "No" --> GammaRamp
-        NormalGamma --> DisplayMgr[DisplayManager]
-        GammaRamp --> DisplayMgr
-        DisplayMgr --> Hardware[CGSetDisplayTransferByTable]
-    end
+flowchart LR
+    Tick["30s timer"] --> TC[TintController]
+    Notes["App switch / Space change"] --> FS[FullscreenTracker] --> TC
+    Loc["LocationProvider: TZ change, wake, CL fix"] --> TC
+    Disp["DisplayManager: reconfig / wake"] --> TC
+    TC --> Engine["ScheduleEngine (FluxCore)"]
+    Engine --> TC
+    TC -->|"per-display Kelvin"| DM[DisplayManager]
+    DM -->|"base table x RGB multipliers"| CG[CGSetDisplayTransferByTable]
 ```
 
-### Data Flow Details:
-1. **Periodic Evaluation:** A background timer fires every 30 seconds (or immediately on system wake/time change).
-2. **Phase Determination:** `ScheduleEngine` calculates the sun's altitude angle for the current time and coordinates. It blends daytime, sunset, and bedtime temperatures based on the solar curve and configured wake time.
-3. **Display Inspection:** `FullscreenTracker` queries `CGWindowListCopyWindowInfo` to determine which displays are running fullscreen windows.
-4. **Gamma Table Application:** For each connected display (`CGGetActiveDisplayList`):
-   - If the display is occupied by a fullscreen application, linear (neutral) gamma is applied.
-   - If the frontmost application is disabled in settings, linear gamma is applied.
-   - Otherwise, the interpolated warm gamma table is applied using `CGSetDisplayTransferByTable`.
+1. `TintController.refresh` runs every 30 s and whenever an input changes.
+2. It resolves coordinates (`LocationResolver`) and asks `ScheduleEngine` for the scheduled Kelvin.
+3. A display gets **6500 K (neutral)** if a temporary disable is active, if the frontmost app is on the per-app disable list, or if that display is showing a full-screen window. Otherwise it gets the scheduled Kelvin.
+4. `DisplayManager` fades each display towards its target (30 Hz while fading) and writes `baseTable.tinted(kelvin:)`.
+
+### Schedule model (`ScheduleEngine`)
+Two weights are blended in **mired** space (1e6/K):
+- **Daylight**: ramps up over `transitionMinutes`, starting at the later of sunrise and wake time. Ramps down over `transitionMinutes` starting at sunset (sun at -0.833°). During polar day or night it follows the current solar elevation.
+- **Bedtime**: ramps up over `transitionMinutes`, ending at bedtime (= wake time - `sleepMinutes`). Holds until wake time, then ramps down. It wraps past midnight correctly.
+
+`kelvin = blend(blend(sunset, day, daylight), bedtime, bedtimeWeight)`. Defaults are 6500 / 3400 / 2300 K, wake time 07:00 and 8 h 30 min of sleep (so bedtime is 22:30), with 60 min transitions.
+
+### Colour (`ColorTemperature`)
+The Planckian locus (Krystek approximation) is converted to linear sRGB, divided by the 6500 K values so that 6500 K is exactly white, normalised so the brightest channel is 1, then sRGB-encoded. The multipliers scale the display's **own** transfer table, so calibration is kept.
+
+### Full-screen detection (`FullscreenTracker` + `FullscreenGeometry`)
+- It reads `CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements])`, which is ordered front to back, and ignores Flux's own windows and fully transparent ones.
+- For each display, it takes the **topmost** window on layer 0 (normal) or at the shielding level that intersects the display. If that window covers `CGDisplayBounds`, the display is "full screen". It works this way so that a full-screen video on display B is found even while you're working in another app on display A ([ADR 008](DECISIONS.md)).
+- `kCGWindowBounds` and `CGDisplayBounds` share a top-left-origin global space. Don't compare against `NSScreen.frame`, which has a bottom-left origin.
+- The camera notch: full-screen windows sit below it, so `NSScreen.safeAreaInsets.top` is allowed as slack at the top.
+- Bounds and layers don't need Screen Recording permission; window *names* would.
+- Checks run on app activation and Space change (again 1 s later, after the Space animation), and on the 30 s tick.
+- Known edge case: with an auto-hiding menu bar, a zoomed (green-button-option) window fills the screen and counts as full screen.
+
+### Location (`LocationProvider` + `LocationResolver`)
+The order is: manual coordinates, then the last Core Location fix **if it was taken in the current time zone**, then the `zone.tab` coordinates for `TimeZone.current`, then a longitude estimated from the UTC offset. On `NSSystemTimeZoneDidChange` the provider calls `NSTimeZone.resetSystemTimeZone()`, recalculates at once (using `zone.tab` until a new fix arrives) and requests a fresh fix. Wake also requests a fix. Core Location is used only when the bundle declares `NSLocationUsageDescription`, so `swift run` builds use `zone.tab` ([ADR 007](DECISIONS.md)).
 
 ---
 
-## 4. Key macOS APIs & Safety Mechanisms
+## 4. Key macOS APIs & Safety
 
-| Purpose | API | Implementation Note |
+| Purpose | API | Notes |
 |---|---|---|
-| Apply Gamma | `CGSetDisplayTransferByTable(displayID, count, redTable, greenTable, blueTable)` | Manipulates hardware gamma LUT without altering user ICC profiles. |
-| Restore Gamma | `CGDisplayRestoreColorSyncSettings()` | **Crucial safety call:** Invoked in `applicationWillTerminate`, `SIGINT`, `SIGTERM`, and crash handlers. |
-| Monitor Displays | `CGDisplayRegisterReconfigurationCallback` | Detects monitor sleep, wake, connect, disconnect, and display mirror changes. |
-| Detect Fullscreen | `CGWindowListCopyWindowInfo(kCGWindowListOptionOnScreenOnly, kCGNullWindowID)` | Returns window bounds and layer numbers to compare against `NSScreen.screens`. |
-| App Focus Events | `NSWorkspace.didActivateApplicationNotification`, `activeSpaceDidChangeNotification` | Triggers immediate per-display fullscreen check. |
-| Start at Login | `SMAppService.mainApp.register()` / `unregister()` | Modern macOS 13+ standard service management. |
-| Timezone Updates | `NotificationCenter.default.addObserver(..., name: NSSystemTimeZoneDidChangeNotification)` | Recomputes solar times instantly when system clock/timezone changes. |
+| Read calibrated table | `CGGetDisplayTransferByTable` | Captured after `CGDisplayRestoreColorSyncSettings()` at launch and after every reconfiguration or wake |
+| Apply tint | `CGSetDisplayTransferByTable` | Gamma only. No ICC profiles are written ([ADR 003](DECISIONS.md)) |
+| Restore | `CGDisplayRestoreColorSyncSettings()` | On quit and on SIGINT/SIGTERM/SIGHUP (DispatchSource leads to `NSApp.terminate`). On a crash, macOS restores the settings when the process exits |
+| Display changes | `CGDisplayRegisterReconfigurationCallback`, `NSWorkspace.didWake/screensDidWake` | Debounced 0.75 s, then tables are recaptured and reapplied |
+| Full-screen check | `CGWindowListCopyWindowInfo`, `CGDisplayBounds`, `NSScreen.safeAreaInsets` | See above |
+| App / Space events | `NSWorkspace.didActivateApplicationNotification`, `activeSpaceDidChangeNotification` | |
+| Location | `CLLocationManager.requestLocation()` (kilometre accuracy) | One-shot fixes only, no continuous tracking |
+| Time zone | `NSSystemTimeZoneDidChange` + `NSTimeZone.resetSystemTimeZone()` | No UI, ever |
+
+**Conflicts:** macOS Night Shift and the original f.lux both change the display output. Turn them off while testing. Night Shift isn't detected yet.
 
 ---
 
-## 5. Build & Packaging Architecture
+## 5. Packaging
 
-Because only Command Line Tools are present:
-1. `swift build -c release` compiles the `FluxApp` binary.
-2. `scripts/build-app.sh` creates the `.app` bundle:
-   ```
-   build/Flux.app/
-   └── Contents/
-       ├── Info.plist            (Sets LSUIElement=1, bundle ID, CFBundleExecutable)
-       ├── MacOS/
-       │   └── FluxApp           (The compiled executable)
-       └── Resources/
-           └── AppIcon.icns
-   ```
-3. The script signs the bundle ad-hoc (`codesign --force --deep --sign - build/Flux.app`).
+`scripts/build-app.sh` runs `swift build -c release --product FluxApp` and lays out:
+
+```
+build/Flux.app/Contents/
+├── Info.plist      # com.mduppes.flux, LSUIElement, LSMinimumSystemVersion 14.0, location usage strings
+└── MacOS/FluxApp
+```
+
+It then signs ad hoc (`codesign --force --sign -`). Because each rebuild changes the ad-hoc signature, macOS may ask for location permission again.

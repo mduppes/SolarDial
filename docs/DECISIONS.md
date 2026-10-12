@@ -49,3 +49,31 @@ This log records settled architectural decisions. Do not re-litigate settled dec
   2. If permission is denied, use a static mapping table from system timezone ID (e.g., `America/Argentina/Buenos_Aires`) to approximate center coordinates.
   3. Listen to `NSSystemTimeZoneDidChangeNotification` and recalculate the solar curve seamlessly in the background without popping up any windows.
 - **Consequences:** Resolves the second primary user complaint regarding timezone clunkiness. Fully offline and unobtrusive.
+- **Refined by ADR 007:** the "static mapping table" is the system's `zone.tab`.
+
+---
+
+### ADR 006: Swift Testing via `scripts/test.sh`
+- **Date:** 2026-10-12
+- **Status:** Accepted
+- **Context:** The Command Line Tools ship `Testing.framework` (Swift Testing) but no `XCTest.framework`. Swift Testing lives in `$(xcode-select -p)/Library/Developer/Frameworks`, which isn't on the search path. Per-target `unsafeFlags` in `Package.swift` aren't enough: SwiftPM's generated test runner is compiled without them, its `#if canImport(Testing)` is false, and `swift test` silently runs zero tests and exits 0.
+- **Decision:** Write tests with Swift Testing. Run them through `scripts/test.sh`, which passes `-F` and the two rpaths (`Frameworks`, `usr/lib` for `lib_TestingInterop.dylib`) globally to `swift test`. Keep `Package.swift` free of unsafe flags. With a full Xcode installed, the script falls through to plain `swift test`.
+- **Consequences:** `swift test` on its own looks green but tests nothing. Always use the script.
+
+---
+
+### ADR 007: `zone.tab` as the location fallback, with time-zone-tagged fixes
+- **Date:** 2026-10-12
+- **Status:** Accepted
+- **Context:** ADR 005 called for a hand-written time zone to coordinate table. macOS already ships `/usr/share/zoneinfo/zone.tab` (IANA, updated with the OS), which has an ISO 6709 coordinate for every zone ID. f.lux's real failure was a *stale* saved location (Dubrovnik while the clock was on UTC-3).
+- **Decision:** Parse `zone.tab` (`FluxCore/Location/ZoneTab.swift`). Store each Core Location fix together with the time-zone ID that was current when it was taken, and use it only while that zone is still current. Otherwise fall back to `zone.tab`, and as a last resort estimate the longitude from the UTC offset.
+- **Consequences:** No table to maintain. Travelling can never leave an old location in use. The fallback is accurate to within the zone's size (usually good enough for sunset to within a few minutes in smaller zones).
+
+---
+
+### ADR 008: Full-screen detection uses the topmost window per display
+- **Date:** 2026-10-12
+- **Status:** Accepted (refines ADR 002)
+- **Context:** The first plan only checked the frontmost app's windows. That misses the case ADR 002 cites: a full-screen video on display B while the user works in another app on display A.
+- **Decision:** For each display, take the topmost on-screen window at layer 0 or at the shielding level (not Flux's own, not transparent) that intersects it. If it covers `CGDisplayBounds` (with notch slack), untint that display. The selection logic is pure (`FullscreenGeometry.fullscreenDisplays`) and unit-tested.
+- **Consequences:** It works on several monitors at once and needs no Screen Recording permission. A zoomed window fills the screen when the menu bar is set to auto-hide, so it counts as full screen. That's accepted for now.

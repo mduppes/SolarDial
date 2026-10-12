@@ -46,8 +46,6 @@ All decompilation and static analysis exports are committed directly to this rep
 - **Complete Raw Archive:**
   [`reference/rea_flux_decompilation.tar.gz`](file:///Users/mduppes/code/Flux/reference/rea_flux_decompilation.tar.gz) (134 KB)
   Contains the complete bundle including REA JSON envelopes, `dispatch.json`, `macho.json`, and trace outputs.
-- **Local Scratch Directory (Session backup):**
-  `/Users/mduppes/.gemini/antigravity/brain/7816c773-9c80-4c6f-8743-29d9df92048f/scratch/`
 
 ---
 

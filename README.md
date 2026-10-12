@@ -8,8 +8,8 @@ A minimal, privacy-respecting f.lux-style menu-bar app for recent macOS versions
 - Contributors / AI agents: start at [AGENTS.md](AGENTS.md)
 
 ```sh
-swift build && swift test
-./scripts/build-app.sh && open build/*.app
+swift build && ./scripts/test.sh
+./scripts/build-app.sh && open build/Flux.app
 ```
 
 Quit the original f.lux first, because both apps control display gamma.
