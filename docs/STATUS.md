@@ -1,12 +1,13 @@
 # Status & Handoff
 
-## Current Status: every scoped feature is built; awaiting first live test
+## Current Status: every scoped feature is built; live visual checks pending
 
 - **Phase 1 (Reverse engineering):** Done. Exports are in `reference/`.
-- **Phase 2 (Architecture & decisions):** Done. ADR 001–010.
-- **Phase 3, Milestone A (core tinter):** Done in code.
-- **Phase 3, Milestone B (settings window, movie/darkroom, start at login, dark-mode sync, bedtime reminder):** Done in code.
-- 50 unit tests pass and `build/Flux.app` builds. **Nothing has been run live yet** (the original f.lux was running during development).
+- **Phase 2 (Architecture & decisions):** Done. ADR 001–012.
+- **Phase 3, Milestone A (core tinter):** Done, and the tint is verified live.
+- **Phase 3, Milestone B (settings window, movie mode, start at login, dark-mode sync, bedtime reminder):** Done in code.
+- **Phase 3, Milestone C (user feedback round):** Done in code: checkmark menu, narrower status item, app icon, 24-hour graph, colour-conflict warning, bedtime dimming, movie Kelvin and duration, Undo / Reset to Defaults. Darkroom removed.
+- 53 unit tests pass and `build/Flux.app` builds and runs.
 
 ---
 
@@ -19,14 +20,29 @@
    - [ ] Unplugging/replugging a monitor and sleep/wake re-apply the tint (`DisplayManager.resetAfterReconfiguration`).
    - [ ] Location: (a Core Location fix was received and stored on first launch, tagged `America/Sao_Paulo`) the permission prompt appears once, then the menu shows "Location Services". Changing the time zone in System Settings switches to "Time zone (...)" without any window opening.
    - [ ] Settings window: the sliders preview live and return to the schedule about 3 s after release. Wake time and sleep length move the bedtime readout. Manual location works.
-   - [ ] Movie mode and darkroom: the darkroom fade looks acceptable (it's a table cross-fade).
+   - [ ] Movie mode shows the chosen Kelvin and turns off after the chosen time; its menu item is checked while on.
+   - [ ] Menu: the five toggles show checkmarks correctly; the status item is no wider than its neighbours.
+   - [ ] Settings: the graph renders (gradient fill, sunrise/sunset/now lines), the dimming slider previews, Undo and Reset to Defaults work, and the window fits on a laptop screen (it's 720 pt tall and scrolls).
+   - [ ] Conflict warning: launching f.lux shows the ⚠︎ line and icon and one notification.
+   - [ ] The Finder/Login Items show the new icon.
    - [ ] Start at login registers (it may need approval in Login Items). Dark-mode sync triggers one Automation prompt. The bedtime reminder appears (notification permission).
 2. Fix whatever the live test turns up. Likely candidates: the SwiftUI form's sizing, `SMAppService` behaviour with an ad-hoc signature, and notification authorization with an ad-hoc signature.
-3. **Nice to have (ask the user first):** detect Night Shift or another gamma writer and warn; an app icon (`Resources/AppIcon.icns`); a 24-hour colour graph in settings; brightness dimming.
+3. **Ideas (ask the user first):** detect Night Shift (needs private API, so probably not); dim during the day as well as at bedtime; a global hotkey for the disables.
 
 ---
 
 ## Handoff Log
+
+### 2026-10-12 — Milestone C: user feedback round (Claude Opus)
+- **Done:**
+  - `FluxCore`: darkroom removed. `DisplayTarget` is now Kelvin + brightness. `MovieMode` uses an exact Kelvin and duration, `TintMode.swift` was renamed to `TargetResolver.swift`. Added `ScheduleResult.brightness` (bedtime dimming), `ScheduleEngine.dailyCurve`, `SettingsHistory` (undo) and `GammaTable.approximatelyEquals`. New settings: `bedtimeBrightness`, `movieKelvin` and `movieMinutes`. 53 tests.
+  - `FluxApp`: the menu has fixed items with checkmarks, and the status item uses `variableLength` with a 14 pt symbol. Added conflict detection (`DisplayManager.checkForOverwrites`, known apps in `TintController`), Undo/Reset in `SettingsStore`, and in settings the graph (`UI/DailyGraphView`, Swift Charts), movie and dimming controls, a conflict banner and an Undo/Reset footer.
+  - Icon: `scripts/make-icon.swift` writes `Resources/AppIcon.icns`, and `build-app.sh` copies it and sets `CFBundleIconFile`.
+  - ADR 009 is superseded by ADR 011 (no darkroom, exact movie Kelvin, gamma dimming). ADR 012 covers conflict detection.
+- **Verified live:** the new build runs and the table read back matches the sunset ramp. The menu, settings window and icon haven't been checked visually, because the agent has no Screen Recording permission.
+- **Gotchas:**
+  - Two table writers (for example f.lux) now fight every 30 s, because Flux rewrites its tables. Quit f.lux.
+  - Old settings JSON decodes fine: the new keys get defaults, and the old darkroom state isn't persisted.
 
 ### 2026-10-12 — First live run (Claude Opus)
 - Quit f.lux and launched `build/Flux.app`. Verified by reading gamma back with `CGGetDisplayTransferByTable`: the tint matches `ScheduleEngine` output, SIGTERM restores identity, and relaunch re-applies. Core Location returned a fix with no visible fuss.

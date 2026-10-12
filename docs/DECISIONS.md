@@ -82,7 +82,7 @@ This log records settled architectural decisions. Do not re-litigate settled dec
 
 ### ADR 009: Mode precedence, movie and darkroom definitions
 - **Date:** 2026-10-12
-- **Status:** Accepted
+- **Status:** Superseded by ADR 011
 - **Context:** f.lux's `computeEffects:pr:` overrides the scheduled Kelvin for movie mode and sets a flag for darkroom. Its exact constants aren't readable from the decompile, and the clone needs explicit rules for how modes combine with the disables.
 - **Decision:** All the rules are in one pure function, `TargetResolver.target(for:)`. Precedence: preview, then temporary disable, then darkroom, then per-app/full-screen disable, then movie, then schedule.
   - Movie mode is `max(scheduled, 4100 K)` for 2.5 h.
@@ -97,3 +97,25 @@ This log records settled architectural decisions. Do not re-litigate settled dec
 - **Context:** There's no public API for setting the system appearance. f.lux runs bundled `darkmode.scpt`/`lightmode.scpt` through `system("/usr/bin/osascript ...")`.
 - **Decision:** Run `osascript` with an inline System Events command through `Process` (no shell). Act only when `prefersDarkAppearance` changes (daylight weight crosses 0.5), and skip it if the appearance already matches.
 - **Consequences:** It needs one Automation permission prompt (`NSAppleEventsUsageDescription` is in `Info.plist`). A manual appearance change made by the user lasts until the next sunset or sunrise.
+
+---
+
+### ADR 011: No darkroom; movie Kelvin is exact; dimming through the gamma tables
+- **Date:** 2026-10-12
+- **Status:** Accepted
+- **Context:** The user asked to drop darkroom, to choose movie mode's exact Kelvin, and for brightness dimming.
+- **Decision:**
+  - Darkroom is removed. `DisplayTarget` is now Kelvin + brightness, which makes every fade a simple blend.
+  - Precedence: preview, then any disable (temporary, per-app, full-screen), then movie, then schedule.
+  - Movie mode shows exactly `movieKelvin` (2700–6500 K, default 4100 K) for `movieMinutes`. It's not `max(scheduled, …)` any more, so it can be cooler or warmer than the schedule.
+  - Dimming multiplies the gamma tables (`bedtimeBrightness`, 40–100 %, following the bedtime ramp), instead of using display brightness APIs. Those are private or only work on built-in displays.
+- **Consequences:** Dimming lowers peak white but not the backlight, so it saves no power. Movie mode and disables show full brightness.
+
+---
+
+### ADR 012: Detecting other colour apps by reading the tables back
+- **Date:** 2026-10-12
+- **Status:** Accepted
+- **Context:** The user asked for a warning when another app changes display colour. There's no notification for transfer-table changes.
+- **Decision:** On each 30 s tick, read the tables back and compare them with what Flux last wrote (with a grace period after fades, launches and reconfigurations). On a mismatch, rewrite the table and flag an "unknown app" conflict for 10 minutes. Also flag known apps (f.lux) by bundle ID when they're running. The warning appears in the menu, in settings, and as a notification once per session.
+- **Consequences:** It's cheap and needs no permission. It can't see Night Shift or True Tone, which work below the tables. Two table writers will still fight every 30 s until one quits, but the user is told why.
