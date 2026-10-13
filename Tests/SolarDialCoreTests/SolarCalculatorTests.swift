@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import SundialCore
+@testable import SolarDialCore
 
 struct SolarCalculatorTests {
     let saoPaulo = Coordinates(latitude: -23.55, longitude: -46.63)

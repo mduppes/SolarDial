@@ -1,5 +1,5 @@
 import AppKit
-import SundialCore
+import SolarDialCore
 
 @MainActor
 final class StatusItemManager: NSObject, NSMenuDelegate {
@@ -33,16 +33,16 @@ final class StatusItemManager: NSObject, NSMenuDelegate {
             return menu
         }
 
-        let appMenu = submenu("Sundial")
+        let appMenu = submenu("SolarDial")
         appMenu.addItem(action("Settings…", #selector(showPreferences), key: ","))
         appMenu.addItem(.separator())
-        appMenu.addItem(NSMenuItem(title: "Hide Sundial", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h"))
+        appMenu.addItem(NSMenuItem(title: "Hide SolarDial", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h"))
         let hideOthers = NSMenuItem(title: "Hide Others", action: #selector(NSApplication.hideOtherApplications(_:)), keyEquivalent: "h")
         hideOthers.keyEquivalentModifierMask = [.command, .option]
         appMenu.addItem(hideOthers)
         appMenu.addItem(NSMenuItem(title: "Show All", action: #selector(NSApplication.unhideAllApplications(_:)), keyEquivalent: ""))
         appMenu.addItem(.separator())
-        appMenu.addItem(action("Quit Sundial", #selector(quit), key: "q"))
+        appMenu.addItem(action("Quit SolarDial", #selector(quit), key: "q"))
 
         let fileMenu = submenu("File")
         fileMenu.addItem(NSMenuItem(title: "Close Window", action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w"))
@@ -73,7 +73,7 @@ final class StatusItemManager: NSObject, NSMenuDelegate {
             symbol = "sun.horizon"
         }
         let config = NSImage.SymbolConfiguration(pointSize: 14, weight: .regular)
-        let image = NSImage(systemSymbolName: symbol, accessibilityDescription: "Sundial")?
+        let image = NSImage(systemSymbolName: symbol, accessibilityDescription: "SolarDial")?
             .withSymbolConfiguration(config)
         image?.isTemplate = true
         guard symbol != currentSymbol else { return }
@@ -107,7 +107,7 @@ final class StatusItemManager: NSObject, NSMenuDelegate {
 
         menu.addItem(.separator())
         menu.addItem(action("Settings…", #selector(showPreferences), key: ","))
-        menu.addItem(action("Quit Sundial", #selector(quit), key: "q"))
+        menu.addItem(action("Quit SolarDial", #selector(quit), key: "q"))
     }
 
     private func statusLines() -> [String] {

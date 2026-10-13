@@ -1,5 +1,5 @@
 import Foundation
-import SundialCore
+import SolarDialCore
 import Observation
 
 @MainActor

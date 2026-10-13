@@ -1,6 +1,6 @@
 # Agent guide — start here
 
-This repo is a **Sundial, an independently implemented f.lux-style app for macOS**. It is a small menu-bar app that warms the screen colour after sunset.
+This repo contains **SolarDial, an independently implemented f.lux-style app for macOS**. It is a small menu-bar app that warms the screen colour after sunset.
 It began with a reverse-engineering pass over the installed f.lux 42.2 (`/Applications/Flux.app`). The goal is to keep the useful features and fix the clunky ones (full-screen disable, time-zone/location handling). Everything tied to the original vendor (account, analytics, offers, auto-updater) is dropped.
 
 ## Read these, in order
@@ -20,8 +20,9 @@ It began with a reverse-engineering pass over the installed f.lux 42.2 (`/Applic
 - **Before you stop working** (including when you run low on budget), append an entry to the *Handoff log* in `docs/STATUS.md`: what you did, what's half-done, what's next, and any gotchas. Update the *Next steps* list.
 - Ask the user before expanding scope (e.g. ICC-profile colour, new modes, network features). Network calls of any kind are out of scope unless the user approves.
 - Keep it simple: plain Swift/SwiftUI/AppKit, no third-party dependencies unless a decision entry justifies one.
-- Put pure logic (solar maths, colour curves, schedule) in `SundialCore` with unit tests. Keep OS-touching code thin and in the app target.
+- Put pure logic (solar maths, colour curves, schedule) in `SolarDialCore` with unit tests. Keep OS-touching code thin and in the app target.
 - Commit in small, descriptive commits.
+- Website links use recognizable local SVG icons beside their labels (especially GitHub and LinkedIn), as in TokenTracking. See `.cursor/rules/website-icons.mdc`.
 
 ## Build / run / test
 
@@ -29,9 +30,9 @@ No Xcode is installed, only Command Line Tools. Everything goes through SwiftPM:
 
 ```sh
 swift build                 # debug build
-./scripts/test.sh           # unit tests (SundialCore); NOT bare `swift test`, which silently runs 0 tests here
-./scripts/build-app.sh      # release build → build/Sundial.app (ad-hoc signed)
-open build/Sundial.app
+./scripts/test.sh           # unit tests (SolarDialCore); NOT bare `swift test`, which silently runs 0 tests here
+./scripts/build-app.sh      # release build → build/SolarDial.app (ad-hoc signed)
+open build/SolarDial.app
 ```
 
 If an agent sandbox makes SwiftPM fail with `sandbox_apply: Operation not permitted`, run the command outside the sandbox.

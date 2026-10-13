@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import SundialCore
+@testable import SolarDialCore
 
 struct ColorTemperatureTests {
     @Test func neutralIsWhite() {

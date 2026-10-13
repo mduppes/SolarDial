@@ -1,4 +1,4 @@
-# Sundial landing page
+# SolarDial landing page
 
 Buildless HTML, CSS and JavaScript. `dist/` contains the source that is served directly, with no frameworks, remote fonts, analytics, or third-party scripts. The illustrative product scene contains no real location or screen data. The interactive schedule uses the same mired-space blending model as the native app with explicitly illustrative times.
 
@@ -23,7 +23,7 @@ The download is the actual Apple silicon build, ad-hoc signed and not notarized.
 
 ## Support and source links
 
-The existing TokenTracking Stripe Payment Link is reused: https://donate.stripe.com/6oU28k9KFap37yN5tIgnK00. Donate links open Stripe-hosted checkout in a new tab; the site has no payment keys, embeds or backend. Creator links also follow TokenTracking. GitHub links currently point to `mduppes/Flux`, the existing repository, until it is renamed.
+The existing TokenTracking Stripe Payment Link is reused: https://donate.stripe.com/6oU28k9KFap37yN5tIgnK00. Donate links open Stripe-hosted checkout in a new tab; the site has no payment keys, embeds or backend. Creator links also follow TokenTracking, with local GitHub and LinkedIn SVG brand marks beside their labels and matching donation hearts. Future edits must retain this icon treatment (`.cursor/rules/website-icons.mdc`). GitHub links currently point to `mduppes/Flux`, the existing repository, until it is renamed.
 
 ## Sites publication
 

@@ -2,21 +2,21 @@
 import PackageDescription
 
 let package = Package(
-    name: "Sundial",
+    name: "SolarDial",
     platforms: [.macOS(.v14)],
     products: [
-        .library(name: "SundialCore", targets: ["SundialCore"]),
-        .executable(name: "SundialApp", targets: ["SundialApp"]),
+        .library(name: "SolarDialCore", targets: ["SolarDialCore"]),
+        .executable(name: "SolarDialApp", targets: ["SolarDialApp"]),
     ],
     targets: [
-        .target(name: "SundialCore"),
+        .target(name: "SolarDialCore"),
         .executableTarget(
-            name: "SundialApp",
-            dependencies: ["SundialCore"]
+            name: "SolarDialApp",
+            dependencies: ["SolarDialCore"]
         ),
         .testTarget(
-            name: "SundialCoreTests",
-            dependencies: ["SundialCore"]
+            name: "SolarDialCoreTests",
+            dependencies: ["SolarDialCore"]
         ),
     ]
 )

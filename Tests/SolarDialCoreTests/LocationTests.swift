@@ -1,7 +1,7 @@
 import CoreGraphics
 import Foundation
 import Testing
-@testable import SundialCore
+@testable import SolarDialCore
 
 struct ZoneTabTests {
     let sample = """

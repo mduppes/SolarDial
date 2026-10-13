@@ -1,6 +1,6 @@
 # Status & Handoff
 
-## Current Status: Sundial rename and landing page built; remaining live checks pending
+## Current Status: SolarDial rename and landing page built; remaining live checks pending
 
 Morning colour is fully on at wake time (or at sunrise, if that is later). The 60-minute transition runs up to that instant. See ADR 013.
 
@@ -9,19 +9,19 @@ Morning colour is fully on at wake time (or at sunrise, if that is later). The 6
 - **Phase 3, Milestone A (core tinter):** Done, and the tint is verified live.
 - **Phase 3, Milestone B (settings window, movie mode, start at login, dark-mode sync, bedtime reminder):** Done in code.
 - **Phase 3, Milestone C (user feedback round):** Done in code: checkmark menu, narrower status item, app icon, 24-hour graph, colour-conflict warning, bedtime dimming, movie Kelvin and duration, Undo / Reset to Defaults. Darkroom removed.
-- 55 unit tests pass and `build/Sundial.app` builds and runs. App identity and Swift targets are renamed to Sundial; existing settings are migrated.
-- Landing page deployed as an owner-private Sites preview: https://sundial-mac.truedog2.chatgpt.site. Includes a real Apple silicon preview download and the TokenTracking Stripe donate link.
+- 55 unit tests pass and `build/SolarDial.app` builds and runs. App identity and Swift targets are renamed to SolarDial; existing settings are migrated.
+- Landing page deployed as an owner-private Sites preview: https://solardial-mac.truedog2.chatgpt.site. Includes a real Apple silicon preview download and the TokenTracking Stripe donate link.
 
 ---
 
 ## Next Steps
 
-- Review the private landing-page preview; public access or a Netlify/custom-domain move is a separate hosting choice. The GitHub repository and workspace currently retain the name `Flux`; website source links use the existing repository URL.
-- Sundial is running, settings JSON matches the previous clone, Location Services has refreshed, and Start at Login was moved from the old clone to Sundial.
+- Review the private landing-page preview; public access or a Netlify/custom-domain move is a separate hosting choice. Move all source and history into `/Users/mduppes/code/SolarDial`, push to `mduppes/SolarDial`, and retire the earlier Flux repository.
+- SolarDial is running, settings JSON matches the previous clone, Location Services has refreshed, and Start at Login was moved from Sundial to SolarDial.
 
 1. **Settings shortcuts follow-up:** rebuilt app is running. Check ⌘W / Escape close Settings while tinting stays active, ⌘M minimizes, ⌘, shows Settings, and existing ⌘Z undoes a settings change. Native menus and app reopen were inspected live; automated keyboard input was inconclusive.
 2. **Graph follow-up:** restart the rebuilt app and check the red clock-labelled marker against the axis; leave Settings open for a minute, then close and reopen it. Code now refreshes every 30 s and explicitly on every Settings show. Visual verification is pending.
-3. **First live test.** Quit f.lux (`pkill -f /Applications/Flux.app/Contents/MacOS/Flux`) and turn off Night Shift. Then `./scripts/build-app.sh && open build/Sundial.app`. Check:
+3. **First live test.** Quit f.lux (`pkill -f /Applications/Flux.app/Contents/MacOS/Flux`) and turn off Night Shift. Then `./scripts/build-app.sh && open build/SolarDial.app`. Check:
    - [x] The tint matches the schedule: 2026-10-12 18:33, Florianópolis fix, 5430 K expected; the display table read back as (1, 0.951, 0.878) against (1, 0.9507, 0.8772) expected, with the calibrated mid-table kept. The menu readout and fade smoothness still need a visual check.
    - [ ] Quitting from the menu, `kill <pid>` (SIGTERM) and Ctrl-C all restore normal colour. (SIGTERM verified: the table is back to identity. Menu Quit and Ctrl-C are untested.)
    - [ ] Full screen: a full-screen video on one display untints only that display. Check a notched MacBook display, and Space switches.
@@ -40,6 +40,12 @@ Morning colour is fully on at wake time (or at sunrise, if that is later). The 6
 ---
 
 ## Handoff Log
+
+### 2026-10-13 — SolarDial rename and website icons
+- **Done:** Renamed app, Swift targets/tests, bundle ID, preview ZIP, website and Sites URL to SolarDial (`com.mduppes.solardial`). Missing preferences migrate from Sundial first, then the original clone. Added local GitHub and LinkedIn SVG brand marks to nav/footer, matching hearts on donation links, and a persistent website icon rule. Fixed a stale uppercase heading and an incorrectly renamed vendor attribution in FEATURES. ADR 017.
+- **Verified:** all 55 tests; release/signing and ZIP/checksum passed. All icon assets loaded in-browser; 390px viewport had no horizontal overflow. Published https://solardial-mac.truedog2.chatgpt.site, same project/private audience. SolarDial launched; settings match Sundial and saved location is present. Sundial login entry disabled, SolarDial enabled.
+- **Next:** user created an empty checkout at `/Users/mduppes/code/SolarDial` with remote `mduppes/SolarDial` and requested moving all work/history there, pushing, and shutting down Flux. Migration is now in progress.
+
 
 ### 2026-10-13 — Rename to Sundial and publish landing page
 - **Done:** Renamed package, source targets, tests, menus, window, notification name, app bundle and bundle ID to Sundial (`SundialCore`, `SundialApp`, `SundialCoreTests`, `com.mduppes.sundial`). Startup copies the old clone's settings and saved location fix only for missing new-domain values. Original f.lux identifiers and reference exports are untouched. Current README/agent/build docs updated, ADR 016 added.

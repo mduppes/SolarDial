@@ -1,4 +1,4 @@
-# Sundial
+# SolarDial
 
 A minimal, privacy-respecting menu-bar app for recent macOS versions. It warms the display after sunset and has better full-screen and location/time-zone handling than the original.
 
@@ -9,7 +9,7 @@ A minimal, privacy-respecting menu-bar app for recent macOS versions. It warms t
 
 ```sh
 swift build && ./scripts/test.sh
-./scripts/build-app.sh && open build/Sundial.app
+./scripts/build-app.sh && open build/SolarDial.app
 ```
 
 Quit the original f.lux first, because both apps control display gamma.

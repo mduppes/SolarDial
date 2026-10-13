@@ -30,13 +30,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         controller?.stop()
     }
 
-    /// Keep the clone's existing preferences when switching to the Sundial bundle ID.
+    /// Keep the clone's existing preferences when switching to the SolarDial bundle ID.
     private func migrateLegacyPreferences() {
-        guard Bundle.main.bundleIdentifier == "com.mduppes.sundial" else { return }
+        guard Bundle.main.bundleIdentifier == "com.mduppes.solardial" else { return }
         let defaults = UserDefaults.standard
-        guard let legacy = defaults.persistentDomain(forName: "com.mduppes.flux") else { return }
-        for key in ["settings", "lastLocationFix"] where defaults.object(forKey: key) == nil {
-            if let value = legacy[key] { defaults.set(value, forKey: key) }
+        // Prefer the most recent brand's values, then fall back to the original clone.
+        for domain in ["com.mduppes.sundial", "com.mduppes.flux"] {
+            guard let legacy = defaults.persistentDomain(forName: domain) else { continue }
+            for key in ["settings", "lastLocationFix"] where defaults.object(forKey: key) == nil {
+                if let value = legacy[key] { defaults.set(value, forKey: key) }
+            }
         }
     }
 

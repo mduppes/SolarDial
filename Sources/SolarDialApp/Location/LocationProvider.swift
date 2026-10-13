@@ -1,6 +1,6 @@
 import AppKit
 import CoreLocation
-import SundialCore
+import SolarDialCore
 
 /// Supplies coordinates without ever showing UI beyond the system's one-time permission prompt.
 /// A Core Location fix is remembered with the time zone it was taken in; after a time-zone

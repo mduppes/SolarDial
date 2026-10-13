@@ -1,5 +1,5 @@
 import Charts
-import SundialCore
+import SolarDialCore
 import SwiftUI
 
 /// Today's colour temperature through the day, shaded with the colour itself.

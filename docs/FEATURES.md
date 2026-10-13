@@ -1,8 +1,8 @@
 # Feature Scope & Specifications
 
-This document defines the feature set of the Sundial app, based on reverse-engineering analysis of f.lux 42.2 and agreed requirements.
+This document defines the feature set of the SolarDial app, based on reverse-engineering analysis of f.lux 42.2 and agreed requirements.
 
-The app is branded **Sundial** (formerly the Flux clone). Existing preferences are migrated on first launch under the new bundle identity.
+The app is branded **SolarDial** (formerly Sundial and the Flux clone). Existing preferences are migrated on first launch under the new bundle identity.
 
 ## 1. Feature Matrix (Keep vs Drop)
 
@@ -20,7 +20,7 @@ The app is branded **Sundial** (formerly the Flux clone). Existing preferences a
 | **Location** | Timezone change detection | **Keep (Improved)** | Recalculates immediately upon `NSSystemTimeZoneDidChangeNotification` without interrupting the user. |
 | **Core** | Menu with checkmarks | **Built** | The menu always shows the same items: Disable for an Hour, Disable Until Sunrise, Disable for <front app>, Disable for Full-Screen Apps, Movie Mode. A checkmark shows which are on; clicking toggles. The status item is exactly as wide as its 14 pt symbol (no side padding). |
 | **Core** | Bedtime dimming | **Built** | Optional (settings slider, 40–100 %, "Off" at 100 %). Brightness follows the bedtime ramp by scaling the gamma tables, so it works on external displays too. Disables and movie mode show full brightness. |
-| **Core** | Colour-conflict warning | **Built** | Warns in the menu (⚠︎ line and icon), in settings, and once per session by notification when f.lux is running or something else has overwritten our gamma tables in the last 10 minutes. Sundial rewrites its tables when they're overwritten. Night Shift isn't detectable this way (it doesn't use the transfer tables). |
+| **Core** | Colour-conflict warning | **Built** | Warns in the menu (⚠︎ line and icon), in settings, and once per session by notification when f.lux is running or something else has overwritten our gamma tables in the last 10 minutes. SolarDial rewrites its tables when they're overwritten. Night Shift isn't detectable this way (it doesn't use the transfer tables). |
 | **Modes** | Movie mode | **Built** | Shows an exact colour (settings slider, 2700–6500 K, default 4100 K) for a chosen time (1–4 h, default 2.5 h). Respects every disable. Menu toggle. |
 | **Modes** | Darkroom mode | **Dropped** | Removed at the user's request ([ADR 011](DECISIONS.md)). |
 | **System** | 24-hour graph | **Built** | Settings shows today's Kelvin curve shaded with the colour itself, with sunrise/sunset lines and a clock-labelled "now" marker (Swift Charts). Refreshes immediately whenever Settings opens and every 30 seconds while visible; the curve, marker and time-axis labels share the schedule time zone. |
@@ -30,7 +30,7 @@ The app is branded **Sundial** (formerly the Flux clone). Existing preferences a
 | **System** | macOS Dark Mode sync | **Keep (built)** | Optional (settings). Switches to Dark at sunset and Light in the morning, only when the schedule crosses over, so manual changes stick until the next crossing. |
 | **System** | Start at login | **Keep (built)** | Settings toggle using `SMAppService.mainApp`. |
 | **System** | Bedtime reminders | **Keep (built)** | Optional (settings). One notification in the first 15 min after bedtime: "You're waking up in 8½ hours." |
-| **System** | Settings window | **Keep (built)** | SwiftUI: Kelvin sliders with live preview, wake time, sleep length, fast/slow transitions, manual location, per-app list, full screen, login, dark mode, reminder. Native shortcuts: ⌘W closes Settings, Escape cancels via the responder chain (then closes Settings), ⌘M minimizes, ⌘, shows Settings, ⌘H hides Sundial, and ⌘Q quits. Text fields have standard Cut/Copy/Paste/Select All commands. Reopening the running app shows Settings; closing Settings keeps tinting active. |
+| **System** | Settings window | **Keep (built)** | SwiftUI: Kelvin sliders with live preview, wake time, sleep length, fast/slow transitions, manual location, per-app list, full screen, login, dark mode, reminder. Native shortcuts: ⌘W closes Settings, Escape cancels via the responder chain (then closes Settings), ⌘M minimizes, ⌘, shows Settings, ⌘H hides SolarDial, and ⌘Q quits. Text fields have standard Cut/Copy/Paste/Select All commands. Reopening the running app shows Settings; closing Settings keeps tinting active. |
 | **Vendor** | Account / Login (`fluxAccount`) | **Drop** | No online accounts, password stores, or authentication. |
 | **Vendor** | Analytics / Telemetry (`fluxNetworkQueue`) | **Drop** | Zero network traffic; no logging of screen time, spectrum, or light levels. |
 | **Vendor** | Promotional offers (`fluxOffer`) | **Drop** | No promotional dialogs, surveys, or sponsored content. |
@@ -44,7 +44,7 @@ The app is branded **Sundial** (formerly the Flux clone). Existing preferences a
 
 ### Fullscreen Disable (Per-Display Untinting)
 - **Original f.lux Flaw:**
-  - Observed in `sub_100009f28` and `observeFullscreen`: Sundial checked `NSWorkspaceActiveSpaceDidChangeNotification` and counted visible menu bar windows across displays. If a menu bar was missing or its own icon was hidden, it declared fullscreen and untinted *all* displays globally.
+  - Observed in `sub_100009f28` and `observeFullscreen`: f.lux checked `NSWorkspaceActiveSpaceDidChangeNotification` and counted visible menu bar windows across displays. If a menu bar was missing or its own icon was hidden, it declared fullscreen and untinted *all* displays globally.
   - Fails with multiple monitors, auto-hiding menu bars, and menu-bar hiders like Bartender.
 - **Clone Implementation (built):**
   1. Re-check on `NSWorkspace.didActivateApplicationNotification`, `activeSpaceDidChangeNotification` (and again 1 s later) and on the 30 s tick.

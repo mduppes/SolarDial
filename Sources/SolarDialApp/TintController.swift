@@ -1,8 +1,8 @@
 import AppKit
-import SundialCore
+import SolarDialCore
 import Observation
 
-/// Another app that is (or seems to be) changing display colour at the same time as Sundial.
+/// Another app that is (or seems to be) changing display colour at the same time as SolarDial.
 enum ColourConflict: Equatable {
     case knownApp(String)
     case unknownApp

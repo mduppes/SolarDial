@@ -153,3 +153,11 @@ This log records settled architectural decisions. Do not re-litigate settled dec
 - **Decision:** Rename SwiftPM modules and tests to `SundialCore`, `SundialApp`, and `SundialCoreTests`; package `build/Sundial.app` with `com.mduppes.sundial`. Migrate only the clone's `settings` and `lastLocationFix` from `com.mduppes.flux` if the new domain has no corresponding value. Leave vendor identifiers and reverse-engineering exports intact. The checkout and GitHub repository currently remain at their existing paths.
 - **Landing page:** Buildless HTML/CSS/JS under `website/dist`, with the generated app icon, an explicitly illustrative product scene and interactive schedule, real Apple silicon preview ZIP/checksum, and TokenTracking's existing Stripe-hosted donate link. No remote fonts, analytics, payment scripts, or app networking. Publish a private Sites preview using its supported source workflow; site hosting is separate from the Swift app.
 - **Consequences:** Existing colours and location fix carry over; Location Services and Start at Login may need approval again for the new bundle identity. The preview is ad-hoc signed, not notarized; no Intel build or open-source license is claimed. The website has no npm dependencies.
+
+
+### ADR 017: SolarDial replaces Sundial; recognizable website icons
+- **Date:** 2026-10-13
+- **Status:** Accepted (supersedes ADR 016 branding)
+- **Context:** The user chose SolarDial because Sundial was taken on Netlify, and requested GitHub/LinkedIn icons as in TokenTracking.
+- **Decision:** Rename the app, modules, test target, bundle, downloadable preview and website to SolarDial (`SolarDialCore`, `SolarDialApp`, `SolarDialCoreTests`, `com.mduppes.solardial`). Migrate missing preferences from `com.mduppes.sundial` before the earlier `com.mduppes.flux` domain. Rename the existing Sites preview to `solardial-mac` while preserving its project and private audience. Netlify deployment was not requested in this change. Use local SVG brand marks beside GitHub and LinkedIn labels in the navigation and footer; record this convention in the agent guide and a website-scoped rule.
+- **Consequences:** Settings survive both earlier names. The new bundle identity may require macOS permissions and login registration again. Existing GitHub/workspace paths remain `Flux`. Donate checkout is unchanged.

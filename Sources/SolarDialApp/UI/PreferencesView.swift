@@ -1,5 +1,5 @@
 import AppKit
-import SundialCore
+import SolarDialCore
 import SwiftUI
 
 struct PreferencesView: View {
@@ -285,7 +285,7 @@ final class PreferencesWindowController {
         if window == nil {
             let view = PreferencesView(store: controller.store, controller: controller)
             let window = SettingsWindow(contentViewController: NSHostingController(rootView: view))
-            window.title = "Sundial Settings"
+            window.title = "SolarDial Settings"
             window.styleMask = [.titled, .closable, .miniaturizable]
             window.isReleasedWhenClosed = false
             window.center()
