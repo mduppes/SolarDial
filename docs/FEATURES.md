@@ -27,7 +27,7 @@ This document defines the feature set of the clean-room Flux clone, based on rev
 | **System** | macOS Dark Mode sync | **Keep (built)** | Optional (settings). Switches to Dark at sunset and Light in the morning, only when the schedule crosses over, so manual changes stick until the next crossing. |
 | **System** | Start at login | **Keep (built)** | Settings toggle using `SMAppService.mainApp`. |
 | **System** | Bedtime reminders | **Keep (built)** | Optional (settings). One notification in the first 15 min after bedtime: "You're waking up in 8½ hours." |
-| **System** | Settings window | **Keep (built)** | SwiftUI: Kelvin sliders with live preview, wake time, sleep length, fast/slow transitions, manual location, per-app list, full screen, login, dark mode, reminder. |
+| **System** | Settings window | **Keep (built)** | SwiftUI: Kelvin sliders with live preview, wake time, sleep length, fast/slow transitions, manual location, per-app list, full screen, login, dark mode, reminder. Native shortcuts: ⌘W closes Settings, Escape cancels via the responder chain (then closes Settings), ⌘M minimizes, ⌘, shows Settings, ⌘H hides Flux, and ⌘Q quits. Text fields have standard Cut/Copy/Paste/Select All commands. Reopening the running app shows Settings; closing Settings keeps tinting active. |
 | **Vendor** | Account / Login (`fluxAccount`) | **Drop** | No online accounts, password stores, or authentication. |
 | **Vendor** | Analytics / Telemetry (`fluxNetworkQueue`) | **Drop** | Zero network traffic; no logging of screen time, spectrum, or light levels. |
 | **Vendor** | Promotional offers (`fluxOffer`) | **Drop** | No promotional dialogs, surveys, or sponsored content. |

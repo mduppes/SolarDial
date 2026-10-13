@@ -20,6 +20,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         controller.start()
     }
 
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        statusItem?.showPreferences()
+        return false
+    }
+
     func applicationWillTerminate(_ notification: Notification) {
         controller?.stop()
     }

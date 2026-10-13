@@ -17,7 +17,48 @@ final class StatusItemManager: NSObject, NSMenuDelegate {
         menu.autoenablesItems = false
         menu.delegate = self
         item.menu = menu
+        installApplicationMenu()
         updateIcon()
+    }
+
+    /// Status-item menus do not supply key equivalents to the Settings responder chain.
+    private func installApplicationMenu() {
+        let mainMenu = NSMenu()
+
+        func submenu(_ title: String) -> NSMenu {
+            let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
+            let menu = NSMenu(title: title)
+            item.submenu = menu
+            mainMenu.addItem(item)
+            return menu
+        }
+
+        let appMenu = submenu("Flux")
+        appMenu.addItem(action("Settings…", #selector(showPreferences), key: ","))
+        appMenu.addItem(.separator())
+        appMenu.addItem(NSMenuItem(title: "Hide Flux", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h"))
+        let hideOthers = NSMenuItem(title: "Hide Others", action: #selector(NSApplication.hideOtherApplications(_:)), keyEquivalent: "h")
+        hideOthers.keyEquivalentModifierMask = [.command, .option]
+        appMenu.addItem(hideOthers)
+        appMenu.addItem(NSMenuItem(title: "Show All", action: #selector(NSApplication.unhideAllApplications(_:)), keyEquivalent: ""))
+        appMenu.addItem(.separator())
+        appMenu.addItem(action("Quit Flux", #selector(quit), key: "q"))
+
+        let fileMenu = submenu("File")
+        fileMenu.addItem(NSMenuItem(title: "Close Window", action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w"))
+
+        // Nil targets let the focused text field handle editing commands itself.
+        // Settings undo remains the SwiftUI footer's existing Command-Z shortcut.
+        let editMenu = submenu("Edit")
+        editMenu.addItem(NSMenuItem(title: "Cut", action: #selector(NSText.cut(_:)), keyEquivalent: "x"))
+        editMenu.addItem(NSMenuItem(title: "Copy", action: #selector(NSText.copy(_:)), keyEquivalent: "c"))
+        editMenu.addItem(NSMenuItem(title: "Paste", action: #selector(NSText.paste(_:)), keyEquivalent: "v"))
+        editMenu.addItem(NSMenuItem(title: "Select All", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a"))
+
+        let windowMenu = submenu("Window")
+        windowMenu.addItem(NSMenuItem(title: "Minimize", action: #selector(NSWindow.performMiniaturize(_:)), keyEquivalent: "m"))
+        NSApp.windowsMenu = windowMenu
+        NSApp.mainMenu = mainMenu
     }
 
     func updateIcon() {
@@ -133,7 +174,7 @@ final class StatusItemManager: NSObject, NSMenuDelegate {
     @objc private func toggleFrontApp() { controller.toggleFrontAppDisabled() }
     @objc private func toggleFullscreen() { controller.toggleFullscreenDisable() }
     @objc private func toggleMovie() { controller.toggleMovieMode() }
-    @objc private func showPreferences() {
+    @objc func showPreferences() {
         // Activating while the menu is still dismissing leaves the menu-bar highlight on a neighbour.
         DispatchQueue.main.async { [preferences] in preferences.show() }
     }

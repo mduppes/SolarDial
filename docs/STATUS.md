@@ -15,8 +15,9 @@ Morning colour is fully on at wake time (or at sunrise, if that is later). The 6
 
 ## Next Steps
 
-1. **Graph follow-up:** restart the rebuilt app and check the red clock-labelled marker against the axis; leave Settings open for a minute, then close and reopen it. Code now refreshes every 30 s and explicitly on every Settings show. Visual verification is pending.
-2. **First live test.** Quit f.lux (`pkill -f /Applications/Flux.app/Contents/MacOS/Flux`) and turn off Night Shift. Then `./scripts/build-app.sh && open build/Flux.app`. Check:
+1. **Settings shortcuts follow-up:** rebuilt app is running. Check ⌘W / Escape close Settings while tinting stays active, ⌘M minimizes, ⌘, shows Settings, and existing ⌘Z undoes a settings change. Native menus and app reopen were inspected live; automated keyboard input was inconclusive.
+2. **Graph follow-up:** restart the rebuilt app and check the red clock-labelled marker against the axis; leave Settings open for a minute, then close and reopen it. Code now refreshes every 30 s and explicitly on every Settings show. Visual verification is pending.
+3. **First live test.** Quit f.lux (`pkill -f /Applications/Flux.app/Contents/MacOS/Flux`) and turn off Night Shift. Then `./scripts/build-app.sh && open build/Flux.app`. Check:
    - [x] The tint matches the schedule: 2026-10-12 18:33, Florianópolis fix, 5430 K expected; the display table read back as (1, 0.951, 0.878) against (1, 0.9507, 0.8772) expected, with the calibrated mid-table kept. The menu readout and fade smoothness still need a visual check.
    - [ ] Quitting from the menu, `kill <pid>` (SIGTERM) and Ctrl-C all restore normal colour. (SIGTERM verified: the table is back to identity. Menu Quit and Ctrl-C are untested.)
    - [ ] Full screen: a full-screen video on one display untints only that display. Check a notched MacBook display, and Space switches.
@@ -29,12 +30,17 @@ Morning colour is fully on at wake time (or at sunrise, if that is later). The 6
    - [ ] Conflict warning: launching f.lux shows the ⚠︎ line and icon and one notification.
    - [ ] The Finder/Login Items show the new icon.
    - [ ] Start at login registers (it may need approval in Login Items). Dark-mode sync triggers one Automation prompt. The bedtime reminder appears (notification permission).
-3. Fix whatever the live test turns up. Likely candidates: the SwiftUI form's sizing, `SMAppService` behaviour with an ad-hoc signature, and notification authorization with an ad-hoc signature.
-4. **Ideas (ask the user first):** detect Night Shift (needs private API, so probably not); dim during the day as well as at bedtime; a global hotkey for the disables.
+4. Fix whatever the live test turns up. Likely candidates: the SwiftUI form's sizing, `SMAppService` behaviour with an ad-hoc signature, and notification authorization with an ad-hoc signature.
+5. **Ideas (ask the user first):** detect Night Shift (needs private API, so probably not); dim during the day as well as at bedtime; a global hotkey for the disables.
 
 ---
 
 ## Handoff Log
+
+### 2026-10-13 — Settings window keyboard commands
+- **Done:** `StatusItemManager` installs native application/File/Edit/Window menus: Settings (⌘,), Quit (⌘Q), Hide (⌘H), Close Window (⌘W), Minimize (⌘M), and standard Cut/Copy/Paste/Select All. Nil targets use the responder chain; existing SwiftUI Settings Undo (⌘Z) remains. `SettingsWindow.cancelOperation` handles Escape without closing a parent with an attached sheet. Reopening the running app shows Settings. Docs and ADR 015 updated.
+- **Verified:** final release build and signing succeeded; restarted the clone cleanly via SIGTERM. Computer-use observed Settings after reopening and inspected the native File menu's Close Window command. No core logic changed.
+- **Limitations / next:** keyboard automation produced inconclusive results (state requests reopen the app, and Escape did not reliably dismiss a menu). Do not claim ⌘W/⌘M/Escape/⌘Z were verified live. Manually check these shortcuts, including sheet cancellation and editing a text field. The rebuilt app is running with Settings open.
 
 ### 2026-10-13 — Refresh the graph clock
 - **Done:** `DailyGraphView` has a 30-second `TimelineView`, and `PreferencesWindowController.show()` updates an observable timestamp on every Settings open, including reopening the retained window. The marker now has a clock label; both marker and axis labels explicitly use the schedule time zone. Curve, Kelvin readout and marker use the same instant, including after midnight. Features and architecture docs updated.

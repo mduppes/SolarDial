@@ -136,3 +136,11 @@ This log records settled architectural decisions. Do not re-litigate settled dec
 - **Context:** The graph read `Date()` only during incidental SwiftUI redraws, which could leave its current-time marker stale. The user requested an immediate refresh whenever Settings loads. The Settings window is retained when closed.
 - **Decision:** Refresh the graph every 30 seconds via `TimelineView`, and update an observable opening timestamp in `PreferencesWindowController.show()` on every invocation. Use the newer timestamp for the entire graph. Label the marker with the clock time in the same time zone as the schedule and axis.
 - **Consequences:** Reopening Settings refreshes immediately even if SwiftUI does not send another appearance event; the graph's day rolls over with its clock.
+
+
+### ADR 015: Native menus for Settings keyboard commands
+- **Date:** 2026-10-13
+- **Status:** Accepted
+- **Context:** The app had only an NSStatusItem menu, leaving standard window and text-editing shortcuts without application-menu commands. The user requested working Settings window shortcuts.
+- **Decision:** Install a native application menu with Settings, Quit and Hide, a File menu with Close Window, an Edit menu with text-editing commands, and a Window menu with Minimize. Use the responder chain for native commands instead of intercepting global keystrokes. Keep the existing SwiftUI Settings Undo shortcut. Handle Escape at the Settings window only after controls, without closing an attached sheet's parent. Reopening the running app brings Settings forward.
+- **Consequences:** Window and editing commands remain local to Flux; closing Settings leaves the menu-bar app running. No global shortcut permission is needed.

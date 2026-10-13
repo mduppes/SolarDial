@@ -284,7 +284,7 @@ final class PreferencesWindowController {
         controller.settingsOpenedAt = Date()
         if window == nil {
             let view = PreferencesView(store: controller.store, controller: controller)
-            let window = NSWindow(contentViewController: NSHostingController(rootView: view))
+            let window = SettingsWindow(contentViewController: NSHostingController(rootView: view))
             window.title = "Flux Settings"
             window.styleMask = [.titled, .closable, .miniaturizable]
             window.isReleasedWhenClosed = false
@@ -293,5 +293,17 @@ final class PreferencesWindowController {
         }
         NSApp.activate()
         window?.makeKeyAndOrderFront(nil)
+    }
+}
+
+/// Escape follows the responder chain, allowing controls and sheets to cancel first.
+@MainActor
+private final class SettingsWindow: NSWindow {
+    override func cancelOperation(_ sender: Any?) {
+        guard attachedSheet == nil else {
+            super.cancelOperation(sender)
+            return
+        }
+        performClose(sender)
     }
 }
