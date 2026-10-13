@@ -128,3 +128,11 @@ This log records settled architectural decisions. Do not re-litigate settled dec
 - **Context:** At 2026-10-13 07:11 in America/Sao_Paulo (10:11Z), Florianópolis, with wake time 07:00 and a 60-minute transition, the screen was still about 2470 K. Sunrise that day is about 05:40, so the sun was not holding the tint. `sleepMinutes` 510 is a duration (8 h 30 min), which puts bedtime at 22:30, not a clock time. Nothing reads the original f.lux defaults (`org.herf.Flux` wake time 480 or the saved 42.6° N, 18.1° E location); that bundle id is only used to notice when f.lux is running. The schedule is stateless, so an app that had been open since the previous evening was not reusing a cached day. The bedtime ramp already finishes at bedtime, but the morning ramps started at wake and ran for `transitionMinutes` afterward. Eleven minutes into that hour, bedtime weight was still about 0.82.
 - **Decision:** Daytime colour, and the release of bedtime colour, are complete at the later of this local day's sunrise and wake time. The transition occupies the `transitionMinutes` before that instant. Wake is built from the calendar day of the instant being evaluated, not from `Calendar.date(bySettingHour:of:)`, whose default search direction is forward.
 - **Consequences:** "Disable until sunrise" ends when that morning ramp begins (06:00, with the defaults). Dark-mode sync's morning crossing (daylight weight 0.5) moves earlier by half the transition. Sunset still starts its ramp at sunset.
+
+
+### ADR 014: Refresh the graph on every Settings open
+- **Date:** 2026-10-13
+- **Status:** Accepted
+- **Context:** The graph read `Date()` only during incidental SwiftUI redraws, which could leave its current-time marker stale. The user requested an immediate refresh whenever Settings loads. The Settings window is retained when closed.
+- **Decision:** Refresh the graph every 30 seconds via `TimelineView`, and update an observable opening timestamp in `PreferencesWindowController.show()` on every invocation. Use the newer timestamp for the entire graph. Label the marker with the clock time in the same time zone as the schedule and axis.
+- **Consequences:** Reopening Settings refreshes immediately even if SwiftUI does not send another appearance event; the graph's day rolls over with its clock.

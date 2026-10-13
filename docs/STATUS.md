@@ -15,7 +15,8 @@ Morning colour is fully on at wake time (or at sunrise, if that is later). The 6
 
 ## Next Steps
 
-1. **First live test (do this first).** Quit f.lux (`pkill -f /Applications/Flux.app/Contents/MacOS/Flux`) and turn off Night Shift. Then `./scripts/build-app.sh && open build/Flux.app`. Check:
+1. **Graph follow-up:** restart the rebuilt app and check the red clock-labelled marker against the axis; leave Settings open for a minute, then close and reopen it. Code now refreshes every 30 s and explicitly on every Settings show. Visual verification is pending.
+2. **First live test.** Quit f.lux (`pkill -f /Applications/Flux.app/Contents/MacOS/Flux`) and turn off Night Shift. Then `./scripts/build-app.sh && open build/Flux.app`. Check:
    - [x] The tint matches the schedule: 2026-10-12 18:33, Florianópolis fix, 5430 K expected; the display table read back as (1, 0.951, 0.878) against (1, 0.9507, 0.8772) expected, with the calibrated mid-table kept. The menu readout and fade smoothness still need a visual check.
    - [ ] Quitting from the menu, `kill <pid>` (SIGTERM) and Ctrl-C all restore normal colour. (SIGTERM verified: the table is back to identity. Menu Quit and Ctrl-C are untested.)
    - [ ] Full screen: a full-screen video on one display untints only that display. Check a notched MacBook display, and Space switches.
@@ -28,12 +29,17 @@ Morning colour is fully on at wake time (or at sunrise, if that is later). The 6
    - [ ] Conflict warning: launching f.lux shows the ⚠︎ line and icon and one notification.
    - [ ] The Finder/Login Items show the new icon.
    - [ ] Start at login registers (it may need approval in Login Items). Dark-mode sync triggers one Automation prompt. The bedtime reminder appears (notification permission).
-2. Fix whatever the live test turns up. Likely candidates: the SwiftUI form's sizing, `SMAppService` behaviour with an ad-hoc signature, and notification authorization with an ad-hoc signature.
-3. **Ideas (ask the user first):** detect Night Shift (needs private API, so probably not); dim during the day as well as at bedtime; a global hotkey for the disables.
+3. Fix whatever the live test turns up. Likely candidates: the SwiftUI form's sizing, `SMAppService` behaviour with an ad-hoc signature, and notification authorization with an ad-hoc signature.
+4. **Ideas (ask the user first):** detect Night Shift (needs private API, so probably not); dim during the day as well as at bedtime; a global hotkey for the disables.
 
 ---
 
 ## Handoff Log
+
+### 2026-10-13 — Refresh the graph clock
+- **Done:** `DailyGraphView` has a 30-second `TimelineView`, and `PreferencesWindowController.show()` updates an observable timestamp on every Settings open, including reopening the retained window. The marker now has a clock label; both marker and axis labels explicitly use the schedule time zone. Curve, Kelvin readout and marker use the same instant, including after midnight. Features and architecture docs updated.
+- **Verified:** debug build and 55 core tests passed; the final release app bundle rebuilt successfully. No schedule or gamma behaviour changed.
+- **Next:** restart `build/Flux.app` and visually check marker placement, periodic refresh and close/reopen refresh. Live UI behaviour has not been verified.
 
 ### 2026-10-13 — Morning tint past wake time
 - **Done:** The morning ramps finish at the later of sunrise and wake, instead of starting there. Wake is the clock time on that local calendar day (year/month/day components), not `Calendar.date(bySettingHour:of:)`. Regression test uses the reported Florianópolis inputs at 2026-10-13 07:11 BRT (10:11Z). 55 tests. ADR 013. Docs updated.

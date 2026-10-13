@@ -281,6 +281,7 @@ final class PreferencesWindowController {
     }
 
     func show() {
+        controller.settingsOpenedAt = Date()
         if window == nil {
             let view = PreferencesView(store: controller.store, controller: controller)
             let window = NSWindow(contentViewController: NSHostingController(rootView: view))

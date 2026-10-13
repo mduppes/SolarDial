@@ -11,12 +11,21 @@ struct DailyGraphView: View {
     private static let gradientRange: ClosedRange<Double> = 1000...6500
 
     var body: some View {
+        TimelineView(.periodic(from: .now, by: 30)) { context in
+            graph(at: max(context.date, controller.settingsOpenedAt))
+        }
+    }
+
+    private func graph(at now: Date) -> some View {
         let engine = controller.engine
-        let now = Date()
+        var timeFormat = Date.FormatStyle.dateTime.hour().minute()
+        timeFormat.timeZone = engine.timeZone
+        var axisFormat = Date.FormatStyle.dateTime.hour()
+        axisFormat.timeZone = engine.timeZone
         let points = engine.dailyCurve(on: now, step: 600)
         let current = engine.evaluate(at: now)
 
-        VStack(alignment: .leading, spacing: 6) {
+        return VStack(alignment: .leading, spacing: 6) {
             Text("Now " + String(Int(current.kelvin.rounded())) + "K")
                 .font(.caption)
                 .foregroundStyle(.secondary)
@@ -45,6 +54,11 @@ struct DailyGraphView: View {
                 }
                 RuleMark(x: .value("Now", now))
                     .foregroundStyle(.red)
+                    .annotation(position: .top, alignment: .leading) {
+                        Text(now.formatted(timeFormat))
+                            .font(.caption2)
+                            .foregroundStyle(.red)
+                    }
             }
             .chartYScale(domain: Self.domain)
             .chartXScale(domain: points.first!.date...points.last!.date)
@@ -57,7 +71,7 @@ struct DailyGraphView: View {
             .chartXAxis {
                 AxisMarks(values: .stride(by: .hour, count: 3)) { _ in
                     AxisGridLine()
-                    AxisValueLabel(format: .dateTime.hour())
+                    AxisValueLabel(format: axisFormat)
                 }
             }
             .frame(height: 150)

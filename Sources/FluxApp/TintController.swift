@@ -30,6 +30,9 @@ final class TintController {
     @ObservationIgnored private var lastOverwrite: Date?
     @ObservationIgnored private var notifiedAboutConflict = false
 
+    /// Explicit graph refresh when the retained Settings window is shown again.
+    var settingsOpenedAt = Date()
+
     private(set) var schedule: ScheduleResult?
     private(set) var resolvedLocation: ResolvedLocation?
     private(set) var temporaryDisable: TemporaryDisable?
