@@ -1,6 +1,6 @@
 import AppKit
 import CoreGraphics
-import FluxCore
+import SundialCore
 
 /// Owns every write to display gamma. Keeps each display's calibrated base table so tinting only
 /// moves the white point, fades between targets, and notices when another app overwrites them.
@@ -22,7 +22,7 @@ final class DisplayManager {
         captureBaseTables()
         CGDisplayRegisterReconfigurationCallback(displayReconfigured, nil)
         NotificationCenter.default.addObserver(
-            forName: .fluxDisplaysReconfigured, object: nil, queue: .main
+            forName: .sundialDisplaysReconfigured, object: nil, queue: .main
         ) { [weak self] _ in
             MainActor.assumeIsolated { self?.scheduleReset() }
         }
@@ -173,7 +173,7 @@ final class DisplayManager {
 }
 
 extension Notification.Name {
-    static let fluxDisplaysReconfigured = Notification.Name("FluxDisplaysReconfigured")
+    static let sundialDisplaysReconfigured = Notification.Name("SundialDisplaysReconfigured")
 }
 
 private func displayReconfigured(
@@ -181,6 +181,6 @@ private func displayReconfigured(
 ) {
     guard !flags.contains(.beginConfigurationFlag) else { return }
     DispatchQueue.main.async {
-        NotificationCenter.default.post(name: .fluxDisplaysReconfigured, object: nil)
+        NotificationCenter.default.post(name: .sundialDisplaysReconfigured, object: nil)
     }
 }

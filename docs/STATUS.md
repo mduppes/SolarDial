@@ -1,6 +1,6 @@
 # Status & Handoff
 
-## Current Status: every scoped feature is built; live visual checks pending
+## Current Status: Sundial rename and landing page built; remaining live checks pending
 
 Morning colour is fully on at wake time (or at sunrise, if that is later). The 60-minute transition runs up to that instant. See ADR 013.
 
@@ -9,15 +9,19 @@ Morning colour is fully on at wake time (or at sunrise, if that is later). The 6
 - **Phase 3, Milestone A (core tinter):** Done, and the tint is verified live.
 - **Phase 3, Milestone B (settings window, movie mode, start at login, dark-mode sync, bedtime reminder):** Done in code.
 - **Phase 3, Milestone C (user feedback round):** Done in code: checkmark menu, narrower status item, app icon, 24-hour graph, colour-conflict warning, bedtime dimming, movie Kelvin and duration, Undo / Reset to Defaults. Darkroom removed.
-- 55 unit tests pass and `build/Flux.app` builds and runs.
+- 55 unit tests pass and `build/Sundial.app` builds and runs. App identity and Swift targets are renamed to Sundial; existing settings are migrated.
+- Landing page deployed as an owner-private Sites preview: https://sundial-mac.truedog2.chatgpt.site. Includes a real Apple silicon preview download and the TokenTracking Stripe donate link.
 
 ---
 
 ## Next Steps
 
+- Review the private landing-page preview; public access or a Netlify/custom-domain move is a separate hosting choice. The GitHub repository and workspace currently retain the name `Flux`; website source links use the existing repository URL.
+- Sundial is running, settings JSON matches the previous clone, Location Services has refreshed, and Start at Login was moved from the old clone to Sundial.
+
 1. **Settings shortcuts follow-up:** rebuilt app is running. Check ⌘W / Escape close Settings while tinting stays active, ⌘M minimizes, ⌘, shows Settings, and existing ⌘Z undoes a settings change. Native menus and app reopen were inspected live; automated keyboard input was inconclusive.
 2. **Graph follow-up:** restart the rebuilt app and check the red clock-labelled marker against the axis; leave Settings open for a minute, then close and reopen it. Code now refreshes every 30 s and explicitly on every Settings show. Visual verification is pending.
-3. **First live test.** Quit f.lux (`pkill -f /Applications/Flux.app/Contents/MacOS/Flux`) and turn off Night Shift. Then `./scripts/build-app.sh && open build/Flux.app`. Check:
+3. **First live test.** Quit f.lux (`pkill -f /Applications/Flux.app/Contents/MacOS/Flux`) and turn off Night Shift. Then `./scripts/build-app.sh && open build/Sundial.app`. Check:
    - [x] The tint matches the schedule: 2026-10-12 18:33, Florianópolis fix, 5430 K expected; the display table read back as (1, 0.951, 0.878) against (1, 0.9507, 0.8772) expected, with the calibrated mid-table kept. The menu readout and fade smoothness still need a visual check.
    - [ ] Quitting from the menu, `kill <pid>` (SIGTERM) and Ctrl-C all restore normal colour. (SIGTERM verified: the table is back to identity. Menu Quit and Ctrl-C are untested.)
    - [ ] Full screen: a full-screen video on one display untints only that display. Check a notched MacBook display, and Space switches.
@@ -36,6 +40,13 @@ Morning colour is fully on at wake time (or at sunrise, if that is later). The 6
 ---
 
 ## Handoff Log
+
+### 2026-10-13 — Rename to Sundial and publish landing page
+- **Done:** Renamed package, source targets, tests, menus, window, notification name, app bundle and bundle ID to Sundial (`SundialCore`, `SundialApp`, `SundialCoreTests`, `com.mduppes.sundial`). Startup copies the old clone's settings and saved location fix only for missing new-domain values. Original f.lux identifiers and reference exports are untouched. Current README/agent/build docs updated, ADR 016 added.
+- **Landing page:** Buildless `website/dist` with the app icon, clearly labelled illustrative product scene, interactive mired-blended daily curve, features, install notes/FAQ, real ad-hoc-signed Apple silicon ZIP and checksum, and TokenTracking's Stripe donate link. `scripts/package-download.sh` regenerates downloads. Published owner-private Sites preview: https://sundial-mac.truedog2.chatgpt.site (project `appgprj_6acebc66be9081918a95bf0a5fbd19dd`, deployment succeeded). Source publishing used `/private/tmp/sundial-site-6sqjqvfl`, not an embedded Git repo in the app checkout.
+- **Verified:** all 55 tests pass with renamed modules; final release/signature/package build passed. Browser checked the desktop layout, 390px responsive overflow, Day/Bedtime buttons, FAQ expansion, and HTTP 200 for page and ZIP. Sundial launched after SIGTERM of the old clone; settings JSON is identical to the old domain. Location Services is active and refreshed its fix, so the new fix differs from the old one. Native window/menu branding confirmed. Old clone's Start at Login was switched off, Sundial's switched on (verified in both UIs).
+- **Next / gotchas:** preview is private, Apple silicon only, ad-hoc signed and not notarized. No GitHub release, repository rename, workspace-folder rename, public-site access, or custom domain was created. GitHub links still use `mduppes/Flux`. Generated download files are ignored by the app Git repo but included in the Sites deployment. The app itself still makes no network requests.
+
 
 ### 2026-10-13 — Settings window keyboard commands
 - **Done:** `StatusItemManager` installs native application/File/Edit/Window menus: Settings (⌘,), Quit (⌘Q), Hide (⌘H), Close Window (⌘W), Minimize (⌘M), and standard Cut/Copy/Paste/Select All. Nil targets use the responder chain; existing SwiftUI Settings Undo (⌘Z) remains. `SettingsWindow.cancelOperation` handles Escape without closing a parent with an attached sheet. Reopening the running app shows Settings. Docs and ADR 015 updated.

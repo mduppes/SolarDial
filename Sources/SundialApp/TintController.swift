@@ -1,8 +1,8 @@
 import AppKit
-import FluxCore
+import SundialCore
 import Observation
 
-/// Another app that is (or seems to be) changing display colour at the same time as Flux.
+/// Another app that is (or seems to be) changing display colour at the same time as Sundial.
 enum ColourConflict: Equatable {
     case knownApp(String)
     case unknownApp

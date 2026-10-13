@@ -1,5 +1,5 @@
 import Foundation
-import FluxCore
+import SundialCore
 import Observation
 
 @MainActor

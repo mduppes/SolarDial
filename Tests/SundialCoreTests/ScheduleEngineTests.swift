@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import FluxCore
+@testable import SundialCore
 
 struct ScheduleEngineTests {
     let tz = TimeZone(identifier: "America/Sao_Paulo")!

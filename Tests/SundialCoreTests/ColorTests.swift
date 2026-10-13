@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import FluxCore
+@testable import SundialCore
 
 struct ColorTemperatureTests {
     @Test func neutralIsWhite() {

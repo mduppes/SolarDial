@@ -1,6 +1,6 @@
 import AppKit
 import CoreGraphics
-import FluxCore
+import SundialCore
 
 /// Finds displays whose visible top window fills the screen, and reports when that might have
 /// changed (app switch or Space change). Uses only window bounds and layers, which don't need the

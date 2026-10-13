@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import FluxCore
+@testable import SundialCore
 
 struct DisplayTargetTests {
     let base = GammaTable(red: [0, 0.5, 1], green: [0, 0.5, 1], blue: [0, 0.5, 1])

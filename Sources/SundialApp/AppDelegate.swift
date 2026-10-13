@@ -7,6 +7,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var signalSources: [DispatchSourceSignal] = []
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        migrateLegacyPreferences()
         let controller = TintController(
             store: SettingsStore(),
             displays: DisplayManager(),
@@ -27,6 +28,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_ notification: Notification) {
         controller?.stop()
+    }
+
+    /// Keep the clone's existing preferences when switching to the Sundial bundle ID.
+    private func migrateLegacyPreferences() {
+        guard Bundle.main.bundleIdentifier == "com.mduppes.sundial" else { return }
+        let defaults = UserDefaults.standard
+        guard let legacy = defaults.persistentDomain(forName: "com.mduppes.flux") else { return }
+        for key in ["settings", "lastLocationFix"] where defaults.object(forKey: key) == nil {
+            if let value = legacy[key] { defaults.set(value, forKey: key) }
+        }
     }
 
     /// Route termination signals through the normal quit path so gamma is restored.

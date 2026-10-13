@@ -144,3 +144,12 @@ This log records settled architectural decisions. Do not re-litigate settled dec
 - **Context:** The app had only an NSStatusItem menu, leaving standard window and text-editing shortcuts without application-menu commands. The user requested working Settings window shortcuts.
 - **Decision:** Install a native application menu with Settings, Quit and Hide, a File menu with Close Window, an Edit menu with text-editing commands, and a Window menu with Minimize. Use the responder chain for native commands instead of intercepting global keystrokes. Keep the existing SwiftUI Settings Undo shortcut. Handle Escape at the Settings window only after controls, without closing an attached sheet's parent. Reopening the running app brings Settings forward.
 - **Consequences:** Window and editing commands remain local to Flux; closing Settings leaves the menu-bar app running. No global shortcut permission is needed.
+
+
+### ADR 016: Sundial branding and landing page
+- **Date:** 2026-10-13
+- **Status:** Accepted
+- **Context:** The user chose Sundial as the app name and requested a landing page similar to TokenTracking, including donations.
+- **Decision:** Rename SwiftPM modules and tests to `SundialCore`, `SundialApp`, and `SundialCoreTests`; package `build/Sundial.app` with `com.mduppes.sundial`. Migrate only the clone's `settings` and `lastLocationFix` from `com.mduppes.flux` if the new domain has no corresponding value. Leave vendor identifiers and reverse-engineering exports intact. The checkout and GitHub repository currently remain at their existing paths.
+- **Landing page:** Buildless HTML/CSS/JS under `website/dist`, with the generated app icon, an explicitly illustrative product scene and interactive schedule, real Apple silicon preview ZIP/checksum, and TokenTracking's existing Stripe-hosted donate link. No remote fonts, analytics, payment scripts, or app networking. Publish a private Sites preview using its supported source workflow; site hosting is separate from the Swift app.
+- **Consequences:** Existing colours and location fix carry over; Location Services and Start at Login may need approval again for the new bundle identity. The preview is ad-hoc signed, not notarized; no Intel build or open-source license is claimed. The website has no npm dependencies.

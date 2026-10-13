@@ -1,6 +1,6 @@
 # Agent guide — start here
 
-This repo is a **clean-room-style clone of f.lux for macOS**. It is a small menu-bar app that warms the screen colour after sunset.
+This repo is a **Sundial, an independently implemented f.lux-style app for macOS**. It is a small menu-bar app that warms the screen colour after sunset.
 It began with a reverse-engineering pass over the installed f.lux 42.2 (`/Applications/Flux.app`). The goal is to keep the useful features and fix the clunky ones (full-screen disable, time-zone/location handling). Everything tied to the original vendor (account, analytics, offers, auto-updater) is dropped.
 
 ## Read these, in order
@@ -20,7 +20,7 @@ It began with a reverse-engineering pass over the installed f.lux 42.2 (`/Applic
 - **Before you stop working** (including when you run low on budget), append an entry to the *Handoff log* in `docs/STATUS.md`: what you did, what's half-done, what's next, and any gotchas. Update the *Next steps* list.
 - Ask the user before expanding scope (e.g. ICC-profile colour, new modes, network features). Network calls of any kind are out of scope unless the user approves.
 - Keep it simple: plain Swift/SwiftUI/AppKit, no third-party dependencies unless a decision entry justifies one.
-- Put pure logic (solar maths, colour curves, schedule) in `FluxCore` with unit tests. Keep OS-touching code thin and in the app target.
+- Put pure logic (solar maths, colour curves, schedule) in `SundialCore` with unit tests. Keep OS-touching code thin and in the app target.
 - Commit in small, descriptive commits.
 
 ## Build / run / test
@@ -29,16 +29,16 @@ No Xcode is installed, only Command Line Tools. Everything goes through SwiftPM:
 
 ```sh
 swift build                 # debug build
-./scripts/test.sh           # unit tests (FluxCore); NOT bare `swift test`, which silently runs 0 tests here
-./scripts/build-app.sh      # release build → build/Flux.app (ad-hoc signed)
-open build/Flux.app
+./scripts/test.sh           # unit tests (SundialCore); NOT bare `swift test`, which silently runs 0 tests here
+./scripts/build-app.sh      # release build → build/Sundial.app (ad-hoc signed)
+open build/Sundial.app
 ```
 
 If an agent sandbox makes SwiftPM fail with `sandbox_apply: Operation not permitted`, run the command outside the sandbox.
 
 ## Hazards
 
-- **Quit the original f.lux before testing** (`pkill -f /Applications/Flux.app/Contents/MacOS/Flux`; `osascript -e 'quit app "Flux"'` is ambiguous because this clone is also named Flux). Turn off Night Shift too. Two gamma writers will fight and flicker.
+- **Quit the original f.lux before testing** (`pkill -f /Applications/Flux.app/Contents/MacOS/Flux`). Turn off Night Shift too. Two gamma writers will fight and flicker.
 - Gamma tables persist until something resets them. The app must call `CGDisplayRestoreColorSyncSettings()` on quit/crash paths. If a display is stuck tinted during development, run that call (or log out/in).
 - Location permission (TCC) is tied to the code signature. Ad-hoc re-signing after each build may make macOS ask again. That's expected in development.
 - **Reverse-engineering reference exports:** Decompiled pseudocode and metadata are committed in [`reference/`](file:///Users/mduppes/code/Flux/reference/) (`reference/decompiled/`, `reference/metadata/`, and `reference/rea_flux_decompilation.tar.gz`). Consult these for understanding f.lux behavior, but write clean-room Swift without copying vendor code.

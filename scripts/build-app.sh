@@ -1,19 +1,19 @@
 #!/bin/sh
-# Builds a release binary and wraps it in an ad-hoc signed menu-bar app at build/Flux.app.
+# Builds a release binary and wraps it in an ad-hoc signed menu-bar app at build/Sundial.app.
 set -eu
 cd "$(dirname "$0")/.."
 
-APP_NAME="Flux"
-BUNDLE_ID="com.mduppes.flux"
+APP_NAME="Sundial"
+BUNDLE_ID="com.mduppes.sundial"
 VERSION="0.1.0"
 APP="build/$APP_NAME.app"
 
-swift build -c release --product FluxApp
-BIN="$(swift build -c release --show-bin-path)/FluxApp"
+swift build -c release --product SundialApp
+BIN="$(swift build -c release --show-bin-path)/SundialApp"
 
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-cp "$BIN" "$APP/Contents/MacOS/FluxApp"
+cp "$BIN" "$APP/Contents/MacOS/SundialApp"
 cp Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
 
 cat > "$APP/Contents/Info.plist" <<PLIST
@@ -22,7 +22,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 <plist version="1.0">
 <dict>
     <key>CFBundleExecutable</key>
-    <string>FluxApp</string>
+    <string>SundialApp</string>
     <key>CFBundleIdentifier</key>
     <string>$BUNDLE_ID</string>
     <key>CFBundleName</key>
@@ -44,11 +44,11 @@ cat > "$APP/Contents/Info.plist" <<PLIST
     <key>NSHighResolutionCapable</key>
     <true/>
     <key>NSAppleEventsUsageDescription</key>
-    <string>Flux switches macOS between Light and Dark Mode at sunrise and sunset, if you turn that on.</string>
+    <string>Sundial switches macOS between Light and Dark Mode at sunrise and sunset, if you turn that on.</string>
     <key>NSLocationUsageDescription</key>
-    <string>Flux uses your approximate location to work out local sunrise and sunset times. It never leaves your Mac.</string>
+    <string>Sundial uses your approximate location to work out local sunrise and sunset times. It never leaves your Mac.</string>
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Flux uses your approximate location to work out local sunrise and sunset times. It never leaves your Mac.</string>
+    <string>Sundial uses your approximate location to work out local sunrise and sunset times. It never leaves your Mac.</string>
 </dict>
 </plist>
 PLIST

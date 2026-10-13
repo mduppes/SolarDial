@@ -2,21 +2,21 @@
 import PackageDescription
 
 let package = Package(
-    name: "Flux",
+    name: "Sundial",
     platforms: [.macOS(.v14)],
     products: [
-        .library(name: "FluxCore", targets: ["FluxCore"]),
-        .executable(name: "FluxApp", targets: ["FluxApp"]),
+        .library(name: "SundialCore", targets: ["SundialCore"]),
+        .executable(name: "SundialApp", targets: ["SundialApp"]),
     ],
     targets: [
-        .target(name: "FluxCore"),
+        .target(name: "SundialCore"),
         .executableTarget(
-            name: "FluxApp",
-            dependencies: ["FluxCore"]
+            name: "SundialApp",
+            dependencies: ["SundialCore"]
         ),
         .testTarget(
-            name: "FluxCoreTests",
-            dependencies: ["FluxCore"]
+            name: "SundialCoreTests",
+            dependencies: ["SundialCore"]
         ),
     ]
 )
