@@ -2,12 +2,14 @@
 
 ## Current Status: every scoped feature is built; live visual checks pending
 
+Morning colour is fully on at wake time (or at sunrise, if that is later). The 60-minute transition runs up to that instant. See ADR 013.
+
 - **Phase 1 (Reverse engineering):** Done. Exports are in `reference/`.
 - **Phase 2 (Architecture & decisions):** Done. ADR 001–012.
 - **Phase 3, Milestone A (core tinter):** Done, and the tint is verified live.
 - **Phase 3, Milestone B (settings window, movie mode, start at login, dark-mode sync, bedtime reminder):** Done in code.
 - **Phase 3, Milestone C (user feedback round):** Done in code: checkmark menu, narrower status item, app icon, 24-hour graph, colour-conflict warning, bedtime dimming, movie Kelvin and duration, Undo / Reset to Defaults. Darkroom removed.
-- 53 unit tests pass and `build/Flux.app` builds and runs.
+- 55 unit tests pass and `build/Flux.app` builds and runs.
 
 ---
 
@@ -32,6 +34,11 @@
 ---
 
 ## Handoff Log
+
+### 2026-10-13 — Morning tint past wake time
+- **Done:** The morning ramps finish at the later of sunrise and wake, instead of starting there. Wake is the clock time on that local calendar day (year/month/day components), not `Calendar.date(bySettingHour:of:)`. Regression test uses the reported Florianópolis inputs at 2026-10-13 07:11 BRT (10:11Z). 55 tests. ADR 013. Docs updated.
+- **Ruled out:** sunrise that morning is ~05:40, so it was not holding the tint; `sleepMinutes` 510 is 8 h 30 min (bedtime 22:30); `org.herf.Flux` is only the conflict-detection bundle id (wake time 480 and 42.6° N, 18.1° E are not read); `ScheduleEngine` keeps no day cache, so being open since Oct 12 19:42 does not change `evaluate`.
+- **Not done:** no live gamma check of this build. "Disable until sunrise" now ends when the ramp begins (06:00 with the defaults).
 
 ### 2026-10-12 — Milestone C: user feedback round (Claude Opus)
 - **Done:**

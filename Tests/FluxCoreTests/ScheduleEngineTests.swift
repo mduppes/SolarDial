@@ -31,7 +31,8 @@ struct ScheduleEngineTests {
     }
 
     @Test func lateNightIsBedtimeColour() {
-        for date in [local(23, 30), local(3), local(6, 59)] {
+        // 05:30 is still before the 06:00–07:00 morning ramp (wake 07:00, 60 min transition).
+        for date in [local(23, 30), local(3), local(5, 30)] {
             let result = engine.evaluate(at: date)
             #expect(result.phase == .bedtime)
             #expect(abs(result.kelvin - 2300) < 1e-6)
@@ -45,11 +46,72 @@ struct ScheduleEngineTests {
         #expect(during.kelvin < 6500 && during.kelvin > 3400)
     }
 
-    @Test func morningWaitsForWakeTimeEvenAfterSunrise() {
-        let beforeWake = engine.evaluate(at: local(6, 30))
+    @Test func morningColourIsCompleteAtWakeEvenAfterSunrise() {
+        // Sunrise is ~05:36, so the 60 min ramp runs 06:00–07:00 and finishes at wake.
+        let beforeRamp = engine.evaluate(at: local(5, 30))
+        let during = engine.evaluate(at: local(6, 30))
+        let atWake = engine.evaluate(at: local(7))
         let afterWake = engine.evaluate(at: local(8, 30))
-        #expect(beforeWake.kelvin < 3000)
+        #expect(beforeRamp.phase == .bedtime)
+        #expect(abs(beforeRamp.kelvin - 2300) < 1e-6)
+        #expect(during.phase == .transition)
+        #expect(abs(during.daylight - 0.5) < 0.02)
+        #expect(abs(during.bedtime - 0.5) < 0.02)
+        #expect(atWake.phase == .day)
+        #expect(atWake.kelvin == 6500)
         #expect(afterWake.kelvin == 6500)
+    }
+
+    @Test func sunriseKeepsTheTintUntilTheSunIsUp() {
+        var settings = UserSettings()
+        settings.wakeMinutes = 4 * 60
+        let early = ScheduleEngine(settings: settings, coordinates: saoPaulo, timeZone: tz)
+        #expect(early.evaluate(at: local(4)).phase == .bedtime)
+        #expect(early.evaluate(at: local(6, 30)).kelvin == 6500)
+    }
+
+    /// 2026-10-13 07:11 America/Sao_Paulo (10:11Z), Florianópolis. Wake 07:00, slow transition.
+    /// The screen was still ~2470 K because the ramp ran for an hour after wake.
+    @Test func floripaMorningIsDayColourElevenMinutesAfterWake() throws {
+        let settings = try JSONDecoder().decode(
+            UserSettings.self,
+            from: Data(
+                """
+                {"movieMinutes":150,"sunsetKelvin":3400,"movieKelvin":4100,"darkModeSync":false,\
+                "bedtimeReminder":false,"transitionMinutes":60,"wakeMinutes":420,"bedtimeBrightness":1,\
+                "bedtimeKelvin":2300,"disabledBundleIDs":[],"sleepMinutes":510,"dayKelvin":6500,\
+                "disableForFullscreen":true}
+                """.utf8))
+        let floripa = Coordinates(latitude: -27.601319760054153, longitude: -48.61451200892745)
+        let schedule = ScheduleEngine(settings: settings, coordinates: floripa, timeZone: tz)
+        #expect(settings.bedtimeMinutes == 22 * 60 + 30)
+        #expect(settings.wakeMinutes == 7 * 60)
+
+        let atWakePlusEleven = local(7, 11, day: 13)
+        let tenElevenZ = try Date("2026-10-13T10:11:00Z", strategy: .iso8601)
+        #expect(atWakePlusEleven == tenElevenZ)
+
+        let morning = schedule.evaluate(at: atWakePlusEleven)
+        let sunrise = try #require(morning.sunrise)
+        #expect(sunrise < local(7, day: 13))
+        #expect(morning.phase == .day)
+        #expect(morning.daylight == 1)
+        #expect(morning.bedtime == 0)
+        #expect(morning.kelvin == 6500)
+
+        // Same engine, still running from the previous evening: night colour survives midnight,
+        // and the afternoon after wake is daytime on that calendar day (wake does not slide to tomorrow).
+        let previousEvening = schedule.evaluate(at: local(19, 42, day: 12))
+        #expect(previousEvening.phase == .sunset)
+        #expect(abs(previousEvening.kelvin - 3400) < 1e-6)
+        let afterMidnight = schedule.evaluate(at: local(0, 30, day: 13))
+        #expect(afterMidnight.phase == .bedtime)
+        #expect(schedule.evaluate(at: local(13, day: 13)).kelvin == 6500)
+
+        let scheduled = morning.target
+        let resolved = TargetResolver.target(for: .init(scheduled: scheduled))
+        #expect(resolved == scheduled)
+        #expect(resolved.kelvin == 6500)
     }
 
     @Test func bedtimeAfterMidnightWraps() {
@@ -63,14 +125,16 @@ struct ScheduleEngineTests {
         #expect(late.evaluate(at: local(1, 0)).phase == .bedtime)
     }
 
-    @Test func nextMorningIsLaterOfSunriseAndWake() {
+    @Test func nextMorningIsWhenTheRampBegins() {
+        // Wake 07:00 and a 60 min transition: the ramp starts at 06:00, after sunrise.
         let next = engine.nextMorning(after: local(21))
-        #expect(next == local(7, day: 13))
+        #expect(next == local(6, day: 13))
         var settings = UserSettings()
         settings.wakeMinutes = 4 * 60
         let early = ScheduleEngine(settings: settings, coordinates: saoPaulo, timeZone: tz)
-        let sunrise = early.nextMorning(after: local(21))
-        #expect(sunrise > local(5, day: 13) && sunrise < local(6, day: 13))
+        let starts = early.nextMorning(after: local(21))
+        // Sunrise is ~05:36, so the ramp begins an hour before that, not at 04:00.
+        #expect(starts > local(4, day: 13) && starts < local(5, day: 13))
     }
 
     @Test func bedtimeDimsWithTheRamp() {
@@ -97,6 +161,6 @@ struct ScheduleEngineTests {
         #expect(disable.isActive(at: now.addingTimeInterval(3599)))
         #expect(!disable.isActive(at: now.addingTimeInterval(3600)))
         let untilSunrise = TemporaryDisable.untilSunrise(from: now, schedule: engine)
-        #expect(untilSunrise.endDate == local(7, day: 13))
+        #expect(untilSunrise.endDate == local(6, day: 13))
     }
 }

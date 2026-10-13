@@ -102,8 +102,9 @@ flowchart LR
 
 ### Schedule model (`ScheduleEngine`)
 Two weights are blended in **mired** space (1e6/K):
-- **Daylight**: ramps up over `transitionMinutes`, starting at the later of sunrise and wake time. Ramps down over `transitionMinutes` starting at sunset (sun at -0.833°). During polar day or night it follows the current solar elevation.
-- **Bedtime**: ramps up over `transitionMinutes`, ending at bedtime (= wake time - `sleepMinutes`). Holds until wake time, then ramps down. It wraps past midnight correctly.
+- **Daylight**: ramps up over `transitionMinutes`, **ending** at the later of sunrise and wake time, so the screen is already at daytime colour when that instant arrives. Ramps down over `transitionMinutes` starting at sunset (sun at -0.833°). During polar day or night it follows the current solar elevation.
+- **Bedtime**: ramps up over `transitionMinutes`, ending at bedtime (= wake time − `sleepMinutes`). Holds, then ramps down over the same morning window and reaches 0 at that anchor. It wraps past midnight correctly.
+- Wake is the clock time on that local calendar day (`year`/`month`/`day` components). It is not `Calendar.date(bySettingHour:of:)`, which searches forward and can return tomorrow once the hour has passed.
 
 `kelvin = blend(blend(sunset, day, daylight), bedtime, bedtimeWeight)`. Defaults are 6500 / 3400 / 2300 K, wake time 07:00 and 8 h 30 min of sleep (so bedtime is 22:30), with 60 min transitions.
 

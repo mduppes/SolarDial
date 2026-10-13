@@ -119,3 +119,12 @@ This log records settled architectural decisions. Do not re-litigate settled dec
 - **Context:** The user asked for a warning when another app changes display colour. There's no notification for transfer-table changes.
 - **Decision:** On each 30 s tick, read the tables back and compare them with what Flux last wrote (with a grace period after fades, launches and reconfigurations). On a mismatch, rewrite the table and flag an "unknown app" conflict for 10 minutes. Also flag known apps (f.lux) by bundle ID when they're running. The warning appears in the menu, in settings, and as a notification once per session.
 - **Consequences:** It's cheap and needs no permission. It can't see Night Shift or True Tone, which work below the tables. Two table writers will still fight every 30 s until one quits, but the user is told why.
+
+---
+
+### ADR 013: The morning transition ends at wake (or at sunrise, if that is later)
+- **Date:** 2026-10-13
+- **Status:** Accepted
+- **Context:** At 2026-10-13 07:11 in America/Sao_Paulo (10:11Z), Florianópolis, with wake time 07:00 and a 60-minute transition, the screen was still about 2470 K. Sunrise that day is about 05:40, so the sun was not holding the tint. `sleepMinutes` 510 is a duration (8 h 30 min), which puts bedtime at 22:30, not a clock time. Nothing reads the original f.lux defaults (`org.herf.Flux` wake time 480 or the saved 42.6° N, 18.1° E location); that bundle id is only used to notice when f.lux is running. The schedule is stateless, so an app that had been open since the previous evening was not reusing a cached day. The bedtime ramp already finishes at bedtime, but the morning ramps started at wake and ran for `transitionMinutes` afterward. Eleven minutes into that hour, bedtime weight was still about 0.82.
+- **Decision:** Daytime colour, and the release of bedtime colour, are complete at the later of this local day's sunrise and wake time. The transition occupies the `transitionMinutes` before that instant. Wake is built from the calendar day of the instant being evaluated, not from `Calendar.date(bySettingHour:of:)`, whose default search direction is forward.
+- **Consequences:** "Disable until sunrise" ends when that morning ramp begins (06:00, with the defaults). Dark-mode sync's morning crossing (daylight weight 0.5) moves earlier by half the transition. Sunset still starts its ramp at sunset.
