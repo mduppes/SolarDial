@@ -7,6 +7,7 @@ Plain HTML, CSS and JavaScript built with Vite through npm. Source lives in `web
 From the repository root:
 
 ```sh
+cd website
 nvm use # optional, selects Node 22 from .nvmrc
 npm ci
 npm run dev
@@ -19,9 +20,11 @@ npm run build
 npm run preview
 ```
 
-The production build goes to `website/dist`; preview serves that build locally. Run all npm commands from the repository root. Commit `package-lock.json` when dependencies change so `npm ci` installs the locked versions.
+The production build goes to `website/dist`; preview serves that build locally. Run all npm commands inside `website/`. Commit `website/package-lock.json` when dependencies change so `npm ci` installs the locked versions.
 
 ## Refresh the preview download
+
+From the repository root:
 
 ```sh
 ./scripts/build-app.sh
@@ -40,16 +43,16 @@ SolarDial uses its own Stripe Payment Link: https://buy.stripe.com/28EfZae0V54J7
 
 ## Sites publication
 
-`.openai/hosting.json` records the Sites project identity. Run `npm run build` from the repository root, then stage the built `dist/` and this manifest. Publish from a separate staged checkout using the Sites source workflow so the app's repository never gains an embedded Git repository. Generated downloads may be omitted when staging because links use the GitHub release. New Sites use owner-private access by default; public access is a separate hosting setting. Preserve the project ID on subsequent edits.
+`.openai/hosting.json` records the Sites project identity. Run `npm run build` from `website/`, then stage the built `dist/` and this manifest. Publish from a separate staged checkout using the Sites source workflow so the app's repository never gains an embedded Git repository. Generated downloads may be omitted when staging because links use the GitHub release. New Sites use owner-private access by default; public access is a separate hosting setting. Preserve the project ID on subsequent edits.
 
 
 ## Netlify
 
 Connect `mduppes/SolarDial` and deploy `main`. The root `netlify.toml` supplies these settings:
 
-- Base directory: repository root (leave blank).
+- Base directory: `website`.
 - Build command: `npm run build`.
-- Publish directory: `website/dist`.
+- Publish directory: `dist` (relative to `website`).
 - Node version: `22`.
 
-Netlify installs npm dependencies from the root package and lockfile before building. Clear any previous UI overrides for the base/build/publish settings. The site uses no backend or environment variables. Release links and checksums must match the actual GitHub release when changing versions.
+Netlify installs npm dependencies from `website/package.json` and `website/package-lock.json` before building. The root config explicitly sets the base directory to `website`; all build paths are relative to it. The site uses no backend or environment variables. Release links and checksums must match the actual GitHub release when changing versions.

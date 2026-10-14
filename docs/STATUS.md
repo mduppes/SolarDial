@@ -19,7 +19,7 @@ Morning colour is fully on at wake time (or at sunrise, if that is later). The 6
 
 - Donation-page icon is ready for manual upload: `Resources/SolarDial-donation-icon.png` (1024 × 1024 PNG).
 
-- Connect `mduppes/SolarDial` to Netlify: base directory blank/repository root, build `npm run build`, publish `website/dist`. The npm migration, LinkedIn removal, donation icon and dedicated Stripe link are ready for Netlify. Review the private landing-page preview; hosting/custom-domain setup remains pending. The active checkout is `/Users/mduppes/code/SolarDial`, with remote `git@github.com:mduppes/SolarDial.git`. The full history is preserved and pushed. The old GitHub repo is archived; `/Users/mduppes/code/Flux` contains only a pointer. Its previous checkout is preserved at `/private/tmp/Flux-retired-2026-10-14`.
+- Connect `mduppes/SolarDial` to Netlify: base directory `website`, build `npm run build`, publish `dist` (relative to the base). The npm migration, LinkedIn removal, donation icon and dedicated Stripe link are ready for Netlify. Review the private landing-page preview; hosting/custom-domain setup remains pending. The active checkout is `/Users/mduppes/code/SolarDial`, with remote `git@github.com:mduppes/SolarDial.git`. The full history is preserved and pushed. The old GitHub repo is archived; `/Users/mduppes/code/Flux` contains only a pointer. Its previous checkout is preserved at `/private/tmp/Flux-retired-2026-10-14`.
 - SolarDial is running, settings JSON matches the previous clone, Location Services has refreshed, and Start at Login is enabled in the app running from the new SolarDial checkout.
 
 1. **Settings shortcuts follow-up:** rebuilt app is running. Check ⌘W / Escape close Settings while tinting stays active, ⌘M minimizes, ⌘, shows Settings, and existing ⌘Z undoes a settings change. Native menus and app reopen were inspected live; automated keyboard input was inconclusive.
@@ -43,6 +43,11 @@ Morning colour is fully on at wake time (or at sunrise, if that is later). The 6
 ---
 
 ## Handoff Log
+
+### 2026-10-14 — Fix Netlify website base and npm dependency installation
+- **Done:** Moved npm package, lockfile and Node version file into `website/`. Scripts now run Vite directly from that directory. Root `netlify.toml` explicitly sets base `website`, command `npm run build`, publish `dist`. Updated local/deployment instructions, architecture, features and ADR 022.
+- **Verified:** Clean `npm ci` and production build pass from `website/`. Also copied source into a fresh temporary checkout with no ancestor dependencies, parsed base/publish from the actual TOML, installed locked dependencies and built successfully into the resolved `website/dist`. Dedicated donation URL retained.
+- **Next / gotchas:** Pushing this fix to `origin/main`; retry Netlify against this revision. Expected build working directory `/opt/build/repo/website`, publish `/opt/build/repo/website/dist`. Hosted Netlify success is not yet verified. Sites preview and native live checks remain pending.
 
 ### 2026-10-14 — Dedicated SolarDial donation link and GitHub push
 - **Done:** Replaced all four donation buttons with the user-provided `https://buy.stripe.com/28EfZae0V54J7yNaO2gnK01`. Updated current documentation and ADR 021. Pushing this change and the preceding npm migration, LinkedIn removal and donation-icon export to `origin/main` as requested.

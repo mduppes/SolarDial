@@ -189,3 +189,11 @@ This log records settled architectural decisions. Do not re-litigate settled dec
 - **Date:** 2026-10-14
 - **Status:** Accepted (replaces ADR 016's shared donation destination)
 - **Decision:** Use the user-provided SolarDial Stripe Payment Link `https://buy.stripe.com/28EfZae0V54J7yNaO2gnK01` for all four website donation buttons instead of TokenTracking's link. Keep checkout hosted by Stripe with no payment scripts or backend. The user authorized pushing this change and prior local website work to GitHub.
+
+
+### ADR 022: Self-contained website npm package and explicit Netlify base
+- **Date:** 2026-10-14
+- **Status:** Accepted (refines ADR 019)
+- **Context:** The user's Netlify site builds in `/opt/build/repo/website`. Root-level npm files caused dependency installation to miss Vite and the publish directory resolved to `website/website/dist`.
+- **Decision:** Move `package.json`, `package-lock.json`, and `.nvmrc` into `website/`; use plain `vite`, `vite build`, and `vite preview` scripts there. Root `netlify.toml` explicitly sets `base = "website"` and `publish = "dist"`, aligning dependency installation, build working directory and publish resolution.
+- **Consequences:** The website is independently installable/buildable from its own directory. Local instructions begin with `cd website`. Swift sources stay outside the Netlify base. Verify a clean install/build in an isolated temporary checkout to avoid masking missing dependencies with the old root `node_modules`.

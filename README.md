@@ -21,6 +21,7 @@ Quit the original f.lux first, because both apps control display gamma.
 The landing page lives in [website/](website/README.md). It includes a daily-schedule illustration, installation notes, and a dedicated SolarDial Stripe-hosted donation link.
 
 ```sh
+cd website
 npm ci
 npm run dev
 # Production output for Netlify:
