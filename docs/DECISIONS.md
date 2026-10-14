@@ -183,3 +183,9 @@ This log records settled architectural decisions. Do not re-litigate settled dec
 - **Date:** 2026-10-14
 - **Status:** Accepted (refines ADR 017)
 - **Decision:** At the user's request, remove LinkedIn links from the navigation and footer and delete the unused SVG. Keep GitHub and donation links with their local icons. Update website guidance to prevent reintroducing LinkedIn links.
+
+
+### ADR 021: Dedicated SolarDial donation link
+- **Date:** 2026-10-14
+- **Status:** Accepted (replaces ADR 016's shared donation destination)
+- **Decision:** Use the user-provided SolarDial Stripe Payment Link `https://buy.stripe.com/28EfZae0V54J7yNaO2gnK01` for all four website donation buttons instead of TokenTracking's link. Keep checkout hosted by Stripe with no payment scripts or backend. The user authorized pushing this change and prior local website work to GitHub.

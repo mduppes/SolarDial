@@ -36,7 +36,7 @@ Use `Resources/SolarDial-donation-icon.png` (relative to the repository root) fo
 
 ## Support and source links
 
-The existing TokenTracking Stripe Payment Link is reused: https://donate.stripe.com/6oU28k9KFap37yN5tIgnK00. Donate links open Stripe-hosted checkout in a new tab; the site has no payment keys, embeds or backend. Creator links also follow TokenTracking, with local GitHub SVG brand marks beside their labels and matching donation hearts. Future edits must retain this icon treatment (`.cursor/rules/website-icons.mdc`). GitHub links point to the active `mduppes/SolarDial` repository. The previous `mduppes/Flux` repository is retired.
+SolarDial uses its own Stripe Payment Link: https://buy.stripe.com/28EfZae0V54J7yNaO2gnK01. Donate links open Stripe-hosted checkout in a new tab; the site has no payment keys, embeds or backend. Creator links also follow TokenTracking, with local GitHub SVG brand marks beside their labels and matching donation hearts. Future edits must retain this icon treatment (`.cursor/rules/website-icons.mdc`). GitHub links point to the active `mduppes/SolarDial` repository. The previous `mduppes/Flux` repository is retired.
 
 ## Sites publication
 

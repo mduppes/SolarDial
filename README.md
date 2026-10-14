@@ -18,7 +18,7 @@ Quit the original f.lux first, because both apps control display gamma.
 
 ## Landing page
 
-The landing page lives in [website/](website/README.md). It includes a daily-schedule illustration, installation notes, and the same Stripe-hosted donate link as TokenTracking.
+The landing page lives in [website/](website/README.md). It includes a daily-schedule illustration, installation notes, and a dedicated SolarDial Stripe-hosted donation link.
 
 ```sh
 npm ci
