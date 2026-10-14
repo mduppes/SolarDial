@@ -17,6 +17,8 @@ Morning colour is fully on at wake time (or at sunrise, if that is later). The 6
 
 ## Next Steps
 
+- Donation-page icon is ready for manual upload: `Resources/SolarDial-donation-icon.png` (1024 × 1024 PNG).
+
 - Connect `mduppes/SolarDial` to Netlify: base directory blank/repository root, build `npm run build`, publish `website/dist`. The npm migration and LinkedIn removal are committed locally; push them before deploying. Review the private landing-page preview; hosting/custom-domain setup remains pending. The active checkout is `/Users/mduppes/code/SolarDial`, with remote `git@github.com:mduppes/SolarDial.git`. The full history is preserved and pushed. The old GitHub repo is archived; `/Users/mduppes/code/Flux` contains only a pointer. Its previous checkout is preserved at `/private/tmp/Flux-retired-2026-10-14`.
 - SolarDial is running, settings JSON matches the previous clone, Location Services has refreshed, and Start at Login is enabled in the app running from the new SolarDial checkout.
 
@@ -41,6 +43,11 @@ Morning colour is fully on at wake time (or at sunrise, if that is later). The 6
 ---
 
 ## Handoff Log
+
+### 2026-10-14 — Donation-page icon export
+- **Done:** Exported the existing SolarDial sunset app/website icon to `Resources/SolarDial-donation-icon.png` for the user's manual donation-page upload. Added export documentation.
+- **Verified:** PNG format, 1024 × 1024 pixels; identical to the existing website artwork inspected visually.
+- **Next / gotchas:** Upload this PNG in the donation-page editor. No Stripe settings were changed. Website commits remain local; hosting and native live checks above remain pending.
 
 ### 2026-10-14 — Remove LinkedIn website links
 - **Done:** Removed both LinkedIn links (navigation and footer) and the unused SVG. Updated feature scope, website README, icon guidance and ADR 020.

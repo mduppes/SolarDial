@@ -30,6 +30,10 @@ The production build goes to `website/dist`; preview serves that build locally. 
 
 The download is the actual Apple silicon build, ad-hoc signed and not notarized. Keep version/architecture labels and installation notes in `index.html` accurate when changing the release. Download artifacts live in `website/downloads/`, outside the build output so Vite builds do not erase them. They are ignored by the app repository and uploaded to the GitHub release. Landing-page downloads point to the v0.1.0 GitHub release so both Sites and Netlify work without generated ZIPs in Git. `package-download.sh` packages the bundle and writes a checksum.
 
+## Donation icon
+
+Use `Resources/SolarDial-donation-icon.png` (relative to the repository root) for a manual donation-page image upload. It is the existing SolarDial sunset icon exported as a 1024 × 1024 PNG.
+
 ## Support and source links
 
 The existing TokenTracking Stripe Payment Link is reused: https://donate.stripe.com/6oU28k9KFap37yN5tIgnK00. Donate links open Stripe-hosted checkout in a new tab; the site has no payment keys, embeds or backend. Creator links also follow TokenTracking, with local GitHub SVG brand marks beside their labels and matching donation hearts. Future edits must retain this icon treatment (`.cursor/rules/website-icons.mdc`). GitHub links point to the active `mduppes/SolarDial` repository. The previous `mduppes/Flux` repository is retired.

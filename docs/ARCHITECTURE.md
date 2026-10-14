@@ -167,6 +167,8 @@ build/SolarDial.app/Contents/
 └── Resources/AppIcon.icns
 ```
 
+`Resources/SolarDial-donation-icon.png` is a 1024 × 1024 PNG export of the existing app/website icon for manual upload to the donation page. It is separate from the app bundle and is not uploaded automatically.
+
 To change the icon, edit `scripts/make-icon.swift`, run `swift scripts/make-icon.swift`, and commit the new `Resources/AppIcon.icns`.
 
 It then signs ad hoc (`codesign --force --sign -`). Because each rebuild changes the ad-hoc signature, macOS may ask for location permission again.
