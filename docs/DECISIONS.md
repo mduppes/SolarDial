@@ -169,3 +169,11 @@ This log records settled architectural decisions. Do not re-litigate settled dec
 - **Context:** The user created `/Users/mduppes/code/SolarDial` with remote `git@github.com:mduppes/SolarDial.git`, requested moving everything out of Flux and shutting it down, and explicitly requested pushing to the new GitHub repository.
 - **Decision:** Preserve the complete Git history and transfer source, docs, references, rules, app artifacts and landing-page downloads to the new checkout. Rebuild SwiftPM caches at the new path. Update website links and current guide paths to SolarDial. Archive the earlier GitHub repository after the new main branch is verified; retain the old local checkout as a recoverable backup outside the active project. Keep the existing Sites project and private audience. Publish the preview ZIP/checksum as GitHub release assets and point website downloads there; configure Netlify to serve the tracked static site without a build step.
 - **Consequences:** SolarDial is the sole active development repository. The built app's bundle identity remains `com.mduppes.solardial`, so preferences are retained; its login registration must point to the new location.
+
+
+### ADR 019: npm website build for Netlify
+- **Date:** 2026-10-14
+- **Status:** Accepted (supersedes ADR 018's buildless Netlify configuration)
+- **Context:** The user requested an npm-based website to match their other Netlify apps.
+- **Decision:** Add root npm scripts and a locked Vite development dependency, keeping the existing plain HTML/CSS/JS. Move source out of `website/dist` into `website/`, with static icons under `website/public/assets`. Generate and ignore `website/dist`. Netlify uses Node 22, `npm run build`, and publish directory `website/dist`, with the repository root as base. Move locally packaged downloads to ignored `website/downloads` so builds cannot delete them; website links still use GitHub release assets.
+- **Consequences:** Conventional npm install/dev/build/preview workflow without a UI framework or runtime dependency. Vite is justified solely as website tooling; Swift app dependencies and network behaviour are unchanged. Netlify setup is prepared locally; hosting is not deployed by this change.

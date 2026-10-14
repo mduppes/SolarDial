@@ -60,8 +60,13 @@ SolarDial/
 │   ├── test.sh                            # swift test + Swift Testing search paths for the CLT
 │   ├── make-icon.swift                    # Draws the icon with AppKit, packs it with iconutil
 │   └── build-app.sh                       # Assembles and ad-hoc signs build/SolarDial.app
-├── website/                              # Buildless landing page; separate Sites project
-│   ├── dist/                             # HTML/CSS/JS, icon and generated preview downloads
+├── package.json / package-lock.json      # npm scripts and locked Vite build dependency
+├── .nvmrc / netlify.toml                  # Node 22 and Netlify build settings
+├── website/                              # Vite landing page; separate Sites project
+│   ├── index.html, style.css, app.js       # Website source
+│   ├── public/assets/                     # Local icons copied to the build
+│   ├── dist/                              # Generated static output (ignored)
+│   ├── downloads/                         # Local preview packages (ignored)
 │   └── .openai/hosting.json              # Site identity + static output declaration
 ├── reference/                             # f.lux decompilation exports (see REVERSE_ENGINEERING.md)
 └── docs/
@@ -171,4 +176,4 @@ It then signs ad hoc (`codesign --force --sign -`). Because each rebuild changes
 
 `com.mduppes.solardial` is the app defaults domain. On launch of the bundled app, `AppDelegate.migrateLegacyPreferences` copies the existing clone's `settings` and `lastLocationFix` from `com.mduppes.sundial`, then `com.mduppes.flux`, only when each value is absent in the new domain. It never reads the vendor's settings. macOS permission and login registration follow the new bundle identity.
 
-`website/dist` is both the landing page's source and static output. It contains local HTML, CSS, JS and the generated app icon, with no external runtime dependencies. An illustrative schedule uses mired blending and clearly labelled sample times. Donate buttons link to the existing Stripe-hosted checkout used by TokenTracking. `scripts/package-download.sh` packages the signed Apple silicon bundle into a ZIP and SHA-256 sidecar under `website/dist/downloads` (ignored in the app repo). Sites publishing uses a separate temporary source checkout, excluding all app code and `reference/` exports. Download links use public GitHub release assets so a clean Netlify clone needs no local binary files. The root `netlify.toml` publishes `website/dist` without a build command. See `website/README.md`.
+`website/` contains the landing page source (HTML, CSS, module JS, and `public/assets` icons). Root npm scripts use Vite as a development/build dependency: `npm run dev`, `npm run build`, and `npm run preview`. The build generates ignored `website/dist` with no external runtime dependencies. The lockfile pins dependencies; `.nvmrc` and Netlify select Node 22 (minimum 22.12). See ADR 019. An illustrative schedule uses mired blending and clearly labelled sample times. Donate buttons link to the existing Stripe-hosted checkout used by TokenTracking. `scripts/package-download.sh` packages the signed Apple silicon bundle into a ZIP and SHA-256 sidecar under `website/downloads` (ignored in the app repo). Sites publishing uses a separate temporary source checkout, excluding all app code and `reference/` exports. Download links use public GitHub release assets so a clean Netlify clone needs no local binary files. The root `netlify.toml` runs `npm run build` and publishes `website/dist` from the repository root. Stage the generated output and hosting manifest for any later Sites publication. See `website/README.md`.

@@ -3,7 +3,7 @@
 set -eu
 cd "$(dirname "$0")/.."
 APP="build/SolarDial.app"
-OUTPUT="website/dist/downloads"
+OUTPUT="website/downloads"
 VERSION=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$APP/Contents/Info.plist")
 ARCH=$(lipo -archs "$APP/Contents/MacOS/SolarDialApp")
 [ "$ARCH" = arm64 ] || { echo "Expected an Apple silicon build, got $ARCH" >&2; exit 1; }

@@ -10,14 +10,14 @@ Morning colour is fully on at wake time (or at sunrise, if that is later). The 6
 - **Phase 3, Milestone B (settings window, movie mode, start at login, dark-mode sync, bedtime reminder):** Done in code.
 - **Phase 3, Milestone C (user feedback round):** Done in code: checkmark menu, narrower status item, app icon, 24-hour graph, colour-conflict warning, bedtime dimming, movie Kelvin and duration, Undo / Reset to Defaults. Darkroom removed.
 - 55 unit tests pass and `build/SolarDial.app` builds and runs. App identity and Swift targets are renamed to SolarDial; existing settings are migrated.
-- Preview ZIP and SHA-256 checksum published at https://github.com/mduppes/SolarDial/releases/tag/v0.1.0. `netlify.toml` publishes the tracked static site with no build step.
+- Preview ZIP and SHA-256 checksum published at https://github.com/mduppes/SolarDial/releases/tag/v0.1.0. `netlify.toml` runs the npm/Vite build and publishes generated `website/dist` (Node 22).
 - Landing page deployed as an owner-private Sites preview: https://solardial-mac.truedog2.chatgpt.site. Includes a real Apple silicon preview download and the TokenTracking Stripe donate link.
 
 ---
 
 ## Next Steps
 
-- Review the private landing-page preview; public access or a Netlify/custom-domain move is a separate hosting choice. The active checkout is `/Users/mduppes/code/SolarDial`, with remote `git@github.com:mduppes/SolarDial.git`. The full history is preserved and pushed. The old GitHub repo is archived; `/Users/mduppes/code/Flux` contains only a pointer. Its previous checkout is preserved at `/private/tmp/Flux-retired-2026-10-14`.
+- Connect `mduppes/SolarDial` to Netlify: base directory blank/repository root, build `npm run build`, publish `website/dist`. The npm migration is committed locally; push it before deploying. Review the private landing-page preview; hosting/custom-domain setup remains pending. The active checkout is `/Users/mduppes/code/SolarDial`, with remote `git@github.com:mduppes/SolarDial.git`. The full history is preserved and pushed. The old GitHub repo is archived; `/Users/mduppes/code/Flux` contains only a pointer. Its previous checkout is preserved at `/private/tmp/Flux-retired-2026-10-14`.
 - SolarDial is running, settings JSON matches the previous clone, Location Services has refreshed, and Start at Login is enabled in the app running from the new SolarDial checkout.
 
 1. **Settings shortcuts follow-up:** rebuilt app is running. Check ⌘W / Escape close Settings while tinting stays active, ⌘M minimizes, ⌘, shows Settings, and existing ⌘Z undoes a settings change. Native menus and app reopen were inspected live; automated keyboard input was inconclusive.
@@ -41,6 +41,12 @@ Morning colour is fully on at wake time (or at sunrise, if that is later). The 6
 ---
 
 ## Handoff Log
+
+### 2026-10-14 — npm website workflow for Netlify
+- **Done:** Root npm package with Vite dev/build/preview scripts, lockfile, Node 22 selection, and Netlify build command. Moved HTML/CSS/module JS to `website/` and local icons to `website/public/assets`; `website/dist` is generated and ignored. Local release packages now live in ignored `website/downloads`, safely outside Vite's cleaned output. Updated README, website instructions, architecture, feature scope and ADR 019.
+- **Verified:** Locked `npm ci` installation and production build pass. All six distinct built asset references resolve; existing ZIP/checksum preserved. Production preview returns HTTP 200. No Swift code changed.
+- **Next / gotchas:** Push the local commit before connecting/deploying Netlify. Base directory must be the repository root (blank), build `npm run build`, publish `website/dist`, Node 22. No Netlify deployment or Sites republication performed. Future Sites publication needs generated `dist` plus the existing hosting manifest. Remaining native live checks above are unchanged.
+
 
 ### 2026-10-14 — Migration completed and pushed to GitHub
 - **Done:** Active repository is `/Users/mduppes/code/SolarDial` with origin `git@github.com:mduppes/SolarDial.git`. Full source/docs/reference/rules history transferred and pushed. Current reference paths and website source links point to SolarDial. The old `mduppes/Flux` GitHub repository is archived with a redirect description. The old local checkout, including its caches and local artifacts, is preserved at `/private/tmp/Flux-retired-2026-10-14`; the original Flux directory now contains only README/AGENTS pointers.

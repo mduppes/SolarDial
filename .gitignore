@@ -4,5 +4,7 @@ build/
 .swiftpm/
 
 # Generated landing-page downloads and local Site staging
-website/dist/downloads/
+node_modules/
+website/dist/
+website/downloads/
 website/.sites-checkout/

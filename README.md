@@ -21,9 +21,10 @@ Quit the original f.lux first, because both apps control display gamma.
 The landing page lives in [website/](website/README.md). It includes a daily-schedule illustration, installation notes, and the same Stripe-hosted donate link as TokenTracking.
 
 ```sh
-./scripts/build-app.sh
-./scripts/package-download.sh
-python3 -m http.server 8765 --directory website/dist --bind 127.0.0.1
+npm ci
+npm run dev
+# Production output for Netlify:
+npm run build
 ```
 
 The packaged preview targets Apple silicon and macOS 14+. It is ad-hoc signed and not notarized. Existing preferences from the earlier clone migrate automatically; macOS may ask again for permissions or Start at Login approval after the rename.

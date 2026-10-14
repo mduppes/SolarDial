@@ -1,0 +1,17 @@
+{
+  "name": "solardial-website",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite website",
+    "build": "vite build website",
+    "preview": "vite preview website"
+  },
+  "devDependencies": {
+    "vite": "^8.3.4"
+  }
+}
