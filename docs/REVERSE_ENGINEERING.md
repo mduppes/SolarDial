@@ -34,17 +34,17 @@ npx -y rea-agents@6.4.0 decompile /Applications/Flux.app/Contents/MacOS/Flux \
 
 ## 3. Preserved Artifacts & Reference Location
 
-All decompilation and static analysis exports are committed directly to this repository under [`reference/`](file:///Users/mduppes/code/Flux/reference/) so any future agent or developer can access them without requiring external tools:
+All decompilation and static analysis exports are committed directly to this repository under [`reference/`](file:///Users/mduppes/code/SolarDial/reference/) so any future agent or developer can access them without requiring external tools:
 
 - **Decompiled Pseudocode Directory:**
-  [`reference/decompiled/`](file:///Users/mduppes/code/Flux/reference/decompiled/)
+  [`reference/decompiled/`](file:///Users/mduppes/code/SolarDial/reference/decompiled/)
   Contains 56 clean `.txt` decompiled methods and helper routines (e.g. `sub_100009f28.txt`, `__TintController_daylightMonitor__.txt`, `__DisplayConfiguration_makeGammaTable__.txt`).
 - **Metadata Files:**
-  [`reference/metadata/`](file:///Users/mduppes/code/Flux/reference/metadata/)
+  [`reference/metadata/`](file:///Users/mduppes/code/SolarDial/reference/metadata/)
   - `classes.txt`: Objective-C class catalog and method selectors.
   - `strings.txt`: Extracted strings with cross-reference searches.
 - **Complete Raw Archive:**
-  [`reference/rea_flux_decompilation.tar.gz`](file:///Users/mduppes/code/Flux/reference/rea_flux_decompilation.tar.gz) (134 KB)
+  [`reference/rea_flux_decompilation.tar.gz`](file:///Users/mduppes/code/SolarDial/reference/rea_flux_decompilation.tar.gz) (134 KB)
   Contains the complete bundle including REA JSON envelopes, `dispatch.json`, `macho.json`, and trace outputs.
 
 ---

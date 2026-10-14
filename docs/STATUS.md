@@ -10,14 +10,15 @@ Morning colour is fully on at wake time (or at sunrise, if that is later). The 6
 - **Phase 3, Milestone B (settings window, movie mode, start at login, dark-mode sync, bedtime reminder):** Done in code.
 - **Phase 3, Milestone C (user feedback round):** Done in code: checkmark menu, narrower status item, app icon, 24-hour graph, colour-conflict warning, bedtime dimming, movie Kelvin and duration, Undo / Reset to Defaults. Darkroom removed.
 - 55 unit tests pass and `build/SolarDial.app` builds and runs. App identity and Swift targets are renamed to SolarDial; existing settings are migrated.
+- Preview ZIP and SHA-256 checksum published at https://github.com/mduppes/SolarDial/releases/tag/v0.1.0. `netlify.toml` publishes the tracked static site with no build step.
 - Landing page deployed as an owner-private Sites preview: https://solardial-mac.truedog2.chatgpt.site. Includes a real Apple silicon preview download and the TokenTracking Stripe donate link.
 
 ---
 
 ## Next Steps
 
-- Review the private landing-page preview; public access or a Netlify/custom-domain move is a separate hosting choice. The active checkout is `/Users/mduppes/code/SolarDial`, with remote `git@github.com:mduppes/SolarDial.git`. The full history is preserved; the Flux checkout and GitHub repo are being retired.
-- SolarDial is running, settings JSON matches the previous clone, Location Services has refreshed, and Start at Login was moved from Sundial to SolarDial.
+- Review the private landing-page preview; public access or a Netlify/custom-domain move is a separate hosting choice. The active checkout is `/Users/mduppes/code/SolarDial`, with remote `git@github.com:mduppes/SolarDial.git`. The full history is preserved and pushed. The old GitHub repo is archived; `/Users/mduppes/code/Flux` contains only a pointer. Its previous checkout is preserved at `/private/tmp/Flux-retired-2026-10-14`.
+- SolarDial is running, settings JSON matches the previous clone, Location Services has refreshed, and Start at Login is enabled in the app running from the new SolarDial checkout.
 
 1. **Settings shortcuts follow-up:** rebuilt app is running. Check ⌘W / Escape close Settings while tinting stays active, ⌘M minimizes, ⌘, shows Settings, and existing ⌘Z undoes a settings change. Native menus and app reopen were inspected live; automated keyboard input was inconclusive.
 2. **Graph follow-up:** restart the rebuilt app and check the red clock-labelled marker against the axis; leave Settings open for a minute, then close and reopen it. Code now refreshes every 30 s and explicitly on every Settings show. Visual verification is pending.
@@ -40,6 +41,13 @@ Morning colour is fully on at wake time (or at sunrise, if that is later). The 6
 ---
 
 ## Handoff Log
+
+### 2026-10-14 — Migration completed and pushed to GitHub
+- **Done:** Active repository is `/Users/mduppes/code/SolarDial` with origin `git@github.com:mduppes/SolarDial.git`. Full source/docs/reference/rules history transferred and pushed. Current reference paths and website source links point to SolarDial. The old `mduppes/Flux` GitHub repository is archived with a redirect description. The old local checkout, including its caches and local artifacts, is preserved at `/private/tmp/Flux-retired-2026-10-14`; the original Flux directory now contains only README/AGENTS pointers.
+- **Release and site:** Published prerelease v0.1.0 with the actual Apple silicon preview ZIP and matching SHA-256 sidecar. Landing-page download links use GitHub release assets, so clean Netlify deployments do not need ignored binary artifacts. Added root `netlify.toml` (publish `website/dist`, no build). Republished the existing private Sites preview successfully with the new GitHub/release links.
+- **Verified:** 55 tests pass in the new checkout; signature verification and preview packaging passed. GitHub asset digest matches the local ZIP (`d098b340b356a895bfeb655d631a3dd4cffddde518a3b45eb514251acb3c8b71`). SolarDial process runs from the new build path; native Settings shows Start at Login enabled. All changes are pushed to the new main branch.
+- **Next / gotchas:** Netlify config is ready, but no Netlify deployment was performed in this chat. Sites remains owner-private. Open the SolarDial folder as the project for future chats; this chat's old Flux project entry now points at a retired directory. `/private/tmp` backup is temporary; durable source/history is in the new GitHub repo. Remaining live checks above still apply.
+
 
 ### 2026-10-13 — SolarDial rename and website icons
 - **Done:** Renamed app, Swift targets/tests, bundle ID, preview ZIP, website and Sites URL to SolarDial (`com.mduppes.solardial`). Missing preferences migrate from Sundial first, then the original clone. Added local GitHub and LinkedIn SVG brand marks to nav/footer, matching hearts on donation links, and a persistent website icon rule. Fixed a stale uppercase heading and an incorrectly renamed vendor attribution in FEATURES. ADR 017.
