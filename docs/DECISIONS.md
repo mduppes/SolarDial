@@ -161,3 +161,11 @@ This log records settled architectural decisions. Do not re-litigate settled dec
 - **Context:** The user chose SolarDial because Sundial was taken on Netlify, and requested GitHub/LinkedIn icons as in TokenTracking.
 - **Decision:** Rename the app, modules, test target, bundle, downloadable preview and website to SolarDial (`SolarDialCore`, `SolarDialApp`, `SolarDialCoreTests`, `com.mduppes.solardial`). Migrate missing preferences from `com.mduppes.sundial` before the earlier `com.mduppes.flux` domain. Rename the existing Sites preview to `solardial-mac` while preserving its project and private audience. Netlify deployment was not requested in this change. Use local SVG brand marks beside GitHub and LinkedIn labels in the navigation and footer; record this convention in the agent guide and a website-scoped rule.
 - **Consequences:** Settings survive both earlier names. The new bundle identity may require macOS permissions and login registration again. Existing GitHub/workspace paths remain `Flux`. Donate checkout is unchanged.
+
+
+### ADR 018: Move development and GitHub hosting to SolarDial
+- **Date:** 2026-10-13
+- **Status:** Accepted
+- **Context:** The user created `/Users/mduppes/code/SolarDial` with remote `git@github.com:mduppes/SolarDial.git`, requested moving everything out of Flux and shutting it down, and explicitly requested pushing to the new GitHub repository.
+- **Decision:** Preserve the complete Git history and transfer source, docs, references, rules, app artifacts and landing-page downloads to the new checkout. Rebuild SwiftPM caches at the new path. Update website links and current guide paths to SolarDial. Archive the earlier GitHub repository after the new main branch is verified; retain the old local checkout as a recoverable backup outside the active project. Keep the existing Sites project and private audience. Publish the preview ZIP/checksum as GitHub release assets and point website downloads there; configure Netlify to serve the tracked static site without a build step.
+- **Consequences:** SolarDial is the sole active development repository. The built app's bundle identity remains `com.mduppes.solardial`, so preferences are retained; its login registration must point to the new location.

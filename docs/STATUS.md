@@ -16,7 +16,7 @@ Morning colour is fully on at wake time (or at sunrise, if that is later). The 6
 
 ## Next Steps
 
-- Review the private landing-page preview; public access or a Netlify/custom-domain move is a separate hosting choice. Move all source and history into `/Users/mduppes/code/SolarDial`, push to `mduppes/SolarDial`, and retire the earlier Flux repository.
+- Review the private landing-page preview; public access or a Netlify/custom-domain move is a separate hosting choice. The active checkout is `/Users/mduppes/code/SolarDial`, with remote `git@github.com:mduppes/SolarDial.git`. The full history is preserved; the Flux checkout and GitHub repo are being retired.
 - SolarDial is running, settings JSON matches the previous clone, Location Services has refreshed, and Start at Login was moved from Sundial to SolarDial.
 
 1. **Settings shortcuts follow-up:** rebuilt app is running. Check ⌘W / Escape close Settings while tinting stays active, ⌘M minimizes, ⌘, shows Settings, and existing ⌘Z undoes a settings change. Native menus and app reopen were inspected live; automated keyboard input was inconclusive.
