@@ -177,3 +177,9 @@ This log records settled architectural decisions. Do not re-litigate settled dec
 - **Context:** The user requested an npm-based website to match their other Netlify apps.
 - **Decision:** Add root npm scripts and a locked Vite development dependency, keeping the existing plain HTML/CSS/JS. Move source out of `website/dist` into `website/`, with static icons under `website/public/assets`. Generate and ignore `website/dist`. Netlify uses Node 22, `npm run build`, and publish directory `website/dist`, with the repository root as base. Move locally packaged downloads to ignored `website/downloads` so builds cannot delete them; website links still use GitHub release assets.
 - **Consequences:** Conventional npm install/dev/build/preview workflow without a UI framework or runtime dependency. Vite is justified solely as website tooling; Swift app dependencies and network behaviour are unchanged. Netlify setup is prepared locally; hosting is not deployed by this change.
+
+
+### ADR 020: Remove website LinkedIn links
+- **Date:** 2026-10-14
+- **Status:** Accepted (refines ADR 017)
+- **Decision:** At the user's request, remove LinkedIn links from the navigation and footer and delete the unused SVG. Keep GitHub and donation links with their local icons. Update website guidance to prevent reintroducing LinkedIn links.

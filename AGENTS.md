@@ -22,7 +22,7 @@ It began with a reverse-engineering pass over the installed f.lux 42.2 (`/Applic
 - Keep it simple: plain Swift/SwiftUI/AppKit, no third-party dependencies unless a decision entry justifies one.
 - Put pure logic (solar maths, colour curves, schedule) in `SolarDialCore` with unit tests. Keep OS-touching code thin and in the app target.
 - Commit in small, descriptive commits.
-- Website links use recognizable local SVG icons beside their labels (especially GitHub and LinkedIn), as in TokenTracking. See `.cursor/rules/website-icons.mdc`.
+- Website links use recognizable local SVG icons beside their labels (especially GitHub), as in TokenTracking. See `.cursor/rules/website-icons.mdc`.
 
 ## Build / run / test
 

@@ -6,7 +6,9 @@ alwaysApply: false
 
 # Website link icons
 
-- Use recognizable GitHub and LinkedIn brand icons beside their text labels, following TokenTracking's social-link treatment.
+- Use recognizable GitHub brand icons beside their text labels, following TokenTracking's social-link treatment.
 - Use consistent SVG icons for other link actions, such as donation hearts and download arrows, rather than substituting generic Unicode symbols for brand marks.
 - Serve icons locally. Keep decorative icons hidden from assistive technology with an empty alt or aria-hidden; preserve readable link labels and keyboard focus styles.
 - Keep the same icon treatment in navigation, support sections, and the footer, including responsive layouts.
+
+- Do not add LinkedIn links; the user requested their removal.
