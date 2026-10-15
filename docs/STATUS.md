@@ -17,9 +17,11 @@ Morning colour is fully on at wake time (or at sunrise, if that is later). The 6
 
 ## Next Steps
 
+- Storage cleanup complete (2026-10-15): current `build/SolarDial.app` is retained; SwiftPM will regenerate `.build` on the next build/test. The original `/Applications/Flux.app` has been removed. Remaining native live checks below still apply.
+
 - Donation-page icon is ready for manual upload: `Resources/SolarDial-donation-icon.png` (1024 × 1024 PNG).
 
-- Connect `mduppes/SolarDial` to Netlify: base directory `website`, build `npm run build`, publish `dist` (relative to the base). The npm migration, LinkedIn removal, donation icon and dedicated Stripe link are ready for Netlify. Review the private landing-page preview; hosting/custom-domain setup remains pending. The active checkout is `/Users/mduppes/code/SolarDial`, with remote `git@github.com:mduppes/SolarDial.git`. The full history is preserved and pushed. The old GitHub repo is archived; `/Users/mduppes/code/Flux` contains only a pointer. Its previous checkout is preserved at `/private/tmp/Flux-retired-2026-10-14`.
+- Connect `mduppes/SolarDial` to Netlify: base directory `website`, build `npm run build`, publish `dist` (relative to the base). The npm migration, LinkedIn removal, donation icon and dedicated Stripe link are ready for Netlify. Review the private landing-page preview; hosting/custom-domain setup remains pending. The active checkout is `/Users/mduppes/code/SolarDial`, with remote `git@github.com:mduppes/SolarDial.git`. The full history is preserved and pushed. The old GitHub repo is archived; `/Users/mduppes/code/Flux` contains only a pointer. Its previous source checkout is preserved at `/private/tmp/Flux-retired-2026-10-14`; obsolete build caches and app bundles were removed on 2026-10-15.
 - SolarDial is running, settings JSON matches the previous clone, Location Services has refreshed, and Start at Login is enabled in the app running from the new SolarDial checkout.
 
 1. **Settings shortcuts follow-up:** rebuilt app is running. Check ⌘W / Escape close Settings while tinting stays active, ⌘M minimizes, ⌘, shows Settings, and existing ⌘Z undoes a settings change. Native menus and app reopen were inspected live; automated keyboard input was inconclusive.
@@ -149,3 +151,10 @@ Morning colour is fully on at wake time (or at sunrise, if that is later). The 6
   - *Full-screen disable:* f.lux counts `Menubar` windows owned by `Window Server` and looks for its own menu icon, and only on Space change. This gives false positives with auto-hide menu bars, several monitors and menu-bar managers.
   - *Time zone/location:* when the UTC offset changes, it opens Preferences and a web sheet (`justgetflux.com/minimap.html`) with the old location instead of re-locating.
 - The user confirmed the scope: drop all vendor code (account, telemetry, offers, updater), untint per display for full screen, gamma only, modern Swift stack.
+
+
+### 2026-10-15 — Remove obsolete builds and caches
+- **Done:** At the user's request, deleted old Flux/Sundial app bundles in the active checkout, all generated SwiftPM output in the active and retired checkouts, the retired checkout's build directory, obsolete root npm dependencies, the temporary SolarDial npm cache and three old website deployment archives. Removed the unused original `/Applications/Flux.app` and its `org.herf.Flux` cache. Measured allocated sizes before removal totalled 1,267,136 KiB (about 1.30 GB / 1.21 GiB); actual free-space gain can differ with APFS snapshots/clones.
+- **Preserved:** Current signed `build/SolarDial.app`, all preferences, source/Git history, reverse-engineering references, the retired source checkout, current website dependencies and release ZIP/checksum. No app behaviour changed.
+- **Verified:** Each targeted path is absent; current app signature and running process checked after cleanup. No rebuild/tests run because these would recreate the deleted caches and no source code changed.
+- **Next / gotchas:** Build/test normally when changing Swift code; the first run will regenerate `.build`. The original vendor app must be reinstalled if needed for further live reverse engineering. Existing native live checks and hosting follow-up remain pending.
