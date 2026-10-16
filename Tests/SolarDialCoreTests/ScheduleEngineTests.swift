@@ -125,6 +125,30 @@ struct ScheduleEngineTests {
         #expect(late.evaluate(at: local(1, 0)).phase == .bedtime)
     }
 
+    /// 2026-10-16 is a Friday. Saturday (weekday 7) wakes at 09:00, every other day at 07:00.
+    @Test func weekdayWakeTimeMovesThatMorningAndTheBedtimeBefore() throws {
+        var settings = UserSettings()
+        settings.wakeMinutesByWeekday = [7: 9 * 60]
+        let weekend = ScheduleEngine(settings: settings, coordinates: saoPaulo, timeZone: tz)
+        #expect(settings.wakeMinutes(onWeekday: 7) == 9 * 60)
+        #expect(settings.wakeMinutes(onWeekday: 6) == 7 * 60)
+
+        // Friday night: bedtime is 00:30 Saturday, so 23:00 is still sunset colour.
+        #expect(weekend.evaluate(at: local(23, day: 16)).phase == .sunset)
+        #expect(weekend.minutesUntilWake(at: local(23, day: 16)) == 600)
+        #expect(weekend.minutesSinceBedtime(at: local(1, day: 17)) == 30)
+        // Saturday morning ramps 08:00–09:00.
+        #expect(weekend.evaluate(at: local(7, 30, day: 17)).phase == .bedtime)
+        #expect(weekend.evaluate(at: local(9, day: 17)).kelvin == 6500)
+        // Thursday night and Sunday night use the 07:00 default (bedtime 22:30).
+        #expect(weekend.evaluate(at: local(23, day: 15)).phase == .bedtime)
+        #expect(weekend.evaluate(at: local(23, day: 18)).phase == .bedtime)
+        #expect(weekend.evaluate(at: local(7, day: 16)).kelvin == 6500)
+
+        let decoded = try JSONDecoder().decode(UserSettings.self, from: JSONEncoder().encode(settings))
+        #expect(decoded == settings)
+    }
+
     @Test func nextMorningIsWhenTheRampBegins() {
         // Wake 07:00 and a 60 min transition: the ramp starts at 06:00, after sunrise.
         let next = engine.nextMorning(after: local(21))

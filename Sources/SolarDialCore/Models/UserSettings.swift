@@ -6,6 +6,8 @@ public struct UserSettings: Codable, Equatable, Sendable {
     public var bedtimeKelvin: Double = 2300
     /// Minutes after local midnight.
     public var wakeMinutes: Int = 7 * 60
+    /// Per-weekday wake times overriding `wakeMinutes`. Keys are `Calendar` weekdays (1 = Sunday … 7 = Saturday).
+    public var wakeMinutesByWeekday: [Int: Int] = [:]
     /// Bedtime is this long before wake time.
     public var sleepMinutes: Int = 8 * 60 + 30
     /// Length of the sunrise, sunset and bedtime ramps.
@@ -31,8 +33,19 @@ public struct UserSettings: Codable, Equatable, Sendable {
 
     public init() {}
 
+    /// Bedtime for the default wake time.
     public var bedtimeMinutes: Int {
-        ((wakeMinutes - sleepMinutes) % 1440 + 1440) % 1440
+        bedtimeMinutes(forWake: wakeMinutes)
+    }
+
+    /// Wake time on `weekday` (1 = Sunday … 7 = Saturday), falling back to `wakeMinutes`.
+    public func wakeMinutes(onWeekday weekday: Int) -> Int {
+        wakeMinutesByWeekday[weekday] ?? wakeMinutes
+    }
+
+    /// Bedtime the night before waking at `wake`, as minutes after local midnight.
+    public func bedtimeMinutes(forWake wake: Int) -> Int {
+        ((wake - sleepMinutes) % 1440 + 1440) % 1440
     }
 
     /// Missing keys fall back to defaults so settings survive new fields being added.
@@ -43,6 +56,8 @@ public struct UserSettings: Codable, Equatable, Sendable {
         sunsetKelvin = try c.decodeIfPresent(Double.self, forKey: .sunsetKelvin) ?? d.sunsetKelvin
         bedtimeKelvin = try c.decodeIfPresent(Double.self, forKey: .bedtimeKelvin) ?? d.bedtimeKelvin
         wakeMinutes = try c.decodeIfPresent(Int.self, forKey: .wakeMinutes) ?? d.wakeMinutes
+        wakeMinutesByWeekday = try c.decodeIfPresent([Int: Int].self, forKey: .wakeMinutesByWeekday)
+            ?? d.wakeMinutesByWeekday
         sleepMinutes = try c.decodeIfPresent(Int.self, forKey: .sleepMinutes) ?? d.sleepMinutes
         transitionMinutes = try c.decodeIfPresent(Int.self, forKey: .transitionMinutes) ?? d.transitionMinutes
         disableForFullscreen = try c.decodeIfPresent(Bool.self, forKey: .disableForFullscreen) ?? d.disableForFullscreen

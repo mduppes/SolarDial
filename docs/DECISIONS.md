@@ -197,3 +197,11 @@ This log records settled architectural decisions. Do not re-litigate settled dec
 - **Context:** The user's Netlify site builds in `/opt/build/repo/website`. Root-level npm files caused dependency installation to miss Vite and the publish directory resolved to `website/website/dist`.
 - **Decision:** Move `package.json`, `package-lock.json`, and `.nvmrc` into `website/`; use plain `vite`, `vite build`, and `vite preview` scripts there. Root `netlify.toml` explicitly sets `base = "website"` and `publish = "dist"`, aligning dependency installation, build working directory and publish resolution.
 - **Consequences:** The website is independently installable/buildable from its own directory. Local instructions begin with `cd website`. Swift sources stay outside the Netlify base. Verify a clean install/build in an isolated temporary checkout to avoid masking missing dependencies with the old root `node_modules`.
+
+### ADR 023: Per-weekday wake times
+- **Date:** 2026-10-16
+- **Status:** Accepted
+- **Context:** The user wanted different wake times on different days instead of one 07:00, tucked away in Settings.
+- **Decision:** Keep `wakeMinutes` as the default and add `wakeMinutesByWeekday` overrides (Calendar weekday → minutes). Settings shows them in a collapsed "Wake time by day" disclosure group (open when any override exists); picking the default time or the reset button clears a day's override. Sleep length stays a single value, so bedtime is the next morning's wake time minus `sleepMinutes`. `ScheduleEngine` computes bedtime weight from absolute instants for the nights ending today and tomorrow, and takes the stronger, instead of circular minutes-into-day.
+- **Consequences:** Friday night's bedtime moves with Saturday's wake time. Bedtime reminders and "waking up in N hours" use the actual next wake. Settings without the new key decode to no overrides.
+

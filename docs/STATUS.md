@@ -32,7 +32,7 @@ Morning colour is fully on at wake time (or at sunrise, if that is later). The 6
    - [ ] Full screen: a full-screen video on one display untints only that display. Check a notched MacBook display, and Space switches.
    - [ ] Unplugging/replugging a monitor and sleep/wake re-apply the tint (`DisplayManager.resetAfterReconfiguration`).
    - [ ] Location: (a Core Location fix was received and stored on first launch, tagged `America/Sao_Paulo`) the permission prompt appears once, then the menu shows "Location Services". Changing the time zone in System Settings switches to "Time zone (...)" without any window opening.
-   - [ ] Settings window: the sliders preview live and return to the schedule about 3 s after release. Wake time and sleep length move the bedtime readout. Manual location works.
+   - [ ] Settings window: the sliders preview live and return to the schedule about 3 s after release. Wake time and sleep length move the bedtime readout. "Wake time by day" overrides show/reset correctly and move "Bedtime tonight". Manual location works.
    - [ ] Movie mode shows the chosen Kelvin and turns off after the chosen time; its menu item is checked while on.
    - [ ] Menu: the five toggles show checkmarks correctly; the status item is no wider than its neighbours.
    - [ ] Settings: the graph renders (gradient fill, sunrise/sunset/now lines), the dimming slider previews, Undo and Reset to Defaults work, and the window fits on a laptop screen (it's 720 pt tall and scrolls).
@@ -45,6 +45,10 @@ Morning colour is fully on at wake time (or at sunrise, if that is later). The 6
 ---
 
 ## Handoff Log
+
+### 2026-10-16 — Per-weekday wake times
+- **Done:** `UserSettings.wakeMinutesByWeekday` overrides the default wake time per weekday; `ScheduleEngine` bedtime/wake maths now uses absolute instants per night (tonight and tomorrow morning), so bedtime follows the next morning's wake. Settings has a collapsed "Wake time by day" group under Wake time; the Bedtime row becomes "Bedtime tonight" when overrides exist. New test for a Saturday 09:00 wake. 56 tests. ADR 023.
+- **Verified:** 56 tests; the user checked the Settings window and menu in the relaunched `build/SolarDial.app`.
 
 ### 2026-10-14 — Fix Netlify website base and npm dependency installation
 - **Done:** Moved npm package, lockfile and Node version file into `website/`. Scripts now run Vite directly from that directory. Root `netlify.toml` explicitly sets base `website`, command `npm run build`, publish `dist`. Updated local/deployment instructions, architecture, features and ADR 022.

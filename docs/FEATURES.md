@@ -8,7 +8,7 @@ The app is branded **SolarDial** (formerly Sundial and the Flux clone). Existing
 
 | Category | Feature | Status | Specification / Rationale |
 |---|---|---|---|
-| **Core** | Day / Sunset / Bedtime schedule | **Keep** | 3 configurable Kelvin targets. Transitions smoothly based on solar elevation and user wake time. Daytime colour is fully reached at the later of sunrise and wake; the morning transition runs up to that instant. |
+| **Core** | Day / Sunset / Bedtime schedule | **Keep** | 3 configurable Kelvin targets. Transitions smoothly based on solar elevation and user wake time. Daytime colour is fully reached at the later of sunrise and wake; the morning transition runs up to that instant. Wake time can be set per weekday (collapsed "Wake time by day" group in Settings); bedtime follows the next morning's wake time. |
 | **Core** | Smooth animated transitions | **Keep** | Interpolate gamma ramps smoothly across minutes (or quick fade when waking/toggling). |
 | **Core** | Menu bar status item | **Keep** | Minimal icon in macOS menu bar with current Kelvin, phase, quick controls, and settings. The icon is always the sun-on-horizon symbol, never time-of-day based; it changes only for a conflict (⚠︎), a disable, or movie mode. |
 | **Core** | Display gamma adjustments | **Keep** | Apply color changes per display using `CGSetDisplayTransferByTable`. |
@@ -30,7 +30,7 @@ The app is branded **SolarDial** (formerly Sundial and the Flux clone). Existing
 | **System** | macOS Dark Mode sync | **Keep (built)** | Optional (settings). Switches to Dark at sunset and Light in the morning, only when the schedule crosses over, so manual changes stick until the next crossing. |
 | **System** | Start at login | **Keep (built)** | Settings toggle using `SMAppService.mainApp`. |
 | **System** | Bedtime reminders | **Keep (built)** | Optional (settings). One notification in the first 15 min after bedtime: "You're waking up in 8½ hours." |
-| **System** | Settings window | **Keep (built)** | SwiftUI: Kelvin sliders with live preview, wake time, sleep length, fast/slow transitions, manual location, per-app list, full screen, login, dark mode, reminder. Native shortcuts: ⌘W closes Settings, Escape cancels via the responder chain (then closes Settings), ⌘M minimizes, ⌘, shows Settings, ⌘H hides SolarDial, and ⌘Q quits. Text fields have standard Cut/Copy/Paste/Select All commands. Reopening the running app shows Settings; closing Settings keeps tinting active. |
+| **System** | Settings window | **Keep (built)** | SwiftUI: Kelvin sliders with live preview, wake time (default plus optional per-weekday overrides), sleep length, fast/slow transitions, manual location, per-app list, full screen, login, dark mode, reminder. Native shortcuts: ⌘W closes Settings, Escape cancels via the responder chain (then closes Settings), ⌘M minimizes, ⌘, shows Settings, ⌘H hides SolarDial, and ⌘Q quits. Text fields have standard Cut/Copy/Paste/Select All commands. Reopening the running app shows Settings; closing Settings keeps tinting active. |
 | **Vendor** | Account / Login (`fluxAccount`) | **Drop** | No online accounts, password stores, or authentication. |
 | **Vendor** | Analytics / Telemetry (`fluxNetworkQueue`) | **Drop** | Zero network traffic; no logging of screen time, spectrum, or light levels. |
 | **Vendor** | Promotional offers (`fluxOffer`) | **Drop** | No promotional dialogs, surveys, or sponsored content. |

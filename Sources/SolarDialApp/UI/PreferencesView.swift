@@ -10,6 +10,14 @@ struct PreferencesView: View {
     @State private var loginNeedsApproval = LaunchAtLogin.needsApproval
     @State private var loginError: String?
     @State private var confirmReset = false
+    /// Starts open when any day has its own wake time, so the overrides aren't hidden.
+    @State private var showWeekdayWake: Bool
+
+    init(store: SettingsStore, controller: TintController) {
+        self.store = store
+        self.controller = controller
+        _showWeekdayWake = State(initialValue: !store.settings.wakeMinutesByWeekday.isEmpty)
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -91,10 +99,19 @@ struct PreferencesView: View {
     private var scheduleSection: some View {
         Section("Schedule") {
             DatePicker("Wake time", selection: wakeTime, displayedComponents: .hourAndMinute)
+            DisclosureGroup("Wake time by day", isExpanded: $showWeekdayWake) {
+                ForEach(orderedWeekdays, id: \.self) { weekday in
+                    weekdayWakeRow(weekday)
+                }
+            }
             Stepper(value: $store.settings.sleepMinutes, in: 300...720, step: 30) {
                 LabeledContent("Sleep length", value: duration(store.settings.sleepMinutes))
             }
-            LabeledContent("Bedtime", value: clock(store.settings.bedtimeMinutes))
+            if store.settings.wakeMinutesByWeekday.isEmpty {
+                LabeledContent("Bedtime", value: clock(store.settings.bedtimeMinutes))
+            } else {
+                LabeledContent("Bedtime tonight", value: clock(tonightsBedtime))
+            }
             Picker("Transition speed", selection: $store.settings.transitionMinutes) {
                 Text("Fast (20 minutes)").tag(20)
                 Text("Slow (60 minutes)").tag(60)
@@ -186,15 +203,61 @@ struct PreferencesView: View {
 
     private var wakeTime: Binding<Date> {
         Binding(
-            get: {
-                let minutes = store.settings.wakeMinutes
-                return Calendar.current.date(
-                    bySettingHour: minutes / 60, minute: minutes % 60, second: 0, of: Date()) ?? Date()
-            },
+            get: { clockDate(store.settings.wakeMinutes) },
+            set: { store.settings.wakeMinutes = minutesAfterMidnight($0) })
+    }
+
+    private func weekdayWakeRow(_ weekday: Int) -> some View {
+        let overridden = store.settings.wakeMinutesByWeekday[weekday] != nil
+        return LabeledContent(Calendar.current.weekdaySymbols[weekday - 1]) {
+            HStack {
+                if overridden {
+                    Button {
+                        store.settings.wakeMinutesByWeekday[weekday] = nil
+                    } label: {
+                        Image(systemName: "arrow.uturn.backward")
+                    }
+                    .buttonStyle(.borderless)
+                    .help("Use the default wake time")
+                } else {
+                    Text("Default").foregroundStyle(.secondary)
+                }
+                DatePicker("", selection: weekdayWakeTime(weekday), displayedComponents: .hourAndMinute)
+                    .labelsHidden()
+            }
+        }
+    }
+
+    /// Calendar weekdays (1 = Sunday) starting from the user's first weekday.
+    private var orderedWeekdays: [Int] {
+        let first = Calendar.current.firstWeekday
+        return (0..<7).map { (first - 1 + $0) % 7 + 1 }
+    }
+
+    /// Bedtime before tomorrow's wake time.
+    private var tonightsBedtime: Int {
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date()
+        let weekday = Calendar.current.component(.weekday, from: tomorrow)
+        return store.settings.bedtimeMinutes(forWake: store.settings.wakeMinutes(onWeekday: weekday))
+    }
+
+    /// Picking the default time clears that day's override.
+    private func weekdayWakeTime(_ weekday: Int) -> Binding<Date> {
+        Binding(
+            get: { clockDate(store.settings.wakeMinutes(onWeekday: weekday)) },
             set: { date in
-                let parts = Calendar.current.dateComponents([.hour, .minute], from: date)
-                store.settings.wakeMinutes = (parts.hour ?? 7) * 60 + (parts.minute ?? 0)
+                let minutes = minutesAfterMidnight(date)
+                store.settings.wakeMinutesByWeekday[weekday] = minutes == store.settings.wakeMinutes ? nil : minutes
             })
+    }
+
+    private func clockDate(_ minutes: Int) -> Date {
+        Calendar.current.date(bySettingHour: minutes / 60, minute: minutes % 60, second: 0, of: Date()) ?? Date()
+    }
+
+    private func minutesAfterMidnight(_ date: Date) -> Int {
+        let parts = Calendar.current.dateComponents([.hour, .minute], from: date)
+        return (parts.hour ?? 7) * 60 + (parts.minute ?? 0)
     }
 
     private var manualLocation: Binding<Bool> {
