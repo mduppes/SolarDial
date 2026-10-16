@@ -51,6 +51,11 @@ struct PreferencesView: View {
                 .keyboardShortcut("z")
                 .disabled(!store.canUndo)
             Spacer()
+            Link(destination: URL(string: "https://solardial.netlify.app/")!) {
+                Label("solardial.netlify.app", systemImage: "globe")
+            }
+            .help("Open the SolarDial website")
+            Spacer()
             Button("Reset to Defaults…") { confirmReset = true }
         }
         .padding(12)
