@@ -134,7 +134,7 @@ The Planckian locus (Krystek approximation) is converted to linear sRGB, divided
 - Known edge case: with an auto-hiding menu bar, a zoomed (green-button-option) window fills the screen and counts as full screen.
 
 ### Location (`LocationProvider` + `LocationResolver`)
-The order is: manual coordinates, then the last Core Location fix **if it was taken in the current time zone**, then the `zone.tab` coordinates for `TimeZone.current`, then a longitude estimated from the UTC offset. On `NSSystemTimeZoneDidChange` the provider calls `NSTimeZone.resetSystemTimeZone()`, recalculates at once (using `zone.tab` until a new fix arrives) and requests a fresh fix. Wake also requests a fix. Core Location is used only when the bundle declares `NSLocationUsageDescription`, so `swift run` builds use `zone.tab` ([ADR 007](DECISIONS.md)).
+The order is: the `zone.tab` coordinates of the manual time zone (`manualTimeZone`), then the last Core Location fix **if it was taken in the current time zone**, then the `zone.tab` coordinates for `TimeZone.current`, then a longitude estimated from the UTC offset. On `NSSystemTimeZoneDidChange` the provider calls `NSTimeZone.resetSystemTimeZone()`, recalculates at once (using `zone.tab` until a new fix arrives) and requests a fresh fix. Wake also requests a fix. Core Location is used only when the bundle declares `NSLocationUsageDescription`, so `swift run` builds use `zone.tab` ([ADR 007](DECISIONS.md)).
 
 ---
 

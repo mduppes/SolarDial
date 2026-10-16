@@ -68,6 +68,9 @@ final class TintController {
         displays.restore()
     }
 
+    /// Time zones that can be picked as a manual location.
+    var timeZoneIdentifiers: [String] { location.timeZoneIdentifiers }
+
     var isFrontAppDisabled: Bool {
         guard let id = frontApp?.bundleIdentifier else { return false }
         return store.settings.disabledBundleIDs.contains(id)
@@ -75,7 +78,7 @@ final class TintController {
 
     var engine: ScheduleEngine {
         let coordinates = resolvedLocation?.coordinates
-            ?? location.resolve(manual: store.settings.manualCoordinates).coordinates
+            ?? location.resolve(manualTimeZone: store.settings.manualTimeZone).coordinates
         return ScheduleEngine(settings: store.settings, coordinates: coordinates, timeZone: .current)
     }
 
@@ -84,7 +87,7 @@ final class TintController {
         if let disable = temporaryDisable, !disable.isActive(at: now) { temporaryDisable = nil }
         if let movie = movieMode, !movie.isActive(at: now) { movieMode = nil }
 
-        resolvedLocation = location.resolve(manual: store.settings.manualCoordinates)
+        resolvedLocation = location.resolve(manualTimeZone: store.settings.manualTimeZone)
         let engine = engine
         let result = engine.evaluate(at: now)
         schedule = result

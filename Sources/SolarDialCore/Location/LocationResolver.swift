@@ -12,7 +12,7 @@ public struct LocationFix: Codable, Equatable, Sendable {
 }
 
 public enum LocationSource: Equatable, Sendable {
-    case manual
+    case manual(String)
     case coreLocation
     case timeZone(String)
     case unknown
@@ -24,18 +24,18 @@ public struct ResolvedLocation: Equatable, Sendable {
 }
 
 public enum LocationResolver {
-    /// Picks the best coordinates available, in order: manual, a fix taken in the current
+    /// Picks the best coordinates available, in order: the manual time zone's `zone.tab` entry, a fix taken in the current
     /// time zone, the time zone's `zone.tab` entry, then a longitude estimated from the UTC offset.
     /// A fix taken in another time zone is ignored, so travelling never leaves a stale location in use.
     public static func resolve(
-        manual: Coordinates?,
+        manualTimeZone: String?,
         lastFix: LocationFix?,
         timeZone: TimeZone,
         zoneTab: ZoneTab?,
         at date: Date = Date()
     ) -> ResolvedLocation {
-        if let manual, manual.isValid {
-            return ResolvedLocation(coordinates: manual, source: .manual)
+        if let manualTimeZone, let coordinates = zoneTab?.coordinates(for: manualTimeZone) {
+            return ResolvedLocation(coordinates: coordinates, source: .manual(manualTimeZone))
         }
         if let lastFix, lastFix.timeZoneIdentifier == timeZone.identifier, lastFix.coordinates.isValid {
             return ResolvedLocation(coordinates: lastFix.coordinates, source: .coreLocation)

@@ -42,30 +42,43 @@ struct LocationResolverTests {
     let saoPauloTZ = TimeZone(identifier: "America/Sao_Paulo")!
     let dubrovnik = Coordinates(latitude: 42.6, longitude: 18.1)
 
-    @Test func manualWins() {
+    @Test func manualTimeZoneWins() {
+        let tab = ZoneTab(contents: "BR\t-2332-04637\tAmerica/Sao_Paulo\nHR\t+4539+01558\tEurope/Zagreb\n")
+        let fix = LocationFix(coordinates: Coordinates(latitude: -23.6, longitude: -46.7), timeZoneIdentifier: "America/Sao_Paulo")
         let result = LocationResolver.resolve(
-            manual: dubrovnik, lastFix: nil, timeZone: saoPauloTZ, zoneTab: tab)
-        #expect(result.source == .manual)
-        #expect(result.coordinates == dubrovnik)
+            manualTimeZone: "Europe/Zagreb", lastFix: fix, timeZone: saoPauloTZ, zoneTab: tab)
+        #expect(result.source == .manual("Europe/Zagreb"))
+        #expect(abs(result.coordinates.latitude - 45.65) < 0.01)
+    }
+
+    @Test func unknownManualTimeZoneFallsBack() {
+        let result = LocationResolver.resolve(
+            manualTimeZone: "Nowhere/Atlantis", lastFix: nil, timeZone: saoPauloTZ, zoneTab: tab)
+        #expect(result.source == .timeZone("America/Sao_Paulo"))
+    }
+
+    @Test func zoneNamesForDisplay() {
+        #expect(ZoneTab.cityName(for: "America/Argentina/Buenos_Aires") == "Buenos Aires")
+        #expect(ZoneTab.regionName(for: "America/Argentina/Buenos_Aires") == "America")
     }
 
     @Test func fixFromAnotherTimeZoneIsIgnored() {
         let stale = LocationFix(coordinates: dubrovnik, timeZoneIdentifier: "Europe/Zagreb")
-        let result = LocationResolver.resolve(manual: nil, lastFix: stale, timeZone: saoPauloTZ, zoneTab: tab)
+        let result = LocationResolver.resolve(manualTimeZone: nil, lastFix: stale, timeZone: saoPauloTZ, zoneTab: tab)
         #expect(result.source == .timeZone("America/Sao_Paulo"))
     }
 
     @Test func fixFromCurrentTimeZoneIsUsed() {
         let here = Coordinates(latitude: -23.6, longitude: -46.7)
         let fix = LocationFix(coordinates: here, timeZoneIdentifier: "America/Sao_Paulo")
-        let result = LocationResolver.resolve(manual: nil, lastFix: fix, timeZone: saoPauloTZ, zoneTab: tab)
+        let result = LocationResolver.resolve(manualTimeZone: nil, lastFix: fix, timeZone: saoPauloTZ, zoneTab: tab)
         #expect(result.source == .coreLocation)
         #expect(result.coordinates == here)
     }
 
     @Test func unknownZoneEstimatesLongitudeFromOffset() {
         let tz = TimeZone(secondsFromGMT: -3 * 3600)!
-        let result = LocationResolver.resolve(manual: nil, lastFix: nil, timeZone: tz, zoneTab: tab)
+        let result = LocationResolver.resolve(manualTimeZone: nil, lastFix: nil, timeZone: tz, zoneTab: tab)
         #expect(result.source == .unknown)
         #expect(result.coordinates.longitude == -45)
     }
@@ -82,7 +95,7 @@ struct SettingsTests {
 
     @Test func roundTrips() throws {
         var settings = UserSettings()
-        settings.manualCoordinates = Coordinates(latitude: 1, longitude: 2)
+        settings.manualTimeZone = "Europe/Zagreb"
         let data = try JSONEncoder().encode(settings)
         #expect(try JSONDecoder().decode(UserSettings.self, from: data) == settings)
     }

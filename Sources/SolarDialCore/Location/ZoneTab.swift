@@ -22,6 +22,30 @@ public struct ZoneTab: Sendable {
         coordinatesByZone[identifier]
     }
 
+    /// Every zone identifier, sorted.
+    public var identifiers: [String] { coordinatesByZone.keys.sorted() }
+
+    /// "America/Argentina/Buenos_Aires" → "Buenos Aires".
+    public static func cityName(for identifier: String) -> String {
+        (identifier.split(separator: "/").last.map(String.init) ?? identifier)
+            .replacingOccurrences(of: "_", with: " ")
+    }
+
+    /// "Sao Paulo (GMT-3)"; with `inRegion`, sub-regions are kept: "Argentina/Buenos Aires (GMT-3)".
+    public static func displayName(for identifier: String, inRegion: Bool = false, locale: Locale = .current) -> String {
+        let name = inRegion
+            ? identifier.split(separator: "/").dropFirst().joined(separator: "/").replacingOccurrences(of: "_", with: " ")
+            : cityName(for: identifier)
+        guard let zone = TimeZone(identifier: identifier) else { return name }
+        let offset = zone.localizedName(for: .shortStandard, locale: locale) ?? zone.abbreviation() ?? ""
+        return offset.isEmpty ? name : "\(name) (\(offset))"
+    }
+
+    /// "America/Argentina/Buenos_Aires" → "America".
+    public static func regionName(for identifier: String) -> String {
+        identifier.split(separator: "/").first.map(String.init) ?? identifier
+    }
+
     /// Parses `±DDMM±DDDMM` or `±DDMMSS±DDDMMSS`.
     public static func parseISO6709(_ text: String) -> Coordinates? {
         let chars = Array(text)

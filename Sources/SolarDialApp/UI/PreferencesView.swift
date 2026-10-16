@@ -121,10 +121,20 @@ struct PreferencesView: View {
 
     private var locationSection: some View {
         Section {
-            Toggle("Set location manually", isOn: manualLocation)
-            if let manual = store.settings.manualCoordinates {
-                TextField("Latitude", value: coordinate(\.latitude, fallback: manual), format: .number)
-                TextField("Longitude", value: coordinate(\.longitude, fallback: manual), format: .number)
+            Toggle("Set time zone manually", isOn: manualLocation)
+            if let manual = store.settings.manualTimeZone {
+                LabeledContent("Time zone") {
+                    Menu(zoneLabel(manual)) {
+                        ForEach(zonesByRegion, id: \.region) { group in
+                            Menu(group.region) {
+                                ForEach(group.zones, id: \.self) { id in
+                                    Button(zoneLabel(id, inRegion: true)) { store.settings.manualTimeZone = id }
+                                }
+                            }
+                        }
+                    }
+                    .fixedSize()
+                }
             }
             if let resolved = controller.resolvedLocation {
                 LabeledContent("Using", value: describe(resolved))
@@ -132,7 +142,7 @@ struct PreferencesView: View {
         } header: {
             Text("Location")
         } footer: {
-            Text("Automatic location uses Location Services when allowed, otherwise your time zone. Nothing is sent over the network.")
+            Text("Sunrise and sunset come from Location Services when allowed, otherwise from the main city of your time zone. A manual time zone only moves the sun; wake and bedtime still follow your Mac's clock. Nothing is sent over the network.")
                 .foregroundStyle(.secondary)
         }
     }
@@ -262,23 +272,20 @@ struct PreferencesView: View {
 
     private var manualLocation: Binding<Bool> {
         Binding(
-            get: { store.settings.manualCoordinates != nil },
+            get: { store.settings.manualTimeZone != nil },
             set: { manual in
-                store.settings.manualCoordinates = manual
-                    ? (controller.resolvedLocation?.coordinates ?? Coordinates(latitude: 0, longitude: 0))
+                let zones = controller.timeZoneIdentifiers
+                let current = TimeZone.current.identifier
+                store.settings.manualTimeZone = manual
+                    ? (zones.contains(current) ? current : zones.first)
                     : nil
             })
     }
 
-    private func coordinate(_ keyPath: WritableKeyPath<Coordinates, Double>, fallback: Coordinates) -> Binding<Double> {
-        Binding(
-            get: { store.settings.manualCoordinates?[keyPath: keyPath] ?? fallback[keyPath: keyPath] },
-            set: { value in
-                var coordinates = store.settings.manualCoordinates ?? fallback
-                coordinates[keyPath: keyPath] = value
-                guard coordinates.isValid else { return }
-                store.settings.manualCoordinates = coordinates
-            })
+    private var zonesByRegion: [(region: String, zones: [String])] {
+        Dictionary(grouping: controller.timeZoneIdentifiers, by: ZoneTab.regionName(for:))
+            .map { ($0.key, $0.value.sorted { zoneLabel($0, inRegion: true) < zoneLabel($1, inRegion: true) }) }
+            .sorted { $0.region < $1.region }
     }
 
     private var loginBinding: Binding<Bool> {
@@ -317,14 +324,16 @@ struct PreferencesView: View {
     }
 
     private func describe(_ resolved: ResolvedLocation) -> String {
-        let c = resolved.coordinates
-        let position = String(format: "%.2f, %.2f", c.latitude, c.longitude)
         switch resolved.source {
-        case .manual: return "Manual (\(position))"
-        case .coreLocation: return "Location Services (\(position))"
-        case .timeZone(let id): return "Time zone \(id) (\(position))"
-        case .unknown: return "UTC offset estimate (\(position))"
+        case .manual(let id): return "Manual: \(zoneLabel(id))"
+        case .coreLocation: return "Location Services (\(zoneLabel(TimeZone.current.identifier)))"
+        case .timeZone(let id): return zoneLabel(id)
+        case .unknown: return "Estimate from UTC offset (\(zoneLabel(TimeZone.current.identifier)))"
         }
+    }
+
+    private func zoneLabel(_ id: String, inRegion: Bool = false) -> String {
+        ZoneTab.displayName(for: id, inRegion: inRegion)
     }
 
     private func appName(for bundleID: String) -> String {

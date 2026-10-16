@@ -205,3 +205,9 @@ This log records settled architectural decisions. Do not re-litigate settled dec
 - **Decision:** Keep `wakeMinutes` as the default and add `wakeMinutesByWeekday` overrides (Calendar weekday → minutes). Settings shows them in a collapsed "Wake time by day" disclosure group (open when any override exists); picking the default time or the reset button clears a day's override. Sleep length stays a single value, so bedtime is the next morning's wake time minus `sleepMinutes`. `ScheduleEngine` computes bedtime weight from absolute instants for the nights ending today and tomorrow, and takes the stronger, instead of circular minutes-into-day.
 - **Consequences:** Friday night's bedtime moves with Saturday's wake time. Bedtime reminders and "waking up in N hours" use the actual next wake. Settings without the new key decode to no overrides.
 
+### ADR 024: Manual location is a time zone
+- **Date:** 2026-10-16
+- **Status:** Accepted (refines ADR 007)
+- **Context:** The user found latitude/longitude fields unintuitive, both for setting a manual location and for the "Using" readout.
+- **Decision:** Replace `manualCoordinates` with `manualTimeZone` (IANA identifier). Its coordinates come from `zone.tab`, like the automatic fallback. Settings picks it from a region ▸ city menu, and the readouts name time zones ("Sao Paulo (GMT-3)") instead of coordinates. The schedule's clock stays `TimeZone.current`, so the manual zone only moves sunrise and sunset. An identifier missing from `zone.tab` falls through to automatic location.
+- **Consequences:** Manual precision is limited to a zone's main city, as with the fallback. Previously saved `manualCoordinates` are ignored on decode (the user had none set). No reverse geocoding, so a Location Services fix is described by the current time zone.

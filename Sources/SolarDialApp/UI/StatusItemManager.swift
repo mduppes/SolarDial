@@ -134,7 +134,7 @@ final class StatusItemManager: NSObject, NSMenuDelegate {
             lines.append("Sunrise \(rise.formatted(timeFormat)) · Sunset \(set.formatted(timeFormat))")
         }
         if let location = controller.resolvedLocation {
-            lines.append("Location: \(sourceName(location.source))")
+            lines.append("Time zone: \(sourceName(location.source))")
         }
         return lines
     }
@@ -150,10 +150,9 @@ final class StatusItemManager: NSObject, NSMenuDelegate {
 
     private func sourceName(_ source: LocationSource) -> String {
         switch source {
-        case .manual: "Manual"
-        case .coreLocation: "Location Services"
-        case .timeZone(let id): "Time zone (\(id))"
-        case .unknown: "Estimated from UTC offset"
+        case .manual(let id): "\(ZoneTab.displayName(for: id)), set manually"
+        case .coreLocation, .unknown: ZoneTab.displayName(for: TimeZone.current.identifier)
+        case .timeZone(let id): ZoneTab.displayName(for: id)
         }
     }
 

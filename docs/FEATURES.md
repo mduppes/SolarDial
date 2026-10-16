@@ -30,11 +30,11 @@ The app is branded **SolarDial** (formerly Sundial and the Flux clone). Existing
 | **System** | macOS Dark Mode sync | **Keep (built)** | Optional (settings). Switches to Dark at sunset and Light in the morning, only when the schedule crosses over, so manual changes stick until the next crossing. |
 | **System** | Start at login | **Keep (built)** | Settings toggle using `SMAppService.mainApp`. |
 | **System** | Bedtime reminders | **Keep (built)** | Optional (settings). One notification in the first 15 min after bedtime: "You're waking up in 8½ hours." |
-| **System** | Settings window | **Keep (built)** | SwiftUI: Kelvin sliders with live preview, wake time (default plus optional per-weekday overrides), sleep length, fast/slow transitions, manual location, per-app list, full screen, login, dark mode, reminder. Native shortcuts: ⌘W closes Settings, Escape cancels via the responder chain (then closes Settings), ⌘M minimizes, ⌘, shows Settings, ⌘H hides SolarDial, and ⌘Q quits. Text fields have standard Cut/Copy/Paste/Select All commands. Reopening the running app shows Settings; closing Settings keeps tinting active. |
+| **System** | Settings window | **Keep (built)** | SwiftUI: Kelvin sliders with live preview, wake time (default plus optional per-weekday overrides), sleep length, fast/slow transitions, manual time zone (region ▸ city menu; the Using row names the time zone, not coordinates), per-app list, full screen, login, dark mode, reminder. Native shortcuts: ⌘W closes Settings, Escape cancels via the responder chain (then closes Settings), ⌘M minimizes, ⌘, shows Settings, ⌘H hides SolarDial, and ⌘Q quits. Text fields have standard Cut/Copy/Paste/Select All commands. Reopening the running app shows Settings; closing Settings keeps tinting active. |
 | **Vendor** | Account / Login (`fluxAccount`) | **Drop** | No online accounts, password stores, or authentication. |
 | **Vendor** | Analytics / Telemetry (`fluxNetworkQueue`) | **Drop** | Zero network traffic; no logging of screen time, spectrum, or light levels. |
 | **Vendor** | Promotional offers (`fluxOffer`) | **Drop** | No promotional dialogs, surveys, or sponsored content. |
-| **Vendor** | External web minimap | **Drop** | Replace web-based map sheet with native manual lat/long or timezone selection. |
+| **Vendor** | External web minimap | **Drop** | Replace web-based map sheet with a native manual time-zone picker. |
 | **Vendor** | Sparkle auto-updater | **Drop** | No background checking or device profiling via Sparkle. |
 | **Vendor** | Hardware light sensors (`fluxSensor`) | **Drop** | Complex proprietary sensor polling dropped in favor of solar schedule. |
 
@@ -60,9 +60,9 @@ The app is branded **SolarDial** (formerly Sundial and the Flux clone). Existing
 - **Clone Implementation (built):**
   1. On first launch of the bundled app, asks for location once through the standard macOS prompt, then requests a single kilometre-accuracy fix at launch, on wake and after a time-zone change.
   2. Each fix is saved together with the time zone it was taken in, and is used only while that zone is current.
-  3. Otherwise it uses the coordinates `/usr/share/zoneinfo/zone.tab` gives for `TimeZone.current`, or as a last resort a longitude estimated from the UTC offset. Manual coordinates (a setting, UI in Milestone B) override everything.
+  3. Otherwise it uses the coordinates `/usr/share/zoneinfo/zone.tab` gives for `TimeZone.current`, or as a last resort a longitude estimated from the UTC offset. A manually chosen time zone (its `zone.tab` city) overrides everything. It only moves the sun; wake and bedtime still use the Mac's clock.
   4. On `NSSystemTimeZoneDidChange` it recalculates at once, without opening any UI.
-  5. It never makes network requests. The menu shows which location source is in use.
+  5. It never makes network requests. The menu shows the time zone in use (e.g. "Time zone: Sao Paulo (GMT-3)"), not the location source.
 
 ---
 

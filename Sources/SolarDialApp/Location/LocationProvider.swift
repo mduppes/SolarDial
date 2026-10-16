@@ -41,9 +41,12 @@ final class LocationProvider: NSObject, CLLocationManagerDelegate {
         }
     }
 
-    func resolve(manual: Coordinates?) -> ResolvedLocation {
-        LocationResolver.resolve(manual: manual, lastFix: lastFix, timeZone: .current, zoneTab: zoneTab)
+    func resolve(manualTimeZone: String?) -> ResolvedLocation {
+        LocationResolver.resolve(manualTimeZone: manualTimeZone, lastFix: lastFix, timeZone: .current, zoneTab: zoneTab)
     }
+
+    /// Time zones that can be picked as a manual location.
+    var timeZoneIdentifiers: [String] { zoneTab?.identifiers ?? [] }
 
     /// Asks Core Location for one fix. Only works from the bundled app, which declares a usage string.
     func refresh() {
