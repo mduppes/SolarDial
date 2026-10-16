@@ -31,7 +31,7 @@ From the repository root:
 ./scripts/package-download.sh
 ```
 
-The download is the actual Apple silicon build, ad-hoc signed and not notarized. Keep version/architecture labels and installation notes in `index.html` accurate when changing the release. Download artifacts live in `website/downloads/`, outside the build output so Vite builds do not erase them. They are ignored by the app repository and uploaded to the GitHub release. Landing-page downloads point to the v0.1.0 GitHub release so both Sites and Netlify work without generated ZIPs in Git. `package-download.sh` packages the bundle and writes a checksum.
+The download is the actual Apple silicon build, ad-hoc signed and not notarized. Keep version/architecture labels and installation notes in `index.html` accurate when changing the release. Download artifacts live in `website/downloads/`, outside the build output so Vite builds do not erase them. They are ignored by the app repository and uploaded to the GitHub release. Landing-page downloads point to the v0.2.0 GitHub release so both Sites and Netlify work without generated ZIPs in Git. `package-download.sh` packages the bundle and writes a checksum.
 
 ## Donation icon
 

@@ -9,8 +9,8 @@ Morning colour is fully on at wake time (or at sunrise, if that is later). The 6
 - **Phase 3, Milestone A (core tinter):** Done, and the tint is verified live.
 - **Phase 3, Milestone B (settings window, movie mode, start at login, dark-mode sync, bedtime reminder):** Done in code.
 - **Phase 3, Milestone C (user feedback round):** Done in code: checkmark menu, narrower status item, app icon, 24-hour graph, colour-conflict warning, bedtime dimming, movie Kelvin and duration, Undo / Reset to Defaults. Darkroom removed.
-- 55 unit tests pass and `build/SolarDial.app` builds and runs. App identity and Swift targets are renamed to SolarDial; existing settings are migrated.
-- Preview ZIP and SHA-256 checksum published at https://github.com/mduppes/SolarDial/releases/tag/v0.1.0. `netlify.toml` runs the npm/Vite build and publishes generated `website/dist` (Node 22).
+- 58 unit tests pass and `build/SolarDial.app` (v0.2.0) builds and runs. App identity and Swift targets are renamed to SolarDial; existing settings are migrated.
+- Preview ZIP and SHA-256 checksum packaged for v0.2.0; landing page copy and download links updated with per-weekday wake times and time-zone location. `netlify.toml` runs the npm/Vite build and publishes generated `website/dist` (Node 22).
 - Landing page deployed as an owner-private Sites preview: https://solardial-mac.truedog2.chatgpt.site. The hosted preview predates the latest website changes; the current source includes the Apple silicon preview download and dedicated SolarDial Stripe link.
 
 ---
@@ -45,6 +45,10 @@ Morning colour is fully on at wake time (or at sunrise, if that is later). The 6
 ---
 
 ## Handoff Log
+
+### 2026-10-16 — SolarDial 0.2.0 release and website update
+- **Done:** Bumped app and website package versions to 0.2.0. Rebuilt release app bundle and packaged `website/downloads/SolarDial-0.2.0-arm64.zip` and `.sha256`. Updated website copy in `website/index.html` to reflect weekday wake times and time-zone manual selection, replacing references to manual coordinates. Updated download links and checksum to point to GitHub release `v0.2.0`. Rebuilt production site to `website/dist`. ADR 025.
+- **Verified:** 58 tests pass; build, codesign verification, and package download succeed. Site builds cleanly with Vite. Relaunched SolarDial 0.2.0 running live.
 
 ### 2026-10-16 — Per-weekday wake times and time-zone manual location
 - **Done:** `UserSettings.wakeMinutesByWeekday` overrides the default wake time per weekday; `ScheduleEngine` bedtime/wake maths now uses absolute instants per night (tonight and tomorrow morning), so bedtime follows the next morning's wake. Settings has a collapsed "Wake time by day" group under Wake time; the Bedtime row becomes "Bedtime tonight" when overrides exist. New test for a Saturday 09:00 wake. 56 tests. ADR 023.

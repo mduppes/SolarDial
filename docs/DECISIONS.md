@@ -211,3 +211,12 @@ This log records settled architectural decisions. Do not re-litigate settled dec
 - **Context:** The user found latitude/longitude fields unintuitive, both for setting a manual location and for the "Using" readout.
 - **Decision:** Replace `manualCoordinates` with `manualTimeZone` (IANA identifier). Its coordinates come from `zone.tab`, like the automatic fallback. Settings picks it from a region ▸ city menu, and the readouts name time zones ("Sao Paulo (GMT-3)") instead of coordinates. The schedule's clock stays `TimeZone.current`, so the manual zone only moves sunrise and sunset. An identifier missing from `zone.tab` falls through to automatic location.
 - **Consequences:** Manual precision is limited to a zone's main city, as with the fallback. Previously saved `manualCoordinates` are ignored on decode (the user had none set). No reverse geocoding, so a Location Services fix is described by the current time zone.
+
+---
+
+### ADR 025: SolarDial 0.2.0 release, updated site copy and download links
+- **Date:** 2026-10-16
+- **Status:** Accepted
+- **Context:** Following the implementation of per-weekday wake times (ADR 023), time-zone manual location selection (ADR 024), and linking the website from Settings, the website copy, download package, and release assets needed updating.
+- **Decision:** Bump application and website package versions to `0.2.0`. Rebuild the signed Apple silicon preview and package `SolarDial-0.2.0-arm64.zip` with its SHA-256 checksum sidecar. Update landing-page download links and preview notices to point to GitHub release `v0.2.0`. Update website copy to reflect per-weekday wake schedules and time-zone manual selection, removing outdated references to manual coordinate entry.
+- **Consequences:** The landing page and release packages accurately reflect the latest native features. Automated and manual downloads resolve to the new build.
