@@ -53,7 +53,7 @@ Morning colour is fully on at wake time (or at sunrise, if that is later). The 6
 ### 2026-10-16 — Per-weekday wake times and time-zone manual location
 - **Done:** `UserSettings.wakeMinutesByWeekday` overrides the default wake time per weekday; `ScheduleEngine` bedtime/wake maths now uses absolute instants per night (tonight and tomorrow morning), so bedtime follows the next morning's wake. Settings has a collapsed "Wake time by day" group under Wake time; the Bedtime row becomes "Bedtime tonight" when overrides exist. New test for a Saturday 09:00 wake. 56 tests. ADR 023.
 - **Also:** manual location is now a time zone (`manualTimeZone`, region ▸ city menu) instead of latitude/longitude, and the "Using" row names time zones. The menu bar dropdown shows "Time zone: Sao Paulo (GMT-3)" (plus "set manually" when manual) instead of the location source. ADR 024. 58 tests.
-- **Also:** Settings footer links to the live site https://solardial.netlify.app/ (README updated too).
+- **Also:** Settings footer links to the live site https://solardial.mduppes.com/ (README updated too).
 - **Verified:** 58 tests; the user checked the Settings window and menu in the relaunched `build/SolarDial.app`.
 
 ### 2026-10-14 — Fix Netlify website base and npm dependency installation

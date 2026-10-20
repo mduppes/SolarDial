@@ -1,6 +1,6 @@
 # SolarDial
 
-[GitHub](https://github.com/mduppes/SolarDial) · [Website](https://solardial.netlify.app/)
+[GitHub](https://github.com/mduppes/SolarDial) · [Website](https://solardial.mduppes.com/)
 
 A minimal, privacy-respecting menu-bar app for recent macOS versions. It warms the display after sunset and has better full-screen and location/time-zone handling than the original.
 
