@@ -17,6 +17,8 @@ Morning colour is fully on at wake time (or at sunrise, if that is later). The 6
 
 ## Next Steps
 
+- Repository sync checked on 2026-10-21: all existing work is on `origin/main`; no outstanding branches, stashes, worktrees or open pull requests. Continue with the live checks and hosting follow-up below.
+
 - Storage cleanup complete (2026-10-15): current `build/SolarDial.app` is retained; SwiftPM will regenerate `.build` on the next build/test. The original `/Applications/Flux.app` has been removed. Remaining native live checks below still apply.
 
 - Donation-page icon is ready for manual upload: `Resources/SolarDial-donation-icon.png` (1024 × 1024 PNG).
@@ -168,3 +170,9 @@ Morning colour is fully on at wake time (or at sunrise, if that is later). The 6
 - **Preserved:** Current signed `build/SolarDial.app`, all preferences, source/Git history, reverse-engineering references, the retired source checkout, current website dependencies and release ZIP/checksum. No app behaviour changed.
 - **Verified:** Each targeted path is absent; current app signature and running process checked after cleanup. No rebuild/tests run because these would recreate the deleted caches and no source code changed.
 - **Next / gotchas:** Build/test normally when changing Swift code; the first run will regenerate `.build`. The original vendor app must be reinstalled if needed for further live reverse engineering. Existing native live checks and hosting follow-up remain pending.
+
+
+### 2026-10-21 — Verify and sync origin/main
+- **Done:** Fetched/pruned origin and confirmed all existing work through `120770a` was already on GitHub's main branch. Checked local and remote branches, worktrees, stashes, untracked files and open GitHub pull requests; there was no outstanding work to merge. Recorded this handoff and prepared it for pushing to `origin/main`.
+- **Verified:** Working tree was clean, local main and freshly fetched origin/main had zero commits of divergence, and `git diff --check` passed. No app or website code changed, so builds/tests were not rerun.
+- **Next / gotchas:** Native live checks and hosting follow-up above remain pending. Generated build output, dependencies and local download packages remain ignored as intended.
